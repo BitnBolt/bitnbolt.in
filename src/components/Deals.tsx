@@ -84,6 +84,8 @@ export default function Deals() {
                 <Image
                   src={deal.image}
                   alt={deal.name}
+                  width={400}
+                  height={300}
                   className="w-full h-full object-cover"
                 />
                 

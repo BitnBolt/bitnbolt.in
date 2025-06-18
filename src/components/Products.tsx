@@ -146,6 +146,8 @@ export default function Products() {
                 <Image
                   src={product.image}
                   alt={product.name}
+                  width={400}
+                  height={300}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 />
                 
