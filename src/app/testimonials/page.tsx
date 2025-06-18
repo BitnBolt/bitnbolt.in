@@ -1,5 +1,6 @@
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import Image from 'next/image';
 
 export default function TestimonialsPage() {
   const testimonials = [
@@ -84,8 +85,8 @@ export default function TestimonialsPage() {
               What Our <span className="text-blue-600">Clients Say</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Don't just take our word for it. Here's what our clients have to say about 
-              their experience with BitnBolt's IoT solutions.
+              Don&apos;t just take our word for it. Here&apos;s what our clients have to say about 
+              their experience with BitnBolt&apos;s IoT solutions.
             </p>
           </div>
         </div>
@@ -146,12 +147,12 @@ export default function TestimonialsPage() {
 
                 {/* Content */}
                 <blockquote className="text-gray-700 mb-6 leading-relaxed">
-                  "{testimonial.content}"
+                  &quot;{testimonial.content}&quot;
                 </blockquote>
 
                 {/* Author */}
                 <div className="flex items-center">
-                  <img
+                  <Image
                     src={testimonial.image}
                     alt={testimonial.name}
                     className="w-12 h-12 rounded-full object-cover mr-4"
@@ -180,9 +181,9 @@ export default function TestimonialsPage() {
                 </h2>
                 <h3 className="text-xl font-semibold mb-4">TechFlow Industries</h3>
                 <p className="text-blue-100 text-lg mb-6">
-                  "BitnBolt's IoT solution transformed our manufacturing process, 
+                &quot;BitnBolt&apos;s IoT solution transformed our manufacturing process, 
                   reducing downtime by 40% and saving millions in operational costs. 
-                  Their expertise and support have been invaluable to our success."
+                  Their expertise and support have been invaluable to our success.&quot;
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
@@ -211,7 +212,7 @@ export default function TestimonialsPage() {
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Ready to transform your business with cutting-edge IoT solutions? 
-            Let's discuss how we can help you achieve similar results.
+            Let&apos;s discuss how we can help you achieve similar results.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">

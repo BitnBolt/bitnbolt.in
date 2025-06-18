@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Deals() {
   const deals = [
     {
@@ -56,7 +58,7 @@ export default function Deals() {
               🔥 Lightning Deals
             </h2>
             <p className="text-gray-600">
-              Limited time offers • Act fast before they're gone
+              Limited time offers • Act fast before they&apos;re gone
             </p>
           </div>
           <div className="text-right">
@@ -79,7 +81,7 @@ export default function Deals() {
 
               {/* Product Image */}
               <div className="relative h-48 overflow-hidden">
-                <img
+                <Image
                   src={deal.image}
                   alt={deal.name}
                   className="w-full h-full object-cover"

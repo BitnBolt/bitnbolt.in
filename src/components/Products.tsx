@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Products() {
   const products = [
     {
@@ -141,7 +143,7 @@ export default function Products() {
             >
               {/* Product Image */}
               <div className="relative h-64 overflow-hidden">
-                <img
+                <Image
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
@@ -270,7 +272,7 @@ export default function Products() {
               Need Something Custom?
             </h3>
             <p className="text-gray-600 text-lg mb-6 max-w-2xl mx-auto">
-              Don't see exactly what you need? We specialize in creating custom IoT solutions 
+              Don&apos;t see exactly what you need? We specialize in creating custom IoT solutions 
               tailored to your specific requirements and industry.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

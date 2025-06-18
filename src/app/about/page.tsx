@@ -6,7 +6,7 @@ export default function AboutPage() {
     {
       icon: "🎯",
       title: "Custom Solutions",
-      description: "We don't believe in one-size-fits-all. Every IoT solution we create is tailored to your specific business needs and requirements."
+      description: "We don&apos;t believe in one-size-fits-all. Every IoT solution we create is tailored to your specific business needs and requirements."
     },
     {
       icon: "⚡",
@@ -54,7 +54,7 @@ export default function AboutPage() {
               Why Choose <span className="text-blue-600">BitnBolt</span>?
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We're not just another IoT company. We're your innovation partners, 
+              We&apos;re not just another IoT company. We&apos;re your innovation partners, 
               transforming ideas into powerful, scalable solutions that drive real business results.
             </p>
           </div>
@@ -119,7 +119,7 @@ export default function AboutPage() {
                 in bridging the gap between digital innovation and real-world implementation.
               </p>
               <p className="text-lg text-gray-600">
-                Today, we're proud to serve hundreds of clients across various industries, 
+                Today, we&apos;re proud to serve hundreds of clients across various industries, 
                 helping them leverage IoT technology to improve efficiency, reduce costs, 
                 and gain competitive advantages.
               </p>
@@ -129,7 +129,7 @@ export default function AboutPage() {
                 <div className="text-6xl mb-4">🏭</div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Industrial IoT Experts</h3>
                 <p className="text-gray-600">
-                  From smart factories to connected cities, we've been at the forefront 
+                  From smart factories to connected cities, we&apos;ve been at the forefront 
                   of industrial IoT innovation for over a decade.
                 </p>
               </div>
