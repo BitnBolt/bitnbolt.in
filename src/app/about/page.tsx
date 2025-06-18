@@ -114,7 +114,7 @@ export default function AboutPage() {
                 regardless of industry or scale, deserves access to cutting-edge IoT solutions.
               </p>
               <p className="text-lg text-gray-600 mb-6">
-                Our name "BitnBolt" represents the combination of digital bits (technology) 
+                Our name &apos;BitnBolt&apos; represents the combination of digital bits (technology) 
                 and mechanical bolts (industrial applications) - symbolizing our expertise 
                 in bridging the gap between digital innovation and real-world implementation.
               </p>
