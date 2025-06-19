@@ -58,7 +58,7 @@ export default function ProductSearchPage() {
       <section className="py-10 bg-gray-50 min-h-[60vh]">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            Results for <span className="text-blue-600">"{keyword}"</span>
+            Results for <span className="text-blue-600">&quot;{keyword}&quot;</span>
           </h2>
           {/* Optionally, add a filter/sort bar here later */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
