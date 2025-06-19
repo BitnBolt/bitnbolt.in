@@ -24,15 +24,18 @@ export default function Header() {
 
           {/* Search Bar - Visible on all devices */}
           <div className="flex flex-1 max-w-sm sm:max-w-xl mx-3 sm:mx-6">
-            <div className="relative w-full">
+            <div className="flex items-center bg-white rounded-full shadow-lg border-2 border-gray-300 pl-2 w-full">
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full px-2 sm:px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm"
+                className="flex-1 px-4 py-2 text-sm bg-transparent border-none focus:ring-0 rounded-full outline-none"
               />
-              <button className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-2 sm:px-3 py-0.5 rounded text-xs hover:bg-blue-700 transition-colors">
+              <button className="ml-2 bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors text-sm font-medium flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
                 <span className="hidden sm:inline">Search</span>
-                <span className="sm:hidden">🔍</span>
               </button>
             </div>
           </div>

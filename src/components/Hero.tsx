@@ -19,13 +19,13 @@ export default function Hero() {
           
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-8">
-            <div className="relative">
+            <div className="flex items-center bg-white rounded-full shadow-lg border-2 border-gray-300 px-2">
               <input
                 type="text"
                 placeholder="Search for IoT products, custom solutions..."
-                className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-full focus:ring-4 focus:ring-blue-500 focus:border-transparent shadow-lg"
+                className="flex-1 px-6 py-4 text-lg bg-transparent border-none focus:ring-0 rounded-full outline-none"
               />
-              <button className="absolute right-2 top-2 bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors">
+              <button className="ml-2 bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors text-lg font-medium">
                 Search
               </button>
             </div>

@@ -55,7 +55,7 @@ export default function Deals() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              🔥 Lightning Deals
+              Lightning Deals
             </h2>
             <p className="text-gray-600">
               Limited time offers • Act fast before they&apos;re gone
@@ -72,10 +72,10 @@ export default function Deals() {
           {deals.map((deal) => (
             <div
               key={deal.id}
-              className="bg-white border-2 border-red-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+              className="bg-white border-2 border-teal-100 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
             >
               {/* Deal Badge */}
-              <div className="bg-red-600 text-white text-center py-2 text-sm font-bold">
+              <div className="bg-teal-500 text-white text-center py-2 text-sm font-bold">
                 {deal.discount}% OFF
               </div>
 
@@ -103,7 +103,7 @@ export default function Deals() {
 
                 {/* Pricing */}
                 <div className="mb-3">
-                  <span className="text-2xl font-bold text-red-600">${deal.salePrice}</span>
+                  <span className="text-2xl font-bold text-teal-600">${deal.salePrice}</span>
                   <span className="text-lg text-gray-500 line-through ml-2">${deal.originalPrice}</span>
                 </div>
 
@@ -115,14 +115,14 @@ export default function Deals() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
-                      className="bg-red-600 h-2 rounded-full transition-all duration-300"
+                      className="bg-teal-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${deal.sold}%` }}
                     ></div>
                   </div>
                 </div>
 
                 {/* Action Button */}
-                <button className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                <button className="w-full bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors font-medium">
                   Claim Deal
                 </button>
               </div>
