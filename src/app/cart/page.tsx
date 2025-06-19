@@ -24,10 +24,10 @@ const dummyCart = [
 export default function CartPage() {
   const [cart, setCart] = useState(dummyCart);
 
-  const updateQuantity = (id, qty) => {
+  const updateQuantity = (id: number, qty: number) => {
     setCart(cart => cart.map(item => item.id === id ? { ...item, quantity: qty } : item));
   };
-  const removeItem = (id) => {
+  const removeItem = (id: number) => {
     setCart(cart => cart.filter(item => item.id !== id));
   };
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
