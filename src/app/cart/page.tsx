@@ -59,7 +59,7 @@ export default function CartPage() {
                           type="number"
                           min={1}
                           value={item.quantity}
-                          onChange={e => updateQuantity(item.id, Math.max(1, Number(e.target.value)))}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateQuantity(item.id, Math.max(1, Number(e.target.value)))}
                           className="w-16 px-2 py-1 border border-gray-300 rounded"
                         />
                         <button

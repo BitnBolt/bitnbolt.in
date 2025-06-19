@@ -33,7 +33,7 @@ export default function CheckoutPage() {
     zip: '',
     phone: '',
   });
-  const handleAddressChange = e => {
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress({ ...address, [e.target.name]: e.target.value });
   };
 
