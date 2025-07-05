@@ -12,7 +12,7 @@ export interface EmailOptions {
   htmlContent: string;
   textContent?: string;
   templateId?: number;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
   cc?: { email: string; name?: string }[];
   bcc?: { email: string; name?: string }[];
   replyTo?: { email: string; name?: string };

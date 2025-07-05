@@ -67,7 +67,7 @@ export const authOptions: NextAuthOptions = {
         error: "/auth/error",
     },
     callbacks: {
-        async signIn({ user, account, profile }) {
+        async signIn({ user, account }) {
             if (account?.provider === "google") {
                 await connectDB();
                 
@@ -104,7 +104,7 @@ export const authOptions: NextAuthOptions = {
             // For credentials provider
             return true;
         },
-        async jwt({ token, user, account, trigger }) {
+        async jwt({ token, user, trigger }) {
             if (user) {
                 token.role = user.role || 'user';
                 token.id = user.id;

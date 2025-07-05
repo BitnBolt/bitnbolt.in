@@ -324,7 +324,7 @@ export default async function SoftwarePage() {
             <div className="lg:w-2/3">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your IoT Experience?</h2>
               <p className="text-blue-100 text-lg">
-                Let's discuss how our custom software solutions can help you maximize the potential of your IoT devices and streamline your operations.
+                Let&apos;s discuss how our custom software solutions can help you maximize the potential of your IoT devices and streamline your operations.
               </p>
             </div>
             <div className="lg:w-1/3 flex flex-col sm:flex-row lg:flex-col gap-4">

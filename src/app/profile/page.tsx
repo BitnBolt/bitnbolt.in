@@ -116,7 +116,7 @@ export default function ProfilePage() {
                     emailVerified: data.emailVerified
                 });
             }
-        } catch (error) {
+        } catch {
             setMessage({ type: 'error', content: 'Failed to load profile data' });
         } finally {
             setIsLoading(false);
@@ -141,7 +141,7 @@ export default function ProfilePage() {
                 const data = await response.json();
                 setMessage({ type: 'error', content: data.error || 'Failed to update profile' });
             }
-        } catch (error) {
+        } catch {
             setMessage({ type: 'error', content: 'An error occurred while saving' });
         } finally {
             setIsSaving(false);
@@ -250,7 +250,7 @@ export default function ProfilePage() {
                                                     } else {
                                                         setMessage({ type: 'error', content: data.error || 'Failed to send verification email' });
                                                     }
-                                                } catch (error) {
+                                                } catch {
                                                     setMessage({ type: 'error', content: 'An error occurred while sending verification email' });
                                                 }
                                             }}

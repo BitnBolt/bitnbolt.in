@@ -31,7 +31,7 @@ export default function SignInForm() {
 
             router.push('/')
             router.refresh()
-        } catch (error) {
+        } catch {
             setError('Something went wrong')
         }
     }

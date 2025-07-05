@@ -64,7 +64,7 @@ export default async function SignInPage() {
 
                         <div className="mt-6 flex flex-col space-y-4 text-center text-sm">
                             <p className="text-gray-600">
-                                Don't have an account?{" "}
+                                Don&apos;t have an account?{" "}
                                 <Link href="/auth/signup" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
                                     Sign up
                                 </Link>
