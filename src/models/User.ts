@@ -21,6 +21,8 @@ export interface IUser extends mongoose.Document {
         postalCode: string | null;
         country: string | null;
     };
+    wishlist: mongoose.Types.ObjectId[];
+    cart: mongoose.Types.ObjectId[];
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -94,6 +96,16 @@ const userSchema = new mongoose.Schema<IUser>({
             default: null
         }
     },
+    wishlist: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        default: []
+    }],
+    cart:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        default: []
+    }],
     createdAt: {
         type: Date,
         default: Date.now,

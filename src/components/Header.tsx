@@ -181,8 +181,8 @@ export default function Header() {
           <Link href="/#iot" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
             IoT Solutions
           </Link>
-          <Link href="/#deals" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
-            Deals
+          <Link href="/software" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+            Software
           </Link>
           <Link href="/about" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
             About

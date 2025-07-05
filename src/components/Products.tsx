@@ -1,6 +1,12 @@
+'use client';
+
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function Products() {
+  const [activeCategory, setActiveCategory] = useState("All");
+
   const products = [
     {
       id: 1,
@@ -65,7 +71,7 @@ export default function Products() {
     {
       id: 5,
       name: "Healthcare IoT Monitor - HIPAA Compliant",
-      category: "IoT",
+      category: "Healthcare",
       price: 799,
       originalPrice: 999,
       rating: 4.9,
@@ -80,7 +86,7 @@ export default function Products() {
     {
       id: 6,
       name: "Smart Energy Management System",
-      category: "Custom Made",
+      category: "Industrial",
       price: 1499,
       originalPrice: 1899,
       rating: 4.8,
@@ -96,14 +102,59 @@ export default function Products() {
 
   const categories = ["All", "IoT", "Custom Made", "Smart Home", "Industrial", "Healthcare"];
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring" as const,
+        stiffness: 100
+      }
+    }
+  };
+
+  // Filter products based on active category
+  const filteredProducts = activeCategory === "All" 
+    ? products 
+    : products.filter(product => product.category === activeCategory);
+
   return (
-    <section id="products" className="py-12 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+    <section id="products" className="py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-blue-50 to-transparent"></div>
+      <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header with animations */}
+        <motion.div 
+          className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-              Shop IoT Products
+            <motion.div 
+              className="inline-block bg-blue-100 text-blue-600 px-4 py-2 rounded-full mb-4 font-medium text-sm"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Our Products
+            </motion.div>
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+              Shop IoT Solutions
             </h2>
             <p className="text-gray-600">
               {products.length} products available • Free shipping on orders over $500
@@ -111,8 +162,8 @@ export default function Products() {
           </div>
           
           {/* Sort Options */}
-          <div className="flex items-center space-x-4 mt-4 md:mt-0">
-            <select className="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+          <div className="flex items-center mt-4 md:mt-0 w-full md:w-auto">
+            <select className="w-full md:w-auto border-2 border-gray-200 rounded-full px-4 py-2 text-sm bg-white focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-shadow duration-300">
               <option>Sort by: Featured</option>
               <option>Price: Low to High</option>
               <option>Price: High to Low</option>
@@ -120,68 +171,107 @@ export default function Products() {
               <option>Newest Arrivals</option>
             </select>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 mb-8">
+        {/* Category Filter with animations */}
+        <motion.div 
+          className="flex flex-wrap gap-2 mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           {categories.map((category) => (
             <button
               key={category}
-              className="px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-blue-50 hover:text-blue-600 border border-gray-200"
+              onClick={() => setActiveCategory(category)}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                activeCategory === category 
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
+                  : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'
+              }`}
             >
               {category}
             </button>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <div
+        {/* Products Grid with staggered animations */}
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {filteredProducts.map((product) => (
+            <motion.div
               key={product.id}
-              className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100"
+              variants={itemVariants}
+              whileHover={{ y: -8 }}
+              className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
             >
-              {/* Product Image */}
+              {/* Product Image with hover effect */}
               <div className="relative h-64 overflow-hidden">
                 <Image
                   src={product.image}
                   alt={product.name}
                   width={400}
                   height={300}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
+                
+                {/* Overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-between p-4">
+                  <button className="bg-white text-gray-800 px-4 py-2 rounded-full font-medium text-sm transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-gray-100">
+                    Quick View
+                  </button>
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-full font-medium text-sm transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-blue-700">
+                    Add to Cart
+                  </button>
+                </div>
                 
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
                   {product.prime && (
-                    <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium">
+                    <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
                       PRIME
                     </span>
                   )}
                   {product.fastDelivery && (
-                    <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-medium">
-                      Fast Delivery
+                    <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+                      FAST DELIVERY
                     </span>
                   )}
                   {!product.inStock && (
-                    <span className="bg-red-600 text-white px-2 py-1 rounded text-xs font-medium">
-                      Out of Stock
+                    <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+                      OUT OF STOCK
                     </span>
                   )}
                 </div>
 
                 {/* Wishlist Button */}
-                <button className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50">
-                  <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button className="absolute top-3 right-3 w-9 h-9 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 group">
+                  <svg className="w-5 h-5 text-gray-600 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 </button>
               </div>
 
               {/* Product Info */}
-              <div className="p-4">
+              <div className="p-5">
+                {/* Category Badge */}
+                <div className="mb-2">
+                  <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2.5 py-1 rounded-full">
+                    {product.category}
+                  </span>
+                </div>
+                
+                {/* Product Name */}
+                <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                  {product.name}
+                </h3>
+
                 {/* Rating */}
-                <div className="flex items-center mb-2">
+                <div className="flex items-center mb-3">
                   <div className="flex text-yellow-400">
                     {[...Array(5)].map((_, i) => (
                       <svg
@@ -199,31 +289,13 @@ export default function Products() {
                   </span>
                 </div>
 
-                {/* Product Name */}
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                  {product.name}
-                </h3>
-
-                {/* Price */}
-                <div className="mb-3">
-                  <span className="text-2xl font-bold text-gray-900">${product.price}</span>
-                  {product.originalPrice > product.price && (
-                    <span className="text-lg text-gray-500 line-through ml-2">${product.originalPrice}</span>
-                  )}
-                  {product.originalPrice > product.price && (
-                    <span className="text-sm text-green-600 font-medium ml-2">
-                      {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off
-                    </span>
-                  )}
-                </div>
-
-                {/* Features */}
+                {/* Features Pills */}
                 <div className="mb-4">
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {product.features.slice(0, 3).map((feature, index) => (
                       <span
                         key={index}
-                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+                        className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
                       >
                         {feature}
                       </span>
@@ -231,62 +303,72 @@ export default function Products() {
                   </div>
                 </div>
 
+                {/* Price */}
+                <div className="flex items-baseline mb-4">
+                  <span className="text-2xl font-bold text-gray-900">${product.price}</span>
+                  {product.originalPrice > product.price && (
+                    <>
+                      <span className="text-lg text-gray-500 line-through ml-2">${product.originalPrice}</span>
+                      <span className="text-sm text-green-600 font-medium ml-2">
+                        {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off
+                      </span>
+                    </>
+                  )}
+                </div>
+
                 {/* Action Buttons */}
                 <div className="space-y-2">
                   {product.inStock ? (
-                    <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                    <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
                       Add to Cart
                     </button>
                   ) : (
-                    <button className="w-full bg-gray-400 text-white py-2 px-4 rounded-lg cursor-not-allowed font-medium">
+                    <button className="w-full bg-gray-400 text-white py-3 px-4 rounded-xl cursor-not-allowed font-medium flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
                       Out of Stock
                     </button>
                   )}
-                  <button className="w-full border border-blue-600 text-blue-600 py-2 px-4 rounded-lg hover:bg-blue-50 transition-colors font-medium">
-                    Buy Now
+                  <button className="w-full border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-xl hover:bg-gray-50 transition-colors font-medium flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    View Details
                   </button>
                 </div>
-
-                {/* Delivery Info */}
-                <div className="mt-3 text-sm text-gray-600">
-                  {product.fastDelivery ? (
-                    <span className="text-green-600">✓ Free delivery by tomorrow</span>
-                  ) : (
-                    <span>✓ Free delivery in 3-5 days</span>
-                  )}
-                </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Load More */}
-        <div className="text-center mt-12">
-          <button className="bg-white border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-            Load More Products
-          </button>
-        </div>
-
-        {/* Custom Solutions CTA */}
-        <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg">
-          <div className="text-center">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Need Something Custom?
-            </h3>
-            <p className="text-gray-600 text-lg mb-6 max-w-2xl mx-auto">
-              Don&apos;t see exactly what you need? We specialize in creating custom IoT solutions 
-              tailored to your specific requirements and industry.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                Request Custom Solution
-              </button>
-              <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                Schedule Consultation
-              </button>
-            </div>
+        {/* Pagination */}
+        <motion.div 
+          className="mt-12 flex justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+        >
+          <div className="inline-flex rounded-xl bg-white shadow-md overflow-hidden">
+            <button className="py-2 px-4 border-r border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button className="py-2 px-4 bg-blue-600 text-white font-medium">1</button>
+            <button className="py-2 px-4 border-x border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">2</button>
+            <button className="py-2 px-4 border-r border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">3</button>
+            <button className="py-2 px-4 text-gray-600 hover:bg-gray-50 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

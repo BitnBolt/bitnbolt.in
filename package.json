@@ -13,6 +13,7 @@
     "@auth/mongodb-adapter": "^3.10.0",
     "@getbrevo/brevo": "^2.2.0",
     "bcryptjs": "^3.0.2",
+    "framer-motion": "^12.19.1",
     "mongoose": "^8.16.0",
     "next": "15.3.3",
     "next-auth": "^4.24.11",

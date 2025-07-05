@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import User from '@/models/User';
 // import { connectToDatabase } from '@/lib/mongodb';
 import { connectDB } from '@/lib/db';
+import { use } from 'react';
 
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const token = searchParams.get('token');
-        console.log(token)
 
         if (!token) {
             return NextResponse.json({ error: 'Token is required' }, { status: 400 });
@@ -30,8 +30,7 @@ export async function GET(req: NextRequest) {
         user.verificationTokenExpiry = undefined;
         await user.save();
 
-        // Redirect to profile page with success message
-        return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/profile?verified=true`);
+        return NextResponse.json({ message: 'Email verified successfully' });
     } catch (error) {
         console.error('Error verifying email:', error);
         return NextResponse.json({ error: 'Failed to verify email' }, { status: 500 });
