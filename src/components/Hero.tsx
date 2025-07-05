@@ -25,7 +25,7 @@ export default function Hero() {
       setCurrentTextIndex((prev) => (prev + 1) % heroTexts.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [heroTexts.length]);
 
   // Animation variants
   const containerVariants = {

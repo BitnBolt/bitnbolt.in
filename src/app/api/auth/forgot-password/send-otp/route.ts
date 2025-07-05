@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendOTPEmail } from '@/lib/email';
 // import { User } from '@/models/User';
 import User from '@/models/User';
-// import { connectToDatabase } from '@/lib/mongodb';
 import { connectDB } from '@/lib/db';
 
 export async function POST(request: NextRequest) {

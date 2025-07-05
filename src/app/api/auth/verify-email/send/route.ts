@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { sendVerificationEmail } from '@/lib/email';
 import User from '@/models/User';
 // import mongoose from 'mongoose';
-// import clientPromise from '@/lib/mongodb';
+// import clientPromise from '@';
 import crypto from 'crypto';
 import { connectDB } from '@/lib/db';
 

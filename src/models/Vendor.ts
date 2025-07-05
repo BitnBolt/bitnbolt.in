@@ -7,18 +7,27 @@ export interface IVendor extends mongoose.Document {
     phone: string;
     shopName: string;
     gstNumber?: string;
-    pickupAddress: {
-        street: string;
+    profileImage?:string;
+    pickupAddresses: Array<{
+        addressType: 'primary' | 'secondary' | 'warehouse';
+        addressName: string;
+        buildingNumber: string;
+        streetName: string;
         city: string;
         state: string;
-        pincode: string;
+        postalCode: string;
         country: string;
-    };
+        landmark?: string;
+        isDefault: boolean;
+    }>;
     shiprocketPickupId?: string;
     approved: boolean;
     emailVerified: boolean;
-    verificationToken?: string;
-    verificationTokenExpiry?: Date;
+    phoneVerified: boolean;
+    emailVerificationToken?: string;
+    emailVerificationTokenExpiry?: Date;
+    phoneVerificationOTP?: string;
+    phoneVerificationOTPExpiry?: Date;
     resetPasswordOTP?: string;
     resetPasswordOTPExpiry?: Date;
     createdAt: Date;
@@ -49,10 +58,27 @@ const vendorSchema = new mongoose.Schema<IVendor>({
     gstNumber: {
         type: String,
     },
-    pickupAddress: {
-        street: {
+    profileImage:{
+        type: String,
+    },
+    pickupAddresses: [{
+        addressType: {
             type: String,
-            required: [true, 'Street is required'],
+            enum: ['primary', 'secondary', 'warehouse'],
+            default: 'primary',
+            required: [true, 'Address type is required'],
+        },
+        addressName: {
+            type: String,
+            required: [true, 'Address name is required'],
+        },
+        buildingNumber: {
+            type: String,
+            required: [true, 'Building/House number is required'],
+        },
+        streetName: {
+            type: String,
+            required: [true, 'Street name is required'],
         },
         city: {
             type: String,
@@ -62,15 +88,23 @@ const vendorSchema = new mongoose.Schema<IVendor>({
             type: String,
             required: [true, 'State is required'],
         },
-        pincode: {
+        postalCode: {
             type: String,
-            required: [true, 'Pincode is required'],
+            required: [true, 'Postal code is required'],
         },
         country: {
             type: String,
             required: [true, 'Country is required'],
         },
-    },
+        landmark: {
+            type: String,
+            default: null,
+        },
+        isDefault: {
+            type: Boolean,
+            default: false,
+        },
+    }],
     shiprocketPickupId: {
         type: String,
         default: null,
@@ -83,11 +117,23 @@ const vendorSchema = new mongoose.Schema<IVendor>({
         type: Boolean,
         default: false,
     },
-    verificationToken: {
+    phoneVerified: {
+        type: Boolean,
+        default: false,
+    },
+    emailVerificationToken: {
         type: String,
         default: null,
     },
-    verificationTokenExpiry: {
+    emailVerificationTokenExpiry: {
+        type: Date,
+        default: null,
+    },
+    phoneVerificationOTP: {
+        type: String,
+        default: null,
+    },
+    phoneVerificationOTPExpiry: {
         type: Date,
         default: null,
     },
