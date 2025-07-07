@@ -8,11 +8,14 @@ export function middleware(request: NextRequest) {
     
     // Define allowed origins
     const allowedOrigins = [
+      'http://localhost:3002', // admin frontend
       'http://localhost:3001', // Vendor frontend
       'http://localhost:3000', // Main frontend
+      'https://admin.bitnbolt.in', // Production admin domain
       'https://vendor.bitnbolt.in', // Production vendor domain
       'https://bitnbolt.in', // Production main domain
     ];
+    
 
     // Check if the origin is allowed
     const isAllowedOrigin = allowedOrigins.includes(origin);

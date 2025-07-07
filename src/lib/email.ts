@@ -139,3 +139,44 @@ export async function sendVerificationEmail(to: string, verificationLink: string
 //   'https://bitnbolt.in/verify?token=xyz',
 //   'John Doe'
 // );
+
+/**
+ * Sends a password reset email with a link
+ * @param to Recipient email address
+ * @param resetLink The password reset link
+ * @param name Optional recipient name
+ */
+export async function sendPasswordResetEmail(to: string, resetLink: string, name?: string) {
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2>Reset Your Password</h2>
+      <p>Hello ${name || 'there'},</p>
+      <p>You requested to reset your password. Please click the button below to create a new password:</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${resetLink}" 
+           style="background-color: #dc2626; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+          Reset Password
+        </a>
+      </div>
+      <p>Or copy and paste this link in your browser:</p>
+      <p style="word-break: break-all; color: #dc2626;">${resetLink}</p>
+      <p>This link will expire in 1 hour.</p>
+      <p>If you didn't request a password reset, please ignore this email.</p>
+      <p>Best regards,<br>BitnBolt Admin Team</p>
+    </div>
+  `;
+
+  return sendEmail({
+    to: [{ email: to, name }],
+    subject: 'Reset Your Password - BitnBolt Admin',
+    htmlContent,
+    tags: ['password-reset']
+  });
+}
+// import { sendPasswordResetEmail } from '@/lib/email';
+
+// await sendPasswordResetEmail(
+//   'admin@example.com',
+//   'https://admin.bitnbolt.in/auth/forgot-password?token=xyz',
+//   'Admin User'
+// );

@@ -22,6 +22,8 @@ export interface IVendor extends mongoose.Document {
     }>;
     shiprocketPickupId?: string;
     approved: boolean;
+    suspended: boolean;
+    suspensionReason?: string;
     emailVerified: boolean;
     phoneVerified: boolean;
     emailVerificationToken?: string;
@@ -112,6 +114,14 @@ const vendorSchema = new mongoose.Schema<IVendor>({
     approved: {
         type: Boolean,
         default: false,
+    },
+    suspended: {
+        type: Boolean,
+        default: false,
+    },
+    suspensionReason: {
+        type: String,
+        default: null,
     },
     emailVerified: {
         type: Boolean,

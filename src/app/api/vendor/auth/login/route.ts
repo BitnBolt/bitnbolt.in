@@ -55,6 +55,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if vendor is suspended
+    if (vendor.suspended) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Your account has been suspended',
+          data: {
+            suspended: true,
+            suspensionReason: vendor.suspensionReason || 'No reason provided',
+            email: vendor.email
+          }
+        },
+        { status: 403 }
+      );
+    }
+
     // Check if vendor is approved (optional - you can remove this if not needed)
     if (!vendor.approved) {
       return NextResponse.json(

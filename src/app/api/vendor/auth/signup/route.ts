@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     await vendor.save();
 
     // Send email verification
-    const verificationLink = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/vendor/verify-email?token=${emailVerificationToken}`;
+    const verificationLink = `${process.env.NEXT_VENDOR_URL || 'http://localhost:3000'}/vendor/verify-email?token=${emailVerificationToken}`;
     await sendVerificationEmail(email, verificationLink, seller_name);
 
     // Generate JWT token
