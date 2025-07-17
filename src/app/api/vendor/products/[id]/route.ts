@@ -26,9 +26,9 @@ export async function GET(
     }
 
     await connectDB();
-
+    const { id } = await params;
     const product = await Product.findOne({
-      _id: params.id,
+      _id: id,
       vendorId: vendorData.vendorId,
     });
 

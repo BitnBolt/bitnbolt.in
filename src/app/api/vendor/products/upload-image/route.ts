@@ -25,60 +25,57 @@ export async function POST(request: NextRequest) {
     // Parse multipart form
     const formData = await request.formData();
     const file = formData.get('image');
-    const productId = formData.get('productId');
-    const imageIndex = formData.get('imageIndex'); // Optional: for updating specific image in array
-
     if (!file || typeof file === 'string') {
       return NextResponse.json({ success: false, message: 'No image file provided' }, { status: 400 });
-    }
-
-    if (!productId || typeof productId !== 'string') {
-      return NextResponse.json({ success: false, message: 'Product ID is required' }, { status: 400 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    await connectDB();
-    const product = await Product.findOne({ _id: productId, vendorId: tokenPayload.vendorId });
-    if (!product) {
-      return NextResponse.json({ success: false, message: 'Product not found' }, { status: 404 });
-    }
+    // Get optional parameters
+    const productId = formData.get('productId');
+    const imageIndex = formData.get('imageIndex');
 
-    // If updating a specific image, delete the old one first
-    if (imageIndex !== null && typeof imageIndex === 'string') {
-      const idx = parseInt(imageIndex);
-      if (!isNaN(idx) && product.images[idx]) {
-        const match = product.images[idx].match(/\/products\/([^\.\/]+)\./);
-        if (match && match[1]) {
-          const publicId = `products/${match[1]}`;
-          await deleteFromCloudinary(publicId);
-        }
-      }
-    }
-
-    // Upload new image
+    // Upload new image to Cloudinary
     const result = await uploadToCloudinary(buffer, 'products') as CloudinaryUploadResult;
+    
+    // If productId is provided, update the product
+    if (productId && typeof productId === 'string') {
+      await connectDB();
+      const product = await Product.findOne({ _id: productId, vendorId: tokenPayload.vendorId });
+      if (!product) {
+        return NextResponse.json({ success: false, message: 'Product not found' }, { status: 404 });
+      }
 
-    // Update product images array
-    if (imageIndex !== null && typeof imageIndex === 'string') {
-      const idx = parseInt(imageIndex);
-      if (!isNaN(idx)) {
-        product.images[idx] = result.secure_url;
+      // If updating a specific image, delete the old one first
+      if (imageIndex !== null && typeof imageIndex === 'string') {
+        const idx = parseInt(imageIndex);
+        if (!isNaN(idx) && product.images[idx]) {
+          // Extract publicId from URL
+          const match = product.images[idx].match(/\/products\/([^\.\/]+)\./);
+          if (match && match[1]) {
+            const publicId = `products/${match[1]}`;
+            await deleteFromCloudinary(publicId);
+          }
+          
+          // Update the image at the specified index
+          product.images[idx] = result.secure_url;
+        }
+      } else {
+        // Add new image to array
+        if (!product.images) {
+          product.images = [];
+        }
+        product.images.push(result.secure_url);
       }
-    } else {
-      if (!product.images) {
-        product.images = [];
-      }
-      product.images.push(result.secure_url);
+
+      product.updatedAt = new Date();
+      await product.save();
     }
-
-    product.updatedAt = new Date();
-    await product.save();
 
     return NextResponse.json({
       success: true,
-      message: 'Product image uploaded',
+      message: 'Image uploaded successfully',
       data: { imageUrl: result.secure_url },
     });
   } catch (error) {
