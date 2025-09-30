@@ -2,38 +2,73 @@
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-const dummyCart = [
-  {
-    id: 1,
-    name: 'IoT Smart Sensor',
-    price: 199,
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-    quantity: 2,
-  },
-  {
-    id: 3,
-    name: 'Smart Home Hub',
-    price: 299,
-    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop',
-    quantity: 1,
-  },
-];
+type CartItem = {
+  productId: string;
+  quantity: number;
+  product: {
+    _id: string;
+    name: string;
+    slug: string;
+    images: string[];
+    finalPrice: number;
+  };
+};
 
 export default function CartPage() {
-  const [cart, setCart] = useState(dummyCart);
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const updateQuantity = (id: number, qty: number) => {
-    setCart(cart => cart.map(item => item.id === id ? { ...item, quantity: qty } : item));
+  const fetchCart = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch('/api/cart');
+      if (!res.ok) throw new Error('Failed to load cart');
+      const data = await res.json() as { items: CartItem[] };
+      // Deduplicate on productId, using server-provided quantity
+      const byId = new Map<string, CartItem>();
+      for (const it of data.items || []) {
+        const key = it.productId;
+        if (!byId.has(key)) byId.set(key, it);
+      }
+      setItems(Array.from(byId.values()));
+    } catch (e: any) {
+      setError(e?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
   };
-  const removeItem = (id: number) => {
-    setCart(cart => cart.filter(item => item.id !== id));
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const updateQuantity = async (productId: string, qty: number) => {
+    qty = Math.max(1, Math.floor(qty));
+    await fetch('/api/cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, quantity: qty })
+    });
+    await fetchCart();
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('cart-updated'));
   };
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const estimatedTax = Math.round(subtotal * 0.08 * 100) / 100; // 8% tax
-  const shipping = subtotal > 500 ? 0 : 20;
-  const total = subtotal + estimatedTax + shipping;
+
+  const removeItem = async (productId: string) => {
+    await fetch(`/api/cart/${productId}`, { method: 'DELETE' });
+    await fetchCart();
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('cart-updated'));
+  };
+
+  const { subtotal, estimatedTax, shipping, total } = useMemo(() => {
+    const st = items.reduce((sum, it) => sum + it.product.finalPrice * it.quantity, 0);
+    const tax = Math.round(st * 0.08 * 100) / 100;
+    const ship = st > 500 ? 0 : 20;
+    return { subtotal: st, estimatedTax: tax, shipping: ship, total: st + tax + ship };
+  }, [items]);
 
   return (
     <main className="min-h-screen bg-gray-100">
@@ -43,28 +78,32 @@ export default function CartPage() {
           {/* Cart Products */}
           <div className="md:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
             <h2 className="text-2xl font-bold mb-6">Shopping Cart</h2>
-            {cart.length === 0 ? (
+            {loading ? (
+              <div className="text-gray-500">Loading…</div>
+            ) : error ? (
+              <div className="text-red-600">{error}</div>
+            ) : items.length === 0 ? (
               <div className="text-gray-500">Your cart is empty.</div>
             ) : (
               <ul className="space-y-6">
-                {cart.map(item => (
-                  <li key={item.id} className="flex items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0">
-                    <Image src={item.image} alt={item.name} width={80} height={80} className="rounded-lg object-cover" />
+                {items.map(item => (
+                  <li key={item.productId} className="flex items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0">
+                    <Image src={item.product.images?.[0] || '/next.svg'} alt={item.product.name} width={80} height={80} className="rounded-lg object-cover" />
                     <div className="flex-1">
-                      <div className="font-semibold text-gray-900 text-lg">{item.name}</div>
-                      <div className="text-blue-600 font-bold text-base mb-2">${item.price}</div>
+                      <div className="font-semibold text-gray-900 text-lg">{item.product.name}</div>
+                      <div className="text-blue-600 font-bold text-base mb-2">${item.product.finalPrice.toFixed(2)}</div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-600">Qty:</span>
                         <input
                           type="number"
                           min={1}
                           value={item.quantity}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateQuantity(item.id, Math.max(1, Number(e.target.value)))}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateQuantity(item.productId, Number(e.target.value))}
                           className="w-16 px-2 py-1 border border-gray-300 rounded"
                         />
                         <button
                           className="ml-2 text-red-500 hover:underline text-sm"
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeItem(item.productId)}
                         >
                           Remove
                         </button>

@@ -10,6 +10,7 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { data: session, status } = useSession();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [cartCount, setCartCount] = useState<number>(0);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -21,6 +22,26 @@ export default function Header() {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Fetch cart count
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const res = await fetch('/api/cart');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted) setCartCount(data.items.length);
+      } catch {}
+    };
+    load();
+    const handler = () => load();
+    window.addEventListener('cart-updated' as any, handler);
+    return () => {
+      mounted = false;
+      window.removeEventListener('cart-updated' as any, handler);
+    };
   }, []);
 
   const handleSignOut = () => {
@@ -146,7 +167,7 @@ export default function Header() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
               </svg>
               <span className="hidden sm:block text-sm">Cart</span>
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-4 h-4 px-1 flex items-center justify-center">{cartCount}</span>
             </Link>
 
             {/* Mobile menu button */}
@@ -172,14 +193,14 @@ export default function Header() {
           <Link href="/" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
             Home
           </Link>
-          <Link href="/#products" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+          <Link href="/product" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
             All Products
           </Link>
           <Link href="/#custom" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
             Custom Made
           </Link>
-          <Link href="/#iot" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
-            IoT Solutions
+          <Link href="/iot-board" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+            IoT Board
           </Link>
           <Link href="/software" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
             Software
@@ -236,14 +257,14 @@ export default function Header() {
               <Link href="/" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
                 Home
               </Link>
-              <Link href="/#products" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
+              <Link href="/product" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
                 All Products
               </Link>
               <Link href="/#custom" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
                 Custom Made
               </Link>
-              <Link href="/#iot" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
-                IoT Solutions
+              <Link href="/iot-board" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
+                IoT Board
               </Link>
               <Link href="/#deals" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
                 Deals

@@ -30,7 +30,7 @@ export default async function Home() {
         <Header />
         <Hero />
         <Deals />
-        <Products />
+        <Products limit={3} showAllLink={true} />
         <Features />
         <Footer />
       </HomeContent>

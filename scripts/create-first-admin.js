@@ -62,7 +62,7 @@ const Admin = mongoose.model('Admin', adminSchema);
 async function createFirstAdmin() {
   try {
     // Connect to MongoDB (replace with your connection string)
-    const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bitnbolt_in';
+    const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://bitnbolt2025:a6mrXqGr8lJY3B17@cluster0.g5bwkkg.mongodb.net/main';
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
 

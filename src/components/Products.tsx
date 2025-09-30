@@ -1,10 +1,16 @@
 'use client';
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-export default function Products() {
+type ProductsProps = {
+  limit?: number;
+  showAllLink?: boolean;
+};
+
+export default function Products({ limit, showAllLink = false }: ProductsProps) {
   const [activeCategory, setActiveCategory] = useState("All");
 
   const products = [
@@ -126,9 +132,11 @@ export default function Products() {
   };
 
   // Filter products based on active category
-  const filteredProducts = activeCategory === "All" 
+  let filteredProducts = activeCategory === "All" 
     ? products 
     : products.filter(product => product.category === activeCategory);
+
+  const limited = typeof limit === 'number' && limit > 0 ? filteredProducts.slice(0, limit) : filteredProducts;
 
   return (
     <section id="products" className="py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
@@ -156,43 +164,7 @@ export default function Products() {
             <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
               Shop IoT Solutions
             </h2>
-            <p className="text-gray-600">
-              {products.length} products available • Free shipping on orders over $500
-            </p>
           </div>
-          
-          {/* Sort Options */}
-          <div className="flex items-center mt-4 md:mt-0 w-full md:w-auto">
-            <select className="w-full md:w-auto border-2 border-gray-200 rounded-full px-4 py-2 text-sm bg-white focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-shadow duration-300">
-              <option>Sort by: Featured</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-              <option>Customer Rating</option>
-              <option>Newest Arrivals</option>
-            </select>
-          </div>
-        </motion.div>
-
-        {/* Category Filter with animations */}
-        <motion.div 
-          className="flex flex-wrap gap-2 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                activeCategory === category 
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
-                  : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
         </motion.div>
 
         {/* Products Grid with staggered animations */}
@@ -202,7 +174,7 @@ export default function Products() {
           initial="hidden"
           animate="visible"
         >
-          {filteredProducts.map((product) => (
+          {limited.map((product) => (
             <motion.div
               key={product.id}
               variants={itemVariants}
@@ -218,16 +190,6 @@ export default function Products() {
                   height={300}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                
-                {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-between p-4">
-                  <button className="bg-white text-gray-800 px-4 py-2 rounded-full font-medium text-sm transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-gray-100">
-                    Quick View
-                  </button>
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-full font-medium text-sm transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-blue-700">
-                    Add to Cart
-                  </button>
-                </div>
                 
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
@@ -346,28 +308,18 @@ export default function Products() {
           ))}
         </motion.div>
 
-        {/* Pagination */}
+        {/* Footer actions */}
         <motion.div 
           className="mt-12 flex justify-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.8 }}
         >
-          <div className="inline-flex rounded-xl bg-white shadow-md overflow-hidden">
-            <button className="py-2 px-4 border-r border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button className="py-2 px-4 bg-blue-600 text-white font-medium">1</button>
-            <button className="py-2 px-4 border-x border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">2</button>
-            <button className="py-2 px-4 border-r border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">3</button>
-            <button className="py-2 px-4 text-gray-600 hover:bg-gray-50 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
+          {showAllLink && (
+            <Link href="/product" className="px-6 py-3 rounded-full bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-800 font-medium">
+              Show all products
+            </Link>
+          )}
         </motion.div>
       </div>
     </section>
