@@ -5,7 +5,7 @@ import { motion, type Variants } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-type Props = {}
+type Props = Record<string, never>
 
 export default function Page({}: Props) {
   const container: Variants = {

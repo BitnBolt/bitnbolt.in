@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 
 export async function GET(
   req: Request,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
     // Get authorization header
@@ -19,14 +19,14 @@ export async function GET(
     const token = authHeader.substring(7);
     
     // Verify JWT token
-    let decoded: any;
+    let decoded: { email: string; vendorId?: string };
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { email: string; vendorId?: string };
     } catch (error) {
       return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
     }
 
-    const { orderId } = params;
+    const { orderId } = await params;
     console.log('Getting documents for order:', orderId);
 
     await connectDB();
@@ -49,7 +49,7 @@ export async function GET(
     }
 
     // Check if order has items from this vendor
-    const vendorItems = order.items.filter((item: any) => 
+    const vendorItems = order.items.filter((item: { vendorId: string }) => 
       String(item.vendorId) === String(vendor._id)
     );
 
@@ -62,7 +62,7 @@ export async function GET(
 
     // Find vendor shipment
     const vendorShipment = order.deliveryDetails.vendorShipments?.find(
-      (shipment: any) => String(shipment.vendorId) === String(vendor._id)
+      (shipment: { vendorId: string }) => String(shipment.vendorId) === String(vendor._id)
     );
 
     if (!vendorShipment) {
@@ -160,7 +160,6 @@ export async function GET(
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      orderId: params?.orderId,
       timestamp: new Date().toISOString()
     });
     return NextResponse.json({ 
@@ -174,7 +173,7 @@ export async function GET(
 // Generate specific document type
 export async function POST(
   req: Request,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
     // Get authorization header
@@ -186,14 +185,14 @@ export async function POST(
     const token = authHeader.substring(7);
     
     // Verify JWT token
-    let decoded: any;
+    let decoded: { email: string; vendorId?: string };
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { email: string; vendorId?: string };
     } catch (error) {
       return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
     }
 
-    const { orderId } = params;
+    const { orderId } = await params;
     const { documentType } = await req.json();
 
     await connectDB();
@@ -207,7 +206,7 @@ export async function POST(
     // Get order and find vendor shipment
     const order = await Order.findOne({ orderId });
     const vendorShipment = order?.deliveryDetails.vendorShipments?.find(
-      (shipment: any) => String(shipment.vendorId) === String(vendor._id)
+      (shipment: { vendorId: string }) => String(shipment.vendorId) === String(vendor._id)
     );
 
     if (!vendorShipment?.shiprocketShipmentId) {

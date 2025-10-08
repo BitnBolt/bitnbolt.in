@@ -37,10 +37,10 @@ export default function Header() {
     };
     load();
     const handler = () => load();
-    window.addEventListener('cart-updated' as any, handler);
+    window.addEventListener('cart-updated' as keyof WindowEventMap, handler);
     return () => {
       mounted = false;
-      window.removeEventListener('cart-updated' as any, handler);
+      window.removeEventListener('cart-updated' as keyof WindowEventMap, handler);
     };
   }, []);
 

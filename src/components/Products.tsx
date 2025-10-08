@@ -132,7 +132,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
   };
 
   // Filter products based on active category
-  let filteredProducts = activeCategory === "All" 
+  const filteredProducts = activeCategory === "All" 
     ? products 
     : products.filter(product => product.category === activeCategory);
 

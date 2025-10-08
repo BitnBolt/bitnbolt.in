@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 interface TrackingData {
@@ -22,7 +22,7 @@ interface TrackingData {
       destination: string;
       consignee_name: string;
       origin: string;
-      courier_agent_details?: any;
+      courier_agent_details?: { name?: string; phone?: string; email?: string };
       courier_name: string;
       edd?: string;
       pod?: string;
@@ -48,37 +48,37 @@ interface TrackingData {
 export default function TrackPage() {
   const params = useParams();
   const awbCode = params.awbCode as string;
-  
+
   const [trackingData, setTrackingData] = useState<TrackingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (awbCode) {
-      fetchTrackingData();
-    }
-  }, [awbCode]);
 
-  const fetchTrackingData = async () => {
+  const fetchTrackingData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const res = await fetch(`/api/shiprocket/track?awbCode=${awbCode}`);
-      
+
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.message || 'Failed to fetch tracking data');
       }
-      
+
       const data = await res.json();
       setTrackingData(data.tracking);
-    } catch (e: any) {
-      setError(e?.message || 'Failed to fetch tracking data');
+    } catch (e: unknown) {
+      setError((e as Error)?.message || 'Failed to fetch tracking data');
     } finally {
       setLoading(false);
     }
-  };
+  }, [awbCode]);
+  useEffect(() => {
+    if (awbCode) {
+      fetchTrackingData();
+    }
+  }, [awbCode, fetchTrackingData]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -200,9 +200,8 @@ export default function TrackPage() {
             {activities.map((activity, index) => (
               <div key={index} className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
-                  <div className={`w-3 h-3 rounded-full ${
-                    index === 0 ? 'bg-green-500' : 'bg-gray-300'
-                  }`}></div>
+                  <div className={`w-3 h-3 rounded-full ${index === 0 ? 'bg-green-500' : 'bg-gray-300'
+                    }`}></div>
                   {index < activities.length - 1 && (
                     <div className="w-px h-8 bg-gray-300 ml-1.5"></div>
                   )}

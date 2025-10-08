@@ -36,8 +36,8 @@ export default function CartPage() {
         if (!byId.has(key)) byId.set(key, it);
       }
       setItems(Array.from(byId.values()));
-    } catch (e: any) {
-      setError(e?.message || 'Something went wrong');
+    } catch (e: unknown) {
+      setError((e as Error)?.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }

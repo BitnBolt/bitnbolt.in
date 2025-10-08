@@ -90,7 +90,7 @@ interface ShiprocketTrackingResponse {
       destination: string;
       consignee_name: string;
       origin: string;
-      courier_agent_details?: any;
+      courier_agent_details?: { name?: string; phone?: string; email?: string };
       courier_name: string;
       edd?: string;
       pod?: string;
@@ -117,13 +117,13 @@ interface ShiprocketLabelResponse {
   label_created: number;
   label_url: string;
   response: string;
-  not_created: any[];
+  not_created: unknown[];
 }
 
 interface ShiprocketInvoiceResponse {
   is_invoice_created: boolean;
   invoice_url: string;
-  not_created: any[];
+  not_created: unknown[];
 }
 
 interface ShiprocketManifestResponse {
@@ -228,12 +228,12 @@ interface ShiprocketServiceabilityResponse {
       new_edd: number;
       suppress_date: string;
       suppress_text: string;
-      suppression_dates: any;
+      suppression_dates: unknown;
       others: string;
-      base_courier_id: any;
+      base_courier_id: unknown;
       base_weight: string;
       air_max_weight: string;
-      volumetric_max_weight: any;
+      volumetric_max_weight: unknown;
       weight_cases: number;
       tracking_performance: number;
       rto_performance: number;
@@ -254,12 +254,12 @@ interface ShiprocketServiceabilityResponse {
       id: number;
       title: string;
     };
-    child_courier_id?: any;
+    child_courier_id?: unknown;
   };
   company_auto_shipment_insurance_setting?: boolean;
   covid_zones?: {
-    delivery_zone: any;
-    pickup_zone: any;
+    delivery_zone: unknown;
+    pickup_zone: unknown;
   };
   currency?: string;
   dg_courier?: number;
@@ -271,7 +271,7 @@ interface ShiprocketServiceabilityResponse {
   is_zone_from_mongo?: boolean;
   label_generate_type?: number;
   on_new_zone?: number;
-  seller_address?: any[];
+  seller_address?: unknown[];
   user_insurance_manadatory?: boolean;
 }
 
@@ -324,7 +324,7 @@ export async function getShiprocketToken(): Promise<string> {
 }
 
 // Create shipment
-export async function createShiprocketShipment(shipmentData: any): Promise<ShiprocketOrderResponse> {
+export async function createShiprocketShipment(shipmentData: Record<string, unknown>): Promise<ShiprocketOrderResponse> {
   try {
     const token = await getShiprocketToken();
 
@@ -619,7 +619,7 @@ export async function getShiprocketDocuments(shipmentId: string, orderId: string
   awb?: string;
 }> {
   try {
-    const documents: any = {};
+    const documents: Record<string, string> = {};
 
     // Generate label
     try {

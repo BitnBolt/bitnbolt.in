@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     const category = searchParams.get('category');
     const q = searchParams.get('q');
 
-    const filter: any = { isPublished: true, isSuspended: false };
+    const filter: { isPublished: boolean; isSuspended: boolean; category?: string; $or?: Array<{ name: { $regex: string; $options: string } } | { description: { $regex: string; $options: string } }>; $text?: { $search: string } } = { isPublished: true, isSuspended: false };
     if (category && category !== 'All') {
       filter.category = category;
     }
@@ -47,7 +47,7 @@ export async function GET(req: Request) {
       total,
       totalPages: Math.max(1, Math.ceil(total / pageSize)),
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('GET /api/products error', error);
     return NextResponse.json({ message: 'Failed to fetch products' }, { status: 500 });
   }

@@ -4,7 +4,6 @@ import type { Session } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
 import Order from '@/models/Order';
-import Product from '@/models/Products';
 
 export async function GET(req: Request) {
   try {
@@ -21,7 +20,7 @@ export async function GET(req: Request) {
     await connectDB();
 
     // Build query
-    const query: any = { userId: session.user.id };
+    const query: { userId: string; status?: string } = { userId: session.user.id };
     if (status) {
       query.status = status;
     }

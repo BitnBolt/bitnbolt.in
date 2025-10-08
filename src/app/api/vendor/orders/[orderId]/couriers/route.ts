@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 
 export async function GET(
   req: Request,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
     // Get authorization header
@@ -19,14 +19,14 @@ export async function GET(
     const token = authHeader.substring(7);
     
     // Verify JWT token
-    let decoded: any;
+    let decoded: { email: string; vendorId?: string };
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { email: string; vendorId?: string };
     } catch (error) {
       return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
     }
 
-    const { orderId } = params;
+    const { orderId } = await params;
     console.log('Getting available couriers for order:', orderId);
 
     await connectDB();
@@ -50,12 +50,12 @@ export async function GET(
     console.log('Found order with status:', order.status);
 
     // Check if order has items from this vendor
-    const vendorItems = order.items.filter((item: any) => 
+    const vendorItems = order.items.filter((item: { vendorId: string }) => 
       String(item.vendorId) === String(vendor._id)
     );
 
     if (vendorItems.length === 0) {
-      console.error('No items found for vendor in order. Vendor ID:', vendor._id, 'Order items:', order.items.map((item: any) => ({ vendorId: item.vendorId, productName: item.productId?.name })));
+      console.error('No items found for vendor in order. Vendor ID:', vendor._id, 'Order items:', order.items.map((item: { vendorId: string; productId?: { name: string } }) => ({ vendorId: item.vendorId, productName: item.productId?.name })));
       return NextResponse.json({ 
         message: 'No items found for this vendor in this order' 
       }, { status: 404 });
@@ -64,11 +64,11 @@ export async function GET(
 
     // Find vendor shipment
     const vendorShipment = order.deliveryDetails.vendorShipments?.find(
-      (shipment: any) => String(shipment.vendorId) === String(vendor._id)
+      (shipment: { vendorId: string }) => String(shipment.vendorId) === String(vendor._id)
     );
 
     if (!vendorShipment) {
-      console.error('No vendor shipment found. Vendor ID:', vendor._id, 'Available shipments:', order.deliveryDetails.vendorShipments?.map((s: any) => ({ vendorId: s.vendorId, status: s.shiprocketStatus })));
+      console.error('No vendor shipment found. Vendor ID:', vendor._id, 'Available shipments:', order.deliveryDetails.vendorShipments?.map((s: { vendorId: string; shiprocketStatus: string }) => ({ vendorId: s.vendorId, status: s.shiprocketStatus })));
       return NextResponse.json({ 
         message: 'Shiprocket shipment not created yet for this vendor' 
       }, { status: 400 });
@@ -77,8 +77,8 @@ export async function GET(
 
     // Get available couriers using the same logic as checkout
     try {
-      const vendorTotal = vendorItems.reduce((sum: number, item: any) => sum + (item.finalPrice * item.quantity), 0);
-      const vendorWeight = vendorItems.reduce((sum: number, item: any) => sum + (item.quantity * 0.5), 0); // Assume 0.5kg per item
+      const vendorTotal = vendorItems.reduce((sum: number, item: { finalPrice: number; quantity: number }) => sum + (item.finalPrice * item.quantity), 0);
+      const vendorWeight = vendorItems.reduce((sum: number, item: { quantity: number }) => sum + (item.quantity * 0.5), 0); // Assume 0.5kg per item
       
       console.log('Courier request data:', {
         pickupPostcode: vendor.pickupAddress?.postalCode || '110001',
@@ -143,7 +143,7 @@ export async function GET(
       console.error('Error details:', {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
-        orderId: params?.orderId,
+        orderId: orderId,
         timestamp: new Date().toISOString()
       });
       return NextResponse.json({ 
@@ -158,7 +158,6 @@ export async function GET(
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      orderId: params?.orderId,
       timestamp: new Date().toISOString()
     });
     return NextResponse.json({ 

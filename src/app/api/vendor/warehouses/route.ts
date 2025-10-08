@@ -26,7 +26,7 @@ function validatePickupAddressData(data: PickupAddressData) {
 }
 
 // Helper function to check if pickup address has all required fields
-function hasValidPickupAddress(pickupAddress: any) {
+function hasValidPickupAddress(pickupAddress: { buildingNumber?: string; streetName?: string; city?: string; state?: string; postalCode?: string; country?: string }) {
   return pickupAddress && 
     pickupAddress.buildingNumber && 
     pickupAddress.streetName && 

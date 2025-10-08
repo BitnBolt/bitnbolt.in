@@ -16,9 +16,9 @@ export async function GET(req: Request) {
     const token = authHeader.substring(7);
     
     // Verify JWT token
-    let decoded: any;
+    let decoded: { email: string; vendorId?: string };
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { email: string; vendorId?: string };
     } catch (error) {
       return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
     }
@@ -37,7 +37,7 @@ export async function GET(req: Request) {
     }
 
     // Build query for orders containing this vendor's products
-    const query: any = { 'items.vendorId': vendor._id };
+    const query: { 'items.vendorId': string; status?: string } = { 'items.vendorId': vendor._id };
     if (status) {
       query.status = status;
     }
@@ -53,7 +53,7 @@ export async function GET(req: Request) {
     // Filter items to only show this vendor's products
     const filteredOrders = orders.map(order => ({
       ...order.toObject(),
-      items: order.items.filter((item: any) => 
+      items: order.items.filter((item: { vendorId: string }) => 
         String(item.vendorId) === String(vendor._id)
       ),
     }));

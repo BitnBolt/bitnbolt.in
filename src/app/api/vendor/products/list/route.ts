@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get('sortOrder') || 'desc';
 
     // Build query
-    const query: any = {
+    const query: { vendorId: string; name?: { $regex: string; $options: string }; category?: string; isPublished?: boolean; $or?: Array<{ name: { $regex: string; $options: string } } | { description: { $regex: string; $options: string } } | { tags: { $regex: string; $options: string } }> } = {
       vendorId: vendorData.vendorId,
     };
 
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Build sort object
-    const sortOptions: any = {};
+    const sortOptions: { [key: string]: 1 | -1 } = {};
     switch (sortBy) {
       case 'price':
         sortOptions.finalPrice = sortOrder === 'asc' ? 1 : -1;

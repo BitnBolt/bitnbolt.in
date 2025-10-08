@@ -8,7 +8,7 @@ import Product from '@/models/Products';
 
 export async function GET(
   req: Request,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
     const session = (await getServerSession(authOptions)) as Session | null;
@@ -16,7 +16,7 @@ export async function GET(
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { orderId } = params;
+    const { orderId } = await params;
 
     await connectDB();
 
@@ -36,7 +36,7 @@ export async function GET(
     }
 
     // Debug: Log vendor data to help identify issues
-    console.log('Order items with vendor data:', order.items.map((item: any) => ({
+    console.log('Order items with vendor data:', order.items.map((item: { productId?: { name: string }; vendorId: { businessName: string; seller_name: string } }) => ({
       productName: item.productId?.name,
       vendorId: item.vendorId,
       vendorBusinessName: item.vendorId?.businessName,

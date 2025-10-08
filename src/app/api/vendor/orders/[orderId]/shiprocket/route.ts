@@ -1,15 +1,13 @@
-import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
+import { createShiprocketShipment } from '@/lib/shiprocket';
 import Order from '@/models/Order';
-import Product from '@/models/Products';
 import Vendor from '@/models/Vendor';
-import User from '@/models/User';
-import { createShiprocketShipment, getShiprocketPickupLocation } from '@/lib/shiprocket';
 import jwt from 'jsonwebtoken';
+import { NextResponse } from 'next/server';
 
 export async function POST(
   req: Request,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
     // Get authorization header
@@ -21,14 +19,14 @@ export async function POST(
     const token = authHeader.substring(7);
     
     // Verify JWT token
-    let decoded: any;
+    let decoded: { email: string; vendorId?: string };
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { email: string; vendorId?: string };
     } catch (error) {
       return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
     }
 
-    const { orderId } = params;
+    const { orderId } = await params;
     console.log('Creating Shiprocket shipment for order:', orderId);
 
     await connectDB();
@@ -54,12 +52,12 @@ export async function POST(
     console.log('Found order with status:', order.status);
 
     // Check if order has items from this vendor
-    const vendorItems = order.items.filter((item: any) => 
+    const vendorItems = order.items.filter((item: { vendorId: { _id: string } }) => 
       String(item.vendorId._id) === String(vendor._id)
     );
 
     if (vendorItems.length === 0) {
-      console.error('No items found for vendor in order. Vendor ID:', vendor._id, 'Order items:', order.items.map((item: any) => ({ vendorId: item.vendorId._id, productName: item.productId?.name })));
+      console.error('No items found for vendor in order. Vendor ID:', vendor._id, 'Order items:', order.items.map((item: { vendorId: { _id: string }; productId?: { name: string } }) => ({ vendorId: item.vendorId._id, productName: item.productId?.name })));
       return NextResponse.json({ 
         message: 'No items found for this vendor in this order' 
       }, { status: 404 });
@@ -75,7 +73,7 @@ export async function POST(
 
     // Check if Shiprocket shipment already exists for this vendor
     const existingVendorShipment = order.deliveryDetails.vendorShipments?.find(
-      (shipment: any) => String(shipment.vendorId) === String(vendor._id)
+      (shipment: { vendorId: string }) => String(shipment.vendorId) === String(vendor._id)
     );
     
     if (existingVendorShipment) {
@@ -102,7 +100,7 @@ export async function POST(
       billing_pincode: parseInt(order.billingAddress.pincode) || 110001,
       billing_state: order.billingAddress.state,
       billing_country: 'India',
-      billing_email: (order.userId as any).email || '',
+      billing_email: (order.userId as { email: string }).email || '',
       billing_phone: parseInt(order.billingAddress.phoneNumber.replace(/\D/g, '')) || 9999999999,
       shipping_is_billing: true,
       shipping_customer_name: '',
@@ -115,7 +113,7 @@ export async function POST(
       shipping_state: '',
       shipping_email: '',
       shipping_phone: '',
-      order_items: vendorItems.map((item: any) => ({
+      order_items: vendorItems.map((item: { productId: { name: string; _id: string }; quantity: number; finalPrice: number; discount?: string }) => ({
         name: item.productId.name,
         sku: String(item.productId._id),
         units: item.quantity,
@@ -129,11 +127,11 @@ export async function POST(
       giftwrap_charges: 0,
       transaction_charges: 0,
       total_discount: 0,
-      sub_total: vendorItems.reduce((sum: number, item: any) => sum + (item.finalPrice * item.quantity), 0),
+      sub_total: vendorItems.reduce((sum: number, item: { finalPrice: number; quantity: number }) => sum + (item.finalPrice * item.quantity), 0),
       length: 10,
       breadth: 15,
       height: 20,
-      weight: vendorItems.reduce((total: number, item: any) => {
+      weight: vendorItems.reduce((total: number, item: { productId: { shippingInfo?: { weight: number } }; quantity: number }) => {
         return total + ((item.productId.shippingInfo?.weight || 100) * item.quantity) / 1000; // Convert to kg
       }, 0),
     };
@@ -226,7 +224,6 @@ export async function POST(
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      orderId: params?.orderId,
       timestamp: new Date().toISOString()
     });
     return NextResponse.json({ 

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -108,10 +108,27 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [trackingData, setTrackingData] = useState<any>(null);
+  const [trackingData, setTrackingData] = useState<{ status: string; tracking_details: Array<{ status: string; time: string; location: string }> } | null>(null);
   const [loadingTracking, setLoadingTracking] = useState(false);
 
   // Redirect if not authenticated
+  
+  const fetchOrderDetails = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const res = await fetch(`/api/orders/${orderId}`);
+      if (!res.ok) throw new Error('Failed to load order details');
+      
+      const data = await res.json();
+      setOrder(data.order);
+    } catch (e: unknown) {
+      setError((e as Error)?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  }, [orderId]);
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/signin');
@@ -123,24 +140,8 @@ export default function OrderDetailPage() {
     if (session?.user?.id && orderId) {
       fetchOrderDetails();
     }
-  }, [session, orderId]);
+  }, [session, orderId, fetchOrderDetails]);
 
-  const fetchOrderDetails = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const res = await fetch(`/api/orders/${orderId}`);
-      if (!res.ok) throw new Error('Failed to load order details');
-      
-      const data = await res.json();
-      setOrder(data.order);
-    } catch (e: any) {
-      setError(e?.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchTrackingData = async () => {
     if (!order?.deliveryDetails.awbCode) return;
@@ -364,7 +365,7 @@ export default function OrderDetailPage() {
                     <div className="mt-4">
                       <h3 className="font-medium mb-2">Tracking Details</h3>
                       <div className="space-y-2">
-                        {trackingData.tracking_data?.shipment_track?.map((track: any, index: number) => (
+                        {trackingData.tracking_details?.map((track: { status: string; location: string; time: string }, index: number) => (
                           <div key={index} className="p-3 bg-gray-50 rounded">
                             <p className="font-medium">{track.status}</p>
                             <p className="text-sm text-gray-500">{track.location}</p>
@@ -482,7 +483,7 @@ export default function OrderDetailPage() {
                     <div className="mt-4 pt-4 border-t">
                       <h3 className="font-medium mb-3">Vendor Shipments</h3>
                       <div className="space-y-3">
-                        {order.deliveryDetails.vendorShipments.map((shipment: any, index: number) => (
+                        {order.deliveryDetails.vendorShipments.map((shipment, index: number) => (
                           <div key={index} className="bg-gray-50 p-3 rounded-lg">
                             <div className="flex justify-between items-start">
                               <div>
@@ -504,7 +505,7 @@ export default function OrderDetailPage() {
                                   shipment.shiprocketStatus === 'created' ? 'bg-yellow-100 text-yellow-800' :
                                   'bg-gray-100 text-gray-800'
                                 }`}>
-                                  {shipment.shiprocketStatus?.charAt(0).toUpperCase() + shipment.shiprocketStatus?.slice(1) || 'Pending'}
+                                  {shipment.shiprocketStatus ? shipment.shiprocketStatus.charAt(0).toUpperCase() + shipment.shiprocketStatus.slice(1) : 'Pending'}
                                 </span>
                                 {shipment.awbCode && (
                                   <a

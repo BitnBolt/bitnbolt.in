@@ -11,6 +11,19 @@ import Vendor from '@/models/Vendor';
 import Razorpay from 'razorpay';
 import { getShiprocketDeliveryCost } from '@/lib/shiprocket';
 
+interface CheckoutProduct {
+  _id: string;
+  name: string;
+  slug: string;
+  images: string[];
+  finalPrice: number;
+  basePrice: number;
+  profitMargin: number;
+  discount: number;
+  vendorId: string;
+  stock: number;
+}
+
 export async function POST(req: Request) {
   try {
     const session = (await getServerSession(authOptions)) as Session | null;
@@ -49,10 +62,10 @@ export async function POST(req: Request) {
 
     // Build quantity map and validate stock
     const quantityMap = new Map<string, number>();
-    const items: any[] = [];
-    const vendorItems = new Map<string, any[]>();
+    const items: Array<{ productId: string; quantity: number; product: { _id: string; name: string; finalPrice: number; vendorId: string; stock: number } }> = [];
+    const vendorItems = new Map<string, Array<{ productId: string; quantity: number; product: { _id: string; name: string; finalPrice: number; vendorId: string; stock: number } }>>();
 
-    for (const product of user.cart as any[]) {
+    for (const product of user.cart as Array<{ _id: string; name: string; finalPrice: number; vendorId: string; stock: number }>) {
       const productId = String(product._id);
       const quantity = (quantityMap.get(productId) || 0) + 1;
       quantityMap.set(productId, quantity);
@@ -66,12 +79,14 @@ export async function POST(req: Request) {
 
       const item = {
         productId: product._id,
-        vendorId: product.vendorId,
         quantity,
-        basePrice: product.basePrice,
-        profitMargin: product.profitMargin,
-        discount: product.discount,
-        finalPrice: product.finalPrice,
+        product: {
+          _id: product._id,
+          name: product.name,
+          finalPrice: product.finalPrice,
+          vendorId: product.vendorId,
+          stock: product.stock,
+        },
       };
 
       items.push(item);
@@ -85,15 +100,34 @@ export async function POST(req: Request) {
     }
 
     // Calculate order summary
-    const itemsTotal = items.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
+    const itemsTotal = items.reduce((sum, item) => sum + (item.product.finalPrice * item.quantity), 0);
     
     // Calculate delivery costs using Shiprocket
     let totalShippingCharge = 0;
-    const deliveryDetails: any[] = [];
+    const deliveryDetails: Array<{
+      vendorId: string;
+      courierName: string;
+      rate: number;
+      estimatedDays: string | number;
+      courierId: number;
+      itemsCount: number;
+      codAvailable?: boolean;
+      rating?: number;
+      deliveryPerformance?: number;
+      realtimeTracking?: number;
+      podAvailable?: number;
+      etd?: string;
+      etdHours?: number;
+      isRecommended?: boolean;
+      freightCharge?: number;
+      codCharges?: number;
+      coverageCharges?: number;
+      otherCharges?: number;
+    }> = [];
     
     try {
       // Get unique vendors and their pickup addresses
-      const vendorIds = [...new Set(items.map(item => String(item.vendorId)))];
+      const vendorIds = [...new Set(items.map(item => String(item.product.vendorId)))];
       const vendors = await Vendor.find({ 
         _id: { $in: vendorIds },
         'pickupAddress.postalCode': { $exists: true, $ne: null }
@@ -101,8 +135,8 @@ export async function POST(req: Request) {
 
       // Calculate shipping for each vendor
       for (const vendor of vendors) {
-        const vendorItems = items.filter(item => String(item.vendorId) === String(vendor._id));
-        const vendorTotal = vendorItems.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
+        const vendorItems = items.filter(item => String(item.product.vendorId) === String(vendor._id));
+        const vendorTotal = vendorItems.reduce((sum, item) => sum + (item.product.finalPrice * item.quantity), 0);
         const vendorWeight = vendorItems.reduce((sum, item) => sum + (item.quantity * 0.5), 0); // Assume 0.5kg per item
         
         try {
@@ -138,12 +172,13 @@ export async function POST(req: Request) {
                   courierName: selectedCourier.courier_name,
                   rate: selectedCourier.rate,
                   estimatedDays: selectedCourier.estimated_delivery_days,
-                  codAvailable: selectedCourier.cod === 1,
                   courierId: selectedCourier.courier_company_id,
+                  itemsCount: vendorItems.length,
+                  codAvailable: selectedCourier.cod === 1,
                   rating: selectedCourier.rating,
                   deliveryPerformance: selectedCourier.delivery_performance,
-                  realtimeTracking: selectedCourier.realtime_tracking,
-                  podAvailable: selectedCourier.pod_available,
+                  realtimeTracking: Number(selectedCourier.realtime_tracking),
+                  podAvailable: Number(selectedCourier.pod_available),
                   etd: selectedCourier.etd,
                   etdHours: selectedCourier.etd_hours,
                   isRecommended: selectedCourier.courier_company_id === serviceabilityResponse.data.recommended_courier_company_id,

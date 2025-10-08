@@ -1,7 +1,7 @@
 'use client'
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -50,69 +50,36 @@ export default function CheckoutPage() {
     landmark: '',
   });
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
-    }
-  }, [status, router]);
-
-  // Fetch cart items and user profile
-  useEffect(() => {
-    if (session?.user?.id) {
-      fetchCart();
-      fetchUserProfile();
-    }
-  }, [session]);
-
-  // Recalculate delivery cost when payment method changes
-  useEffect(() => {
-    if (shippingAddress.pincode && shippingAddress.pincode.length === 6 && items.length > 0) {
-      calculateDeliveryCost(shippingAddress.pincode);
-    }
-  }, [payment]);
-
-  // Calculate delivery cost when items are loaded and we have a pincode
-  useEffect(() => {
-    if (shippingAddress.pincode && shippingAddress.pincode.length === 6 && items.length > 0 && !deliveryCost) {
-      calculateDeliveryCost(shippingAddress.pincode);
-    }
-  }, [items, shippingAddress.pincode]);
-
-  // Load Razorpay script
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  const fetchCart = async () => {
+  
+  const calculateDeliveryCost = useCallback(async (pincode: string) => {
+    if (!pincode || pincode.length !== 6 || items.length === 0) return;
+    
     try {
-      setLoading(true);
-      setError(null);
-      const res = await fetch('/api/cart');
-      if (!res.ok) throw new Error('Failed to load cart');
-      const data = await res.json() as { items: CartItem[] };
-      // Deduplicate on productId, using server-provided quantity (same as cart page)
-      const byId = new Map<string, CartItem>();
-      for (const it of data.items || []) {
-        const key = it.productId;
-        if (!byId.has(key)) byId.set(key, it);
-      }
-      setItems(Array.from(byId.values()));
-    } catch (e: any) {
-      setError(e?.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
-    }
-  };
+      setDeliveryLoading(true);
+      const res = await fetch('/api/checkout/delivery-cost', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          deliveryPincode: pincode,
+          paymentMethod: payment,
+        }),
+      });
 
-  const fetchUserProfile = async () => {
+      if (res.ok) {
+        const data = await res.json();
+        setDeliveryCost(data.totalShippingCost);
+      } else {
+        setDeliveryCost(null);
+      }
+    } catch (error) {
+      console.error('Failed to calculate delivery cost:', error);
+      setDeliveryCost(null);
+    } finally {
+      setDeliveryLoading(false);
+    }
+  }, [items.length, payment]);
+
+  const fetchUserProfile = useCallback(async () => {
     try {
       const res = await fetch('/api/user/profile');
       if (!res.ok) return; // Don't show error for profile fetch failure
@@ -148,6 +115,69 @@ export default function CheckoutPage() {
       console.log('Could not fetch user profile for auto-fill');
       setProfileLoaded(true);
     }
+  }, [session, calculateDeliveryCost]);
+
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+    }
+  }, [status, router]);
+
+  // Fetch cart items and user profile
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchCart();
+      fetchUserProfile();
+    }
+  }, [session, fetchUserProfile]);
+
+  // Recalculate delivery cost when payment method changes
+  useEffect(() => {
+    if (shippingAddress.pincode && shippingAddress.pincode.length === 6 && items.length > 0) {
+      calculateDeliveryCost(shippingAddress.pincode);
+    }
+  }, [payment, items.length, shippingAddress.pincode, calculateDeliveryCost]);
+
+  // Calculate delivery cost when items are loaded and we have a pincode
+  useEffect(() => {
+    if (shippingAddress.pincode && shippingAddress.pincode.length === 6 && items.length > 0 && !deliveryCost) {
+      calculateDeliveryCost(shippingAddress.pincode);
+    }
+  }, [items, shippingAddress.pincode, deliveryCost, calculateDeliveryCost]);
+
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const fetchCart = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch('/api/cart');
+      if (!res.ok) throw new Error('Failed to load cart');
+      const data = await res.json() as { items: CartItem[] };
+      // Deduplicate on productId, using server-provided quantity (same as cart page)
+      const byId = new Map<string, CartItem>();
+      for (const it of data.items || []) {
+        const key = it.productId;
+        if (!byId.has(key)) byId.set(key, it);
+      }
+      setItems(Array.from(byId.values()));
+    } catch (e: unknown) {
+      setError((e as Error)?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'shipping' | 'billing') => {
@@ -161,34 +191,6 @@ export default function CheckoutPage() {
       }
     } else {
       setBillingAddress({ ...billingAddress, [e.target.name]: value });
-    }
-  };
-
-  const calculateDeliveryCost = async (pincode: string) => {
-    if (!pincode || pincode.length !== 6 || items.length === 0) return;
-    
-    try {
-      setDeliveryLoading(true);
-      const res = await fetch('/api/checkout/delivery-cost', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          deliveryPincode: pincode,
-          paymentMethod: payment,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setDeliveryCost(data.totalShippingCost);
-      } else {
-        setDeliveryCost(null);
-      }
-    } catch (error) {
-      console.error('Failed to calculate delivery cost:', error);
-      setDeliveryCost(null);
-    } finally {
-      setDeliveryLoading(false);
     }
   };
 
@@ -240,7 +242,7 @@ export default function CheckoutPage() {
           name: 'BitnBolt',
           description: 'Order Payment',
           order_id: data.razorpayOrder.id,
-          handler: async function (response: any) {
+          handler: async function (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
             try {
               const verifyRes = await fetch('/api/payment/verify', {
                 method: 'POST',
@@ -282,8 +284,8 @@ export default function CheckoutPage() {
           },
         };
 
-        const razorpay = new (window as any).Razorpay(options);
-        razorpay.on('payment.failed', async function (response: any) {
+        const razorpay = new (window as unknown as { Razorpay: new (options: object) => { on: (event: string, handler: (response: unknown) => void) => void; open: () => void } }).Razorpay(options);
+        razorpay.on('payment.failed', async function (response: unknown) {
           try {
             // Call API to restore stock and mark order as cancelled
             await fetch('/api/payment/failed', {
@@ -301,8 +303,8 @@ export default function CheckoutPage() {
         // COD order
         router.push(`/orders/${data.orderId}?success=true`);
       }
-    } catch (e: any) {
-      setError(e?.message || 'Checkout failed');
+    } catch (e: unknown) {
+      setError((e as Error)?.message || 'Checkout failed');
     } finally {
       setLoading(false);
     }

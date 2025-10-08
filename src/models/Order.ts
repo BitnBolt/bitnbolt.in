@@ -40,7 +40,7 @@ export interface IOrder extends mongoose.Document {
         razorpayOrderId?: string;
         razorpayPaymentId?: string;
         razorpaySignature?: string;
-        gatewayResponse?: any;
+        gatewayResponse?: Record<string, unknown>;
     };
     orderSummary: {
         itemsTotal: number;      // Sum of all items' finalPrice * quantity
@@ -75,7 +75,7 @@ export interface IOrder extends mongoose.Document {
             courierName?: string;
             courierCompanyId?: string;
             shiprocketStatus?: 'pending' | 'created' | 'shipped' | 'delivered' | 'failed';
-            shiprocketResponse?: any;
+            shiprocketResponse?: Record<string, unknown>;
             createdAt?: Date;
             updatedAt?: Date;
         }>;
@@ -100,7 +100,7 @@ export interface IOrder extends mongoose.Document {
         }>;
         totalShippingCost?: number;
         shiprocketStatus?: 'pending' | 'created' | 'shipped' | 'delivered' | 'failed';
-        shiprocketResponse?: any;
+        shiprocketResponse?: Record<string, unknown>;
     };
     cancellation?: {
         reason: string;

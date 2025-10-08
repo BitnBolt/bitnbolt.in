@@ -57,12 +57,12 @@ export async function POST(req: Request) {
       billing_email: order.userId.email || '',
       billing_phone: order.billingAddress.phoneNumber,
       shipping_is_billing: true,
-      order_items: order.items.map((item: any) => ({
+      order_items: order.items.map((item: { productId: { name: string; _id: string }; quantity: number; finalPrice: number }) => ({
         name: item.productId.name,
         sku: item.productId._id,
         units: item.quantity,
         selling_price: item.finalPrice,
-        discount: item.discount,
+        discount: '',
         tax: 0,
         hsn: 0,
       })),
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       length: 10,
       breadth: 10,
       height: 10,
-      weight: order.items.reduce((total: number, item: any) => {
+      weight: order.items.reduce((total: number, item: { productId: { shippingInfo?: { weight: number } }; quantity: number }) => {
         return total + (item.productId.shippingInfo?.weight || 100) * item.quantity;
       }, 0),
     };

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -82,6 +82,32 @@ export default function OrdersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [filterStatus, setFilterStatus] = useState('');
 
+  const fetchOrders = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '10',
+      });
+
+      if (filterStatus) {
+        params.append('status', filterStatus);
+      }
+
+      const res = await fetch(`/api/orders?${params}`);
+      if (!res.ok) throw new Error('Failed to load orders');
+
+      const data = await res.json();
+      setOrders(data.orders || []);
+      setTotalPages(data.pagination?.pages || 1);
+    } catch (e: unknown) {
+      setError((e as Error)?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, filterStatus]);
   // Redirect if not authenticated
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -94,34 +120,8 @@ export default function OrdersPage() {
     if (session?.user?.id) {
       fetchOrders();
     }
-  }, [session, currentPage, filterStatus]);
+  }, [session, currentPage, filterStatus, fetchOrders]);
 
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: '10',
-      });
-      
-      if (filterStatus) {
-        params.append('status', filterStatus);
-      }
-
-      const res = await fetch(`/api/orders?${params}`);
-      if (!res.ok) throw new Error('Failed to load orders');
-      
-      const data = await res.json();
-      setOrders(data.orders || []);
-      setTotalPages(data.pagination?.pages || 1);
-    } catch (e: any) {
-      setError(e?.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -172,7 +172,7 @@ export default function OrdersPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-            
+
             <div className="flex gap-4">
               <select
                 value={filterStatus}
@@ -203,8 +203,8 @@ export default function OrdersPage() {
           ) : orders.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-500 text-lg mb-4">No orders found</div>
-              <Link 
-                href="/product" 
+              <Link
+                href="/product"
                 className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Start Shopping
@@ -254,12 +254,12 @@ export default function OrdersPage() {
                   <div className="flex justify-between items-center">
                     <div>
                       <p className="text-sm text-gray-500">
-                        Payment: {order.paymentDetails.method.toUpperCase()} • 
+                        Payment: {order.paymentDetails.method.toUpperCase()} •
                         Status: {order.paymentDetails.status.charAt(0).toUpperCase() + order.paymentDetails.status.slice(1)}
                       </p>
                       <p className="text-lg font-semibold">Total: ₹{order.orderSummary.totalAmount.toFixed(2)}</p>
                     </div>
-                    
+
                     <div className="flex gap-2">
                       <Link
                         href={`/orders/${order.orderId}`}
@@ -267,7 +267,7 @@ export default function OrdersPage() {
                       >
                         View Details
                       </Link>
-                      
+
                       {(order.deliveryDetails.awbCode || order.deliveryDetails.shiprocketOrderId) && (
                         <button
                           onClick={() => {
@@ -299,11 +299,11 @@ export default function OrdersPage() {
                   >
                     Previous
                   </button>
-                  
+
                   <span className="px-4 py-2 flex items-center">
                     Page {currentPage} of {totalPages}
                   </span>
-                  
+
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                     disabled={currentPage === totalPages}

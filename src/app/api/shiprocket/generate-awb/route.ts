@@ -43,13 +43,13 @@ export async function POST(req: Request) {
     );
 
     // Update order with AWB details
-    order.deliveryDetails.awbCode = awbResult.awb_code;
+    order.deliveryDetails.awbCode = awbResult.response.data.awb_code;
     order.deliveryDetails.courierCompanyId = courierId;
-    order.deliveryDetails.shiprocketShipmentId = awbResult.shipment_id;
+    order.deliveryDetails.shiprocketShipmentId = awbResult.response.data.shipment_id;
     order.status = 'shipped';
     order.statusHistory.push({
       status: 'shipped',
-      comment: `AWB generated: ${awbResult.awb_code}`,
+      comment: `AWB generated: ${awbResult.response.data.awb_code}`,
       timestamp: new Date(),
     });
 
@@ -58,8 +58,8 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: 'AWB generated successfully',
-      awbCode: awbResult.awb_code,
-      shipmentId: awbResult.shipment_id,
+      awbCode: awbResult.response.data.awb_code,
+      shipmentId: awbResult.response.data.shipment_id,
       orderId: order.orderId,
     });
 

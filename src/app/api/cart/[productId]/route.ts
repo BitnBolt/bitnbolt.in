@@ -7,7 +7,7 @@ import User from '@/models/User';
 import Product from '@/models/Products';
 import mongoose from 'mongoose';
 
-export async function DELETE(_req: Request, { params }: { params: { productId: string } }) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ productId: string }> }) {
   try {
     const session = (await getServerSession(authOptions)) as Session | null;
     if (!session?.user?.id) {
@@ -16,7 +16,8 @@ export async function DELETE(_req: Request, { params }: { params: { productId: s
 
     await connectDB();
 
-    let productId = params.productId;
+    const { productId: productIdParam } = await params;
+    let productId = productIdParam;
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       const pBySlug = await Product.findOne({ slug: productId }).select('_id');
       if (!pBySlug) return NextResponse.json({ message: 'Invalid product' }, { status: 400 });
@@ -26,7 +27,7 @@ export async function DELETE(_req: Request, { params }: { params: { productId: s
     const user = await User.findById(session.user.id);
     if (!user) return NextResponse.json({ message: 'User not found' }, { status: 404 });
 
-    user.cart = (user.cart || []).filter((pid: any) => String(pid) !== String(productId)) as any;
+    user.cart = (user.cart || []).filter((pid: mongoose.Types.ObjectId) => String(pid) !== String(productId)) as mongoose.Types.ObjectId[];
     await user.save();
 
     return NextResponse.json({ message: 'Removed from cart' });
@@ -36,7 +37,7 @@ export async function DELETE(_req: Request, { params }: { params: { productId: s
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { productId: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ productId: string }> }) {
   try {
     const session = (await getServerSession(authOptions)) as Session | null;
     if (!session?.user?.id) {
@@ -45,7 +46,8 @@ export async function PATCH(req: Request, { params }: { params: { productId: str
 
     await connectDB();
 
-    let productId = params.productId;
+    const { productId: productIdParam } = await params;
+    let productId = productIdParam;
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       const pBySlug = await Product.findOne({ slug: productId }).select('_id');
       if (!pBySlug) return NextResponse.json({ message: 'Invalid product' }, { status: 400 });
@@ -59,10 +61,10 @@ export async function PATCH(req: Request, { params }: { params: { productId: str
     if (!user) return NextResponse.json({ message: 'User not found' }, { status: 404 });
 
     if (op === 'inc') {
-      (user.cart as any).push(new mongoose.Types.ObjectId(productId));
+      (user.cart as mongoose.Types.ObjectId[]).push(new mongoose.Types.ObjectId(productId));
     } else if (op === 'dec') {
-      const idx = (user.cart || []).findIndex((pid: any) => String(pid) === String(productId));
-      if (idx >= 0) (user.cart as any).splice(idx, 1);
+      const idx = (user.cart || []).findIndex((pid: mongoose.Types.ObjectId) => String(pid) === String(productId));
+      if (idx >= 0) (user.cart as mongoose.Types.ObjectId[]).splice(idx, 1);
     }
 
     await user.save();

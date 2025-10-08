@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 
 export async function GET(
   req: Request,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
     // Get authorization header
@@ -19,14 +19,14 @@ export async function GET(
     const token = authHeader.substring(7);
     
     // Verify JWT token
-    let decoded: any;
+    let decoded: { email: string; vendorId?: string };
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { email: string; vendorId?: string };
     } catch (error) {
       return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
     }
 
-    const { orderId } = params;
+    const { orderId } = await params;
 
     await connectDB();
 
@@ -47,7 +47,7 @@ export async function GET(
     }
 
     // Filter items to only show this vendor's products
-    const vendorItems = order.items.filter((item: any) => 
+    const vendorItems = order.items.filter((item: { vendorId: { _id: string } }) => 
       String(item.vendorId._id) === String(vendor._id)
     );
 
@@ -58,7 +58,7 @@ export async function GET(
     }
 
     // Calculate vendor-specific totals
-    const vendorSubtotal = vendorItems.reduce((sum: number, item: any) => 
+    const vendorSubtotal = vendorItems.reduce((sum: number, item: { finalPrice: number; quantity: number }) => 
       sum + (item.finalPrice * item.quantity), 0
     );
 
@@ -81,7 +81,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
     // Get authorization header
@@ -93,16 +93,16 @@ export async function PATCH(
     const token = authHeader.substring(7);
     
     // Verify JWT token
-    let decoded: any;
+    let decoded: { email: string; vendorId?: string };
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { email: string; vendorId?: string };
       console.log('Decoded token in PATCH:', decoded);
     } catch (error) {
       console.error('Token verification error in PATCH:', error);
       return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
     }
 
-    const { orderId } = params;
+    const { orderId } = await params;
     const body = await req.json();
     const { status, comment } = body;
 
@@ -127,7 +127,7 @@ export async function PATCH(
     }
 
     // Check if order has items from this vendor
-    const hasVendorItems = order.items.some((item: any) => 
+    const hasVendorItems = order.items.some((item: { vendorId: string }) => 
       String(item.vendorId) === String(vendor._id)
     );
 
@@ -166,7 +166,7 @@ export async function PATCH(
 
         // If status is being changed to 'confirmed', automatically create Shiprocket shipment
         const existingVendorShipment = order.deliveryDetails.vendorShipments?.find(
-          (shipment: any) => String(shipment.vendorId) === String(vendor._id)
+          (shipment: { vendorId: string }) => String(shipment.vendorId) === String(vendor._id)
         );
         
         if (status === 'confirmed' && !existingVendorShipment) {
@@ -182,7 +182,7 @@ export async function PATCH(
 
         if (populatedOrder) {
           // Filter items for this vendor
-          const vendorItems = populatedOrder.items.filter((item: any) => 
+          const vendorItems = populatedOrder.items.filter((item: { vendorId: { _id: string } }) => 
             String(item.vendorId._id) === String(vendor._id)
           );
 
@@ -205,7 +205,7 @@ export async function PATCH(
               billing_pincode: parseInt(populatedOrder.billingAddress.pincode),
               billing_state: populatedOrder.billingAddress.state,
               billing_country: 'India',
-              billing_email: (populatedOrder.userId as any).email || '',
+              billing_email: (populatedOrder.userId as { email: string }).email || '',
               billing_phone: parseInt(populatedOrder.billingAddress.phoneNumber.replace(/\D/g, '')),
               shipping_is_billing: true,
               shipping_customer_name: '',
@@ -218,7 +218,7 @@ export async function PATCH(
               shipping_state: '',
               shipping_email: '',
               shipping_phone: '',
-              order_items: vendorItems.map((item: any) => ({
+              order_items: vendorItems.map((item: { productId: { name: string; _id: string }; quantity: number; finalPrice: number; discount?: string }) => ({
                 name: item.productId.name,
                 sku: String(item.productId._id),
                 units: item.quantity,
@@ -232,11 +232,11 @@ export async function PATCH(
               giftwrap_charges: 0,
               transaction_charges: 0,
               total_discount: 0,
-              sub_total: vendorItems.reduce((sum: number, item: any) => sum + (item.finalPrice * item.quantity), 0),
+              sub_total: vendorItems.reduce((sum: number, item: { finalPrice: number; quantity: number }) => sum + (item.finalPrice * item.quantity), 0),
               length: 10,
               breadth: 15,
               height: 20,
-              weight: vendorItems.reduce((total: number, item: any) => {
+              weight: vendorItems.reduce((total: number, item: { productId: { shippingInfo?: { weight: number } }; quantity: number }) => {
                 return total + ((item.productId.shippingInfo?.weight || 100) * item.quantity) / 1000;
               }, 0),
             };

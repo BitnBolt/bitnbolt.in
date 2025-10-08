@@ -62,12 +62,12 @@ export default function ProductViewPage() {
           const cartRes = await fetch('/api/cart');
           if (cartRes.ok) {
             const cart = await cartRes.json();
-            const present = (cart.items || []).some((it: any) => String(it.productId) === String(data._id) || it?.product?.slug === data.slug);
+            const present = (cart.items || []).some((it: { productId: string; product?: { slug: string } }) => String(it.productId) === String(data._id) || it?.product?.slug === data.slug);
             setInCart(present);
           }
         } catch {}
-      } catch (e: any) {
-        if (e?.name !== 'AbortError') setError(e?.message || 'Something went wrong');
+      } catch (e: unknown) {
+        if ((e as Error)?.name !== 'AbortError') setError((e as Error)?.message || 'Something went wrong');
       } finally {
         setLoading(false);
       }
@@ -264,7 +264,7 @@ export default function ProductViewPage() {
 
         <div className="max-w-6xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-base font-semibold mb-3">What's in the box</h3>
+            <h3 className="text-base font-semibold mb-3">What&apos;s in the box</h3>
             {product.whatsInTheBox?.length ? (
               <ul className="list-disc pl-5 text-gray-700 space-y-1">
                 {product.whatsInTheBox.map((item, idx) => (

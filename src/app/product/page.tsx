@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-type Props = {}
+type Props = Record<string, never>
 
 type ApiProduct = {
   _id: string;
@@ -40,26 +40,21 @@ type UiProduct = {
 };
 
 export default function Page({}: Props) {
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 overflow-hidden">
-      <Header />
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {(() => {
-          const [activeCategory, setActiveCategory] = useState('All');
-          const [currentPage, setCurrentPage] = useState(1);
-          const [items, setItems] = useState<UiProduct[]>([]);
-          const [total, setTotal] = useState(0);
-          const [totalPages, setTotalPages] = useState(1);
-          const [loading, setLoading] = useState(false);
-          const [error, setError] = useState<string | null>(null);
-          const [adding, setAdding] = useState<string | null>(null);
-          const [cartIds, setCartIds] = useState<Set<string>>(new Set());
-          const [cartSlugs, setCartSlugs] = useState<Set<string>>(new Set());
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [items, setItems] = useState<UiProduct[]>([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [adding, setAdding] = useState<string | null>(null);
+  const [cartIds, setCartIds] = useState<Set<string>>(new Set());
+  const [cartSlugs, setCartSlugs] = useState<Set<string>>(new Set());
 
-          const pageSize = 6;
-          const categories = ['All', 'IoT', 'Custom Made', 'Industrial', 'Healthcare'];
+  const pageSize = 6;
+  const categories = ['All', 'IoT', 'Custom Made', 'Industrial', 'Healthcare'];
 
-          useEffect(() => {
+  useEffect(() => {
             const controller = new AbortController();
             async function fetchProducts() {
               try {
@@ -93,9 +88,9 @@ export default function Page({}: Props) {
                 setItems(mapped);
                 setTotal(data.total || 0);
                 setTotalPages(data.totalPages || 1);
-              } catch (err: any) {
-                if (err?.name !== 'AbortError') {
-                  setError(err?.message || 'Something went wrong');
+              } catch (err: unknown) {
+                if ((err as Error)?.name !== 'AbortError') {
+                  setError((err as Error)?.message || 'Something went wrong');
                 }
               } finally {
                 setLoading(false);
@@ -105,58 +100,61 @@ export default function Page({}: Props) {
             return () => controller.abort();
           }, [activeCategory, currentPage]);
 
-          // Load cart to know which products are in cart
-          const loadCart = async () => {
-            try {
-              const res = await fetch('/api/cart');
-              if (!res.ok) return;
-              const data = await res.json();
-              const ids = new Set<string>();
-              const slugs = new Set<string>();
-              for (const it of data.items || []) {
-                if (it?.productId) ids.add(String(it.productId));
-                if (it?.product?.slug) slugs.add(String(it.product.slug));
-              }
-              setCartIds(ids);
-              setCartSlugs(slugs);
-            } catch {}
-          };
+  // Load cart to know which products are in cart
+  const loadCart = async () => {
+    try {
+      const res = await fetch('/api/cart');
+      if (!res.ok) return;
+      const data = await res.json();
+      const ids = new Set<string>();
+      const slugs = new Set<string>();
+      for (const it of data.items || []) {
+        if (it?.productId) ids.add(String(it.productId));
+        if (it?.product?.slug) slugs.add(String(it.product.slug));
+      }
+      setCartIds(ids);
+      setCartSlugs(slugs);
+    } catch {}
+  };
 
-          useEffect(() => {
-            loadCart();
-            const handler = () => loadCart();
-            window.addEventListener('cart-updated' as any, handler);
-            return () => window.removeEventListener('cart-updated' as any, handler);
-          }, []);
+  useEffect(() => {
+    loadCart();
+    const handler = () => loadCart();
+    window.addEventListener('cart-updated' as keyof WindowEventMap, handler);
+            return () => window.removeEventListener('cart-updated' as keyof WindowEventMap, handler);
+  }, []);
 
-          const handleCategoryClick = (cat: string) => {
-            setActiveCategory(cat);
-            setCurrentPage(1);
-          };
+  const handleCategoryClick = (cat: string) => {
+    setActiveCategory(cat);
+    setCurrentPage(1);
+  };
 
-          const handleAddToCart = async (slug: string) => {
-            try {
-              setAdding(slug);
-              const res = await fetch('/api/cart', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId: slug, quantity: 1 })
-              });
-              if (!res.ok) {
-                const j = await res.json().catch(() => ({}));
-                throw new Error(j.message || 'Failed to add to cart');
-              }
-              if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('cart-updated'));
-              await loadCart();
-            } catch (e) {
-              console.error(e);
-            } finally {
-              setAdding(null);
-            }
-          };
+  const handleAddToCart = async (slug: string) => {
+    try {
+      setAdding(slug);
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: slug, quantity: 1 })
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.message || 'Failed to add to cart');
+      }
+      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('cart-updated'));
+      await loadCart();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setAdding(null);
+    }
+  };
 
-          return (
-            <div className="relative z-10">
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 overflow-hidden">
+      <Header />
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="relative z-10">
               <motion.div 
                 className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8"
                 initial={{ opacity: 0, y: -20 }}
@@ -173,10 +171,10 @@ export default function Page({}: Props) {
                   <p className="text-gray-600 mt-1">{loading ? 'Loading…' : `Showing ${items.length} of ${total} products`}</p>
                 </div>
 
-                <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-                  {categories.map(cat => (
-                    <button
-                      key={cat}
+            <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
+              {categories.map(cat => (
+                <button
+                  key={cat}
                       onClick={() => handleCategoryClick(cat)}
                       className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === cat ? 'bg-blue-600 text-white shadow-md shadow-blue-200' : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'}`}
                     >
@@ -317,11 +315,9 @@ export default function Page({}: Props) {
                   Next
                 </button>
               </div>
-            </div>
-          );
-        })()}
+        </div>
       </section>
       <Footer />
     </main>
-  )
+  );
 }

@@ -39,8 +39,8 @@ export async function POST(req: Request) {
     }
 
     // Group items by vendor
-    const vendorItems = new Map<string, any[]>();
-    for (const product of user.cart as any[]) {
+    const vendorItems = new Map<string, Array<{ _id: string; name: string; finalPrice: number; vendorId: string; weight?: number }>>();
+    for (const product of user.cart as Array<{ _id: string; name: string; finalPrice: number; vendorId: string; weight?: number }>) {
       const vendorId = String(product.vendorId);
       if (!vendorItems.has(vendorId)) {
         vendorItems.set(vendorId, []);
@@ -56,7 +56,27 @@ export async function POST(req: Request) {
     }).select('_id pickupAddress.postalCode');
 
     let totalShippingCost = 0;
-    const deliveryBreakdown: any[] = [];
+    const deliveryBreakdown: Array<{
+      vendorId: string;
+      courierName: string;
+      rate: number;
+      estimatedDays: string | number;
+      codAvailable: boolean;
+      itemsCount: number;
+      courierId?: number;
+      rating?: number;
+      deliveryPerformance?: number;
+      realtimeTracking?: number;
+      podAvailable?: number;
+      etd?: string;
+      etdHours?: number;
+      isRecommended?: boolean;
+      freightCharge?: number;
+      codCharges?: number;
+      coverageCharges?: number;
+      otherCharges?: number;
+      isFallback?: boolean;
+    }> = [];
 
     // Calculate shipping for each vendor
     for (const vendor of vendors) {
@@ -102,8 +122,8 @@ export async function POST(req: Request) {
                 courierId: selectedCourier.courier_company_id,
                 rating: selectedCourier.rating,
                 deliveryPerformance: selectedCourier.delivery_performance,
-                realtimeTracking: selectedCourier.realtime_tracking,
-                podAvailable: selectedCourier.pod_available,
+                realtimeTracking: Number(selectedCourier.realtime_tracking),
+                podAvailable: Number(selectedCourier.pod_available),
                 etd: selectedCourier.etd,
                 etdHours: selectedCourier.etd_hours,
                 isRecommended: selectedCourier.courier_company_id === serviceabilityResponse.data.recommended_courier_company_id,

@@ -5,7 +5,7 @@ import Product from "@/models/Products";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -40,7 +40,7 @@ export async function GET(
     }
 
     return NextResponse.json({ product }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching product:", error);
     return NextResponse.json(
       { error: "Internal server error" },

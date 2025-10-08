@@ -7,6 +7,18 @@ import User from '@/models/User';
 import Product from '@/models/Products';
 import mongoose from 'mongoose';
 
+interface CartProduct {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  slug: string;
+  images: string[];
+  finalPrice: number;
+  basePrice: number;
+  rating: number;
+  category: string;
+  stock: number;
+}
+
 export async function GET() {
   try {
     const session = (await getServerSession(authOptions)) as Session | null;
@@ -23,7 +35,7 @@ export async function GET() {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    const items = (user.cart as any[]) || [];
+    const items = (user.cart as CartProduct[]) || [];
 
     // Build quantity map from duplicates in populated array by _id
     const quantityMap = new Map<string, number>();
@@ -32,7 +44,7 @@ export async function GET() {
       quantityMap.set(key, (quantityMap.get(key) || 0) + 1);
     }
 
-    const detailed = items.map((p: any) => ({
+    const detailed = items.map((p: CartProduct) => ({
       productId: p._id,
       quantity: quantityMap.get(String(p._id)) || 1,
       product: p,
@@ -81,11 +93,11 @@ export async function POST(req: Request) {
     }
 
     // Remove all existing occurrences of this product from cart
-    user.cart = (user.cart || []).filter((pid: any) => String(pid) !== String(product._id)) as any;
+    user.cart = (user.cart || []).filter((pid: mongoose.Types.ObjectId) => String(pid) !== String(product._id)) as mongoose.Types.ObjectId[];
 
     // If quantity > 0, push N copies (duplicates represent quantity)
     for (let i = 0; i < quantity; i++) {
-      (user.cart as any).push(product._id as any);
+      (user.cart as mongoose.Types.ObjectId[]).push(product._id);
     }
 
     await user.save();

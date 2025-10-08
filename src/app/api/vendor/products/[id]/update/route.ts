@@ -6,7 +6,7 @@ import { deleteFromCloudinary } from '@/lib/cloudinary';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Extract and verify token
@@ -23,8 +23,9 @@ export async function PUT(
     await connectDB();
 
     // Find the product
+    const { id } = await params;
     const product = await Product.findOne({
-      _id: params.id,
+      _id: id,
       vendorId: tokenPayload.vendorId,
     });
 
@@ -64,7 +65,6 @@ export async function PUT(
     }
 
     // Update the product
-    const { id } = await params;
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       { 
