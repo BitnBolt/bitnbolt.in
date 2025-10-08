@@ -1,6 +1,7 @@
 'use client'
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
+// import Footer from '../../../components/Footer';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -155,10 +156,10 @@ export default function ProductViewPage() {
                 <span className="text-sm text-gray-600">{product.rating?.average ?? 0} ({product.rating?.count ?? 0} ratings)</span>
               </div>
               <div className="mb-4 flex items-center gap-3">
-                <span className="text-3xl font-bold text-blue-600">${product.finalPrice.toFixed(2)}</span>
+                <span className="text-3xl font-bold text-blue-600">₹{product.finalPrice.toFixed(2)}</span>
                 {product.basePrice > product.finalPrice && (
                   <>
-                    <span className="text-lg text-gray-500 line-through">${product.basePrice.toFixed(2)}</span>
+                    <span className="text-lg text-gray-500 line-through">₹{product.basePrice.toFixed(2)}</span>
                     <span className="text-sm text-green-600 font-medium">{discountPct}% off</span>
                   </>
                 )}

@@ -244,10 +244,10 @@ export default function Page({}: Props) {
                         </div>
 
                         <div className="flex items-baseline mb-4">
-                          <span className="text-2xl font-bold text-gray-900">${p.price}</span>
+                          <span className="text-2xl font-bold text-gray-900">₹{p.price}</span>
                           {p.originalPrice > p.price && (
                             <>
-                              <span className="text-lg text-gray-500 line-through ml-2">${p.originalPrice}</span>
+                              <span className="text-lg text-gray-500 line-through ml-2">₹{p.originalPrice}</span>
                               <span className="text-sm text-green-600 font-medium ml-2">{Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}% off</span>
                             </>
                           )}

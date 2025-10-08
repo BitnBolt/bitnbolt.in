@@ -2,6 +2,7 @@
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
 type CartItem = {
@@ -63,11 +64,10 @@ export default function CartPage() {
     if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('cart-updated'));
   };
 
-  const { subtotal, estimatedTax, shipping, total } = useMemo(() => {
+  const { subtotal, estimatedTax, total } = useMemo(() => {
     const st = items.reduce((sum, it) => sum + it.product.finalPrice * it.quantity, 0);
-    const tax = Math.round(st * 0.08 * 100) / 100;
-    const ship = st > 500 ? 0 : 20;
-    return { subtotal: st, estimatedTax: tax, shipping: ship, total: st + tax + ship };
+    const tax = Math.round(st * 0.18 * 100) / 100;
+    return { subtotal: st, estimatedTax: tax, total: st + tax };
   }, [items]);
 
   return (
@@ -91,7 +91,7 @@ export default function CartPage() {
                     <Image src={item.product.images?.[0] || '/next.svg'} alt={item.product.name} width={80} height={80} className="rounded-lg object-cover" />
                     <div className="flex-1">
                       <div className="font-semibold text-gray-900 text-lg">{item.product.name}</div>
-                      <div className="text-blue-600 font-bold text-base mb-2">${item.product.finalPrice.toFixed(2)}</div>
+                      <div className="text-blue-600 font-bold text-base mb-2">₹{item.product.finalPrice.toFixed(2)}</div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-600">Qty:</span>
                         <input
@@ -119,23 +119,23 @@ export default function CartPage() {
             <h3 className="text-xl font-bold mb-2">Order Summary</h3>
             <div className="flex items-center justify-between text-base">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex items-center justify-between text-base">
-              <span>Estimated Tax (8%)</span>
-              <span>${estimatedTax.toFixed(2)}</span>
-            </div>
-            <div className="flex items-center justify-between text-base">
-              <span>Shipping</span>
-              <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+              <span>Estimated Tax (18%)</span>
+              <span>₹{estimatedTax.toFixed(2)}</span>
             </div>
             <div className="border-t pt-4 flex items-center justify-between text-lg font-bold">
               <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+              <span>₹{total.toFixed(2)}</span>
             </div>
-            <button className="bg-teal-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-teal-700 transition-colors w-full mt-2">Proceed to Checkout</button>
+            <Link href="/checkout" className="block">
+              <button className="bg-teal-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-teal-700 transition-colors w-full mt-2">
+                Proceed to Checkout
+              </button>
+            </Link>
             <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-700">
-              <p>Free delivery on orders over $500.</p>
+              <p>Free delivery on orders over ₹500.</p>
               <p className="mt-1 text-gray-500">30-day returns • Secure checkout • 24/7 support</p>
             </div>
           </div>

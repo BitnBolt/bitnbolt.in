@@ -33,7 +33,7 @@ export default function Header() {
         if (!res.ok) return;
         const data = await res.json();
         if (mounted) setCartCount(data.items.length);
-      } catch {}
+      } catch { }
     };
     load();
     const handler = () => load();
@@ -91,7 +91,7 @@ export default function Header() {
               </div>
             ) : session ? (
               <div className="hidden sm:flex items-center space-x-3 relative" ref={dropdownRef}>
-                <div 
+                <div
                   className="flex items-center space-x-2 cursor-pointer"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
@@ -113,8 +113,8 @@ export default function Header() {
                 {/* Dropdown */}
                 {isDropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
-                    <Link 
-                      href="/profile" 
+                    <Link
+                      href="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setIsDropdownOpen(false)}
                     >
@@ -163,8 +163,8 @@ export default function Header() {
 
             {/* Cart */}
             <Link href="/cart" className="flex items-center space-x-1 hover:text-blue-600 relative">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 1116 0 2 2 0 01-4 0z" />
               </svg>
               <span className="hidden sm:block text-sm">Cart</span>
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-4 h-4 px-1 flex items-center justify-center">{cartCount}</span>

@@ -37,6 +37,10 @@ export interface IOrder extends mongoose.Document {
         status: 'pending' | 'paid' | 'failed' | 'refunded';
         transactionId?: string;
         paidAt?: Date;
+        razorpayOrderId?: string;
+        razorpayPaymentId?: string;
+        razorpaySignature?: string;
+        gatewayResponse?: any;
     };
     orderSummary: {
         itemsTotal: number;      // Sum of all items' finalPrice * quantity
@@ -56,6 +60,47 @@ export interface IOrder extends mongoose.Document {
         trackingId?: string;
         expectedDeliveryDate?: Date;
         actualDeliveryDate?: Date;
+        // Legacy fields for backward compatibility
+        shiprocketOrderId?: string;
+        shiprocketShipmentId?: string;
+        awbCode?: string;
+        courierName?: string;
+        courierCompanyId?: string;
+        // Multi-vendor shipment support
+        vendorShipments?: Array<{
+            vendorId: mongoose.Types.ObjectId;
+            shiprocketOrderId?: string;
+            shiprocketShipmentId?: string;
+            awbCode?: string;
+            courierName?: string;
+            courierCompanyId?: string;
+            shiprocketStatus?: 'pending' | 'created' | 'shipped' | 'delivered' | 'failed';
+            shiprocketResponse?: any;
+            createdAt?: Date;
+            updatedAt?: Date;
+        }>;
+        deliveryCosts?: Array<{
+            vendorId: mongoose.Types.ObjectId;
+            courierName: string;
+            rate: number;
+            estimatedDays: string;
+            codAvailable: boolean;
+            courierId: number;
+            rating: number;
+            deliveryPerformance: number;
+            realtimeTracking: string;
+            podAvailable: string;
+            etd: string;
+            etdHours: number;
+            isRecommended: boolean;
+            freightCharge: number;
+            codCharges: number;
+            coverageCharges: number;
+            otherCharges: number;
+        }>;
+        totalShippingCost?: number;
+        shiprocketStatus?: 'pending' | 'created' | 'shipped' | 'delivered' | 'failed';
+        shiprocketResponse?: any;
     };
     cancellation?: {
         reason: string;
@@ -197,6 +242,10 @@ const orderSchema = new mongoose.Schema<IOrder>({
         },
         transactionId: String,
         paidAt: Date,
+        razorpayOrderId: String,
+        razorpayPaymentId: String,
+        razorpaySignature: String,
+        gatewayResponse: mongoose.Schema.Types.Mixed,
     },
     orderSummary: {
         itemsTotal: {
@@ -241,6 +290,68 @@ const orderSchema = new mongoose.Schema<IOrder>({
         trackingId: String,
         expectedDeliveryDate: Date,
         actualDeliveryDate: Date,
+        // Legacy fields for backward compatibility
+        shiprocketOrderId: String,
+        shiprocketShipmentId: String,
+        awbCode: String,
+        courierName: String,
+        courierCompanyId: String,
+        // Multi-vendor shipment support
+        vendorShipments: [{
+            vendorId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Vendor',
+                required: true,
+            },
+            shiprocketOrderId: String,
+            shiprocketShipmentId: String,
+            awbCode: String,
+            courierName: String,
+            courierCompanyId: String,
+            shiprocketStatus: {
+                type: String,
+                enum: ['pending', 'created', 'shipped', 'delivered', 'failed'],
+                default: 'pending',
+            },
+            shiprocketResponse: mongoose.Schema.Types.Mixed,
+            createdAt: {
+                type: Date,
+                default: Date.now,
+            },
+            updatedAt: {
+                type: Date,
+                default: Date.now,
+            },
+        }],
+        deliveryCosts: [{
+            vendorId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Vendor',
+            },
+            courierName: String,
+            rate: Number,
+            estimatedDays: String,
+            codAvailable: Boolean,
+            courierId: Number,
+            rating: Number,
+            deliveryPerformance: Number,
+            realtimeTracking: String,
+            podAvailable: String,
+            etd: String,
+            etdHours: Number,
+            isRecommended: Boolean,
+            freightCharge: Number,
+            codCharges: Number,
+            coverageCharges: Number,
+            otherCharges: Number,
+        }],
+        totalShippingCost: Number,
+        shiprocketStatus: {
+            type: String,
+            enum: ['pending', 'created', 'shipped', 'delivered', 'failed'],
+            default: 'pending',
+        },
+        shiprocketResponse: mongoose.Schema.Types.Mixed,
     },
     cancellation: {
         reason: String,

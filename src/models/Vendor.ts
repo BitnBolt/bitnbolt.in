@@ -8,9 +8,8 @@ export interface IVendor extends mongoose.Document {
     shopName: string;
     gstNumber?: string;
     profileImage?:string;
-    pickupAddresses: Array<{
+    pickupAddress: {
         addressType: 'primary' | 'secondary' | 'warehouse';
-        addressName: string;
         buildingNumber: string;
         streetName: string;
         city: string;
@@ -18,8 +17,7 @@ export interface IVendor extends mongoose.Document {
         postalCode: string;
         country: string;
         landmark?: string;
-        isDefault: boolean;
-    }>;
+    };
     shiprocketPickupId?: string;
     approved: boolean;
     suspended: boolean;
@@ -63,16 +61,11 @@ const vendorSchema = new mongoose.Schema<IVendor>({
     profileImage:{
         type: String,
     },
-    pickupAddresses: [{
+    pickupAddress: {
         addressType: {
             type: String,
             enum: ['primary', 'secondary', 'warehouse'],
-            default: 'primary',
-            required: [true, 'Address type is required'],
-        },
-        addressName: {
-            type: String,
-            required: [true, 'Address name is required'],
+            default: 'warehouse'
         },
         buildingNumber: {
             type: String,
@@ -102,11 +95,7 @@ const vendorSchema = new mongoose.Schema<IVendor>({
             type: String,
             default: null,
         },
-        isDefault: {
-            type: Boolean,
-            default: false,
-        },
-    }],
+    },
     shiprocketPickupId: {
         type: String,
         default: null,
