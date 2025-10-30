@@ -36,9 +36,9 @@ export default function AboutPage() {
   ];
 
   const stats = [
-    { number: "500+", label: "Projects Completed" },
-    { number: "98%", label: "Client Satisfaction" },
-    { number: "50+", label: "Team Experts" },
+    { number: "100+", label: "Projects Completed" },
+    { number: "Free", label: "Consultation" },
+    { number: "100%", label: "Satisfaction Guarantee" },
     { number: "24/7", label: "Support Available" }
   ];
 

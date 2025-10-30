@@ -194,10 +194,7 @@ export default function Header() {
             Home
           </Link>
           <Link href="/product" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
-            All Products
-          </Link>
-          <Link href="/#custom" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
-            Custom Made
+            Shop IoT Products
           </Link>
           <Link href="/iot-board" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
             IoT Board
