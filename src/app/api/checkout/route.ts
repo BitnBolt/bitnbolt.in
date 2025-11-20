@@ -60,47 +60,76 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'Cart is empty' }, { status: 400 });
     }
 
-    // Build quantity map and validate stock
-    const quantityMap = new Map<string, number>();
-    const items: Array<{ productId: string; quantity: number; product: { _id: string; name: string; finalPrice: number; vendorId: string; stock: number } }> = [];
-    const vendorItems = new Map<string, Array<{ productId: string; quantity: number; product: { _id: string; name: string; finalPrice: number; vendorId: string; stock: number } }>>();
-
-    for (const product of user.cart as Array<{ _id: string; name: string; finalPrice: number; vendorId: string; stock: number }>) {
-      const productId = String(product._id);
-      const quantity = (quantityMap.get(productId) || 0) + 1;
-      quantityMap.set(productId, quantity);
-
-      // Check stock availability
-      if (product.stock < quantity) {
-        return NextResponse.json({ 
-          message: `Insufficient stock for ${product.name}. Available: ${product.stock}` 
-        }, { status: 400 });
-      }
-
-      const item = {
-        productId: product._id,
-        quantity,
-        product: {
-          _id: product._id,
-          name: product.name,
-          finalPrice: product.finalPrice,
-          vendorId: product.vendorId,
-          stock: product.stock,
-        },
+    // Consolidate cart items and validate stock
+    type OrderItemEntry = {
+      orderItem: {
+        productId: string;
+        vendorId: string;
+        quantity: number;
+        basePrice: number;
+        profitMargin: number;
+        discount: number;
+        finalPrice: number;
       };
+      productMeta: {
+        name: string;
+        stock: number;
+      };
+    };
 
-      items.push(item);
+    const orderItemMap = new Map<string, OrderItemEntry>();
 
-      // Group by vendor for shipping calculation
-      const vendorId = String(product.vendorId);
-      if (!vendorItems.has(vendorId)) {
-        vendorItems.set(vendorId, []);
-      }
-      vendorItems.get(vendorId)!.push(item);
+    // Build quantity map from cart values (cart stores product IDs, duplicates represent quantity)
+    const cartProductIds = (user.cartIds || user.cart || []) as Array<string | { _id: string }>;
+    const quantityMap = new Map<string, number>();
+    for (const entry of cartProductIds) {
+      const key = typeof entry === 'string' ? entry : entry._id;
+      if (!key) continue;
+      quantityMap.set(key, (quantityMap.get(key) || 0) + 1);
     }
 
+    for (const product of user.cart as CheckoutProduct[]) {
+      const productId = String(product._id);
+      const cartQuantity = quantityMap.get(productId) || 1;
+      const existing = orderItemMap.get(productId);
+
+      if (existing) {
+        const nextQuantity = existing.orderItem.quantity + cartQuantity;
+        if (product.stock < nextQuantity) {
+          return NextResponse.json({
+            message: `Insufficient stock for ${product.name}. Available: ${product.stock}`,
+          }, { status: 400 });
+        }
+        existing.orderItem.quantity = nextQuantity;
+      } else {
+        if (product.stock < cartQuantity) {
+          return NextResponse.json({
+            message: `Insufficient stock for ${product.name}. Available: ${product.stock}`,
+          }, { status: 400 });
+        }
+
+        orderItemMap.set(productId, {
+          orderItem: {
+            productId: product._id,
+            vendorId: product.vendorId,
+            quantity: cartQuantity,
+            basePrice: product.basePrice,
+            profitMargin: product.profitMargin,
+            discount: product.discount,
+            finalPrice: product.finalPrice,
+          },
+          productMeta: {
+            name: product.name,
+            stock: product.stock,
+          },
+        });
+      }
+    }
+
+    const items = Array.from(orderItemMap.values()).map((entry) => entry.orderItem);
+
     // Calculate order summary
-    const itemsTotal = items.reduce((sum, item) => sum + (item.product.finalPrice * item.quantity), 0);
+    const itemsTotal = items.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
     
     // Calculate delivery costs using Shiprocket
     let totalShippingCharge = 0;
@@ -127,7 +156,7 @@ export async function POST(req: Request) {
     
     try {
       // Get unique vendors and their pickup addresses
-      const vendorIds = [...new Set(items.map(item => String(item.product.vendorId)))];
+      const vendorIds = [...new Set(items.map(item => String(item.vendorId)))];
       const vendors = await Vendor.find({ 
         _id: { $in: vendorIds },
         'pickupAddress.postalCode': { $exists: true, $ne: null }
@@ -135,8 +164,8 @@ export async function POST(req: Request) {
 
       // Calculate shipping for each vendor
       for (const vendor of vendors) {
-        const vendorItems = items.filter(item => String(item.product.vendorId) === String(vendor._id));
-        const vendorTotal = vendorItems.reduce((sum, item) => sum + (item.product.finalPrice * item.quantity), 0);
+        const vendorItems = items.filter(item => String(item.vendorId) === String(vendor._id));
+        const vendorTotal = vendorItems.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
         const vendorWeight = vendorItems.reduce((sum, item) => sum + (item.quantity * 0.5), 0); // Assume 0.5kg per item
         
         try {

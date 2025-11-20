@@ -3,6 +3,25 @@ import { connectDB } from '@/lib/db';
 import Vendor from '@/models/Vendor';
 import { verifyVendorToken, extractTokenFromHeader } from '@/lib/vendor-jwt';
 
+interface PickupAddress {
+  addressType: string;
+  addressName: string;
+  buildingNumber: string;
+  streetName: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  landmark: string;
+  isDefault: boolean;
+}
+interface VendorWithPickups {
+  pickupAddresses?: PickupAddress[];
+  pickupAddress?: PickupAddress;
+  // [key: string]: any;
+  [key: string]: unknown;
+}
+
 export async function GET(request: NextRequest) {
   try {
     // Extract token from Authorization header
@@ -46,6 +65,27 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const pickupAddresses = Array.isArray((vendor as VendorWithPickups).pickupAddresses)
+      ? (vendor as VendorWithPickups).pickupAddresses!
+      : vendor.pickupAddress && vendor.pickupAddress.buildingNumber
+      ? [
+          {
+            addressType: vendor.pickupAddress.addressType || 'warehouse',
+            addressName: vendor.pickupAddress.city
+              ? `${vendor.pickupAddress.city} Pickup`
+              : 'Primary Pickup',
+            buildingNumber: vendor.pickupAddress.buildingNumber,
+            streetName: vendor.pickupAddress.streetName,
+            city: vendor.pickupAddress.city,
+            state: vendor.pickupAddress.state,
+            postalCode: vendor.pickupAddress.postalCode,
+            country: vendor.pickupAddress.country,
+            landmark: vendor.pickupAddress.landmark,
+            isDefault: true,
+          },
+        ]
+      : [];
+
     return NextResponse.json({
       success: true,
       data: {
@@ -57,7 +97,7 @@ export async function GET(request: NextRequest) {
           shopName: vendor.shopName,
           gstNumber: vendor.gstNumber,
           profileImage: vendor.profileImage,
-          pickupAddresses: vendor.pickupAddresses,
+          pickupAddresses,
           emailVerified: vendor.emailVerified,
           phoneVerified: vendor.phoneVerified,
           approved: vendor.approved,

@@ -79,12 +79,13 @@ export async function GET(
     try {
       const vendorTotal = vendorItems.reduce((sum: number, item: { finalPrice: number; quantity: number }) => sum + (item.finalPrice * item.quantity), 0);
       const vendorWeight = vendorItems.reduce((sum: number, item: { quantity: number }) => sum + (item.quantity * 0.5), 0); // Assume 0.5kg per item
+      const codFlag = order.paymentDetails.method === 'cod';
       
       console.log('Courier request data:', {
         pickupPostcode: vendor.pickupAddress?.postalCode || '110001',
         deliveryPostcode: order.shippingAddress.pincode,
         weight: Math.max(vendorWeight, 0.1),
-        cod: order.paymentDetails.method === 'cod' ? vendorTotal : 0,
+        cod: codFlag ? 1 : 0,
         declaredValue: vendorTotal,
         paymentMethod: order.paymentDetails.method
       });
@@ -93,7 +94,7 @@ export async function GET(
         pickupPostcode: vendor.pickupAddress?.postalCode || '110001',
         deliveryPostcode: order.shippingAddress.pincode,
         weight: Math.max(vendorWeight, 0.1),
-        cod: order.paymentDetails.method === 'cod' ? vendorTotal : 0, // Use actual COD amount, not just 1
+        cod: codFlag ? 1 : 0,
         declaredValue: vendorTotal,
       });
 

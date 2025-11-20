@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import './Products';
+import './User';
 
 export interface IOrder extends mongoose.Document {
     orderId: string;  // Custom order ID (e.g., BB-2024-0001)
@@ -409,7 +411,6 @@ const orderSchema = new mongoose.Schema<IOrder>({
 });
 
 // Indexes for better query performance
-orderSchema.index({ orderId: 1 }, { unique: true });
 orderSchema.index({ userId: 1, createdAt: -1 });
 orderSchema.index({ 'items.vendorId': 1 });
 orderSchema.index({ status: 1 });
