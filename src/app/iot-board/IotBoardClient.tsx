@@ -211,7 +211,7 @@ export default function IotBoardClient({ productId }: Props) {
             {/* Who It's For Section */}
             <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Who It's For</h2>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Who It&apos;s For</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {targetAudience.map((audience, i) => (
                             <motion.div key={i} variants={item} className="bg-blue-600 text-white rounded-2xl p-6 shadow-lg text-center flex items-center justify-center min-h-[120px]">
@@ -268,10 +268,10 @@ export default function IotBoardClient({ productId }: Props) {
             <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">Gallery</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {["photo-1581091226825-a6a2a5aee158", "photo-1580894908360-9243200b4b9b", "photo-1518779578993-ec3579fee39f", "photo-1519389950473-47ba0277781c"].map((id, i) => (
+                    {["/iot-board/im1.png", "/iot-board/im2.png", "/iot-board/im3.png", "/iot-board/im4.png"].map((id, i) => (
                         <div key={i} className="relative rounded-xl overflow-hidden shadow">
                             <Image
-                                src={`https://images.unsplash.com/${id}?w=600&h=400&fit=crop`}
+                                src={id}
                                 alt="IoT board gallery"
                                 width={600}
                                 height={400}
