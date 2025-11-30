@@ -7,10 +7,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default async function SoftwarePage() {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    redirect("/auth/signin");
-  }
+  // const session = await getServerSession(authOptions);
+  // if (!session) {
+  //   redirect("/auth/signin");
+  // }
 
   // IoT software solutions data
   const softwareSolutions = [

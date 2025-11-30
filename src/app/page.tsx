@@ -11,10 +11,10 @@ import { redirect } from 'next/navigation';
 import HomeContent from '@/components/HomeContent';
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    redirect('/auth/signin');
-  }
+  // const session = await getServerSession(authOptions);
+  // if (!session) {
+  //   redirect('/auth/signin');
+  // }
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 overflow-hidden">
