@@ -231,7 +231,7 @@ export default function Hero() {
                     <SwiperSlide>
                       <div className="w-full h-full aspect-[9/16]">
                         <img
-                          src="/iot-board/im1.png"
+                          src="/slideshow/im1.png"
                           alt="Screenshot 1"
                           className="w-full h-full object-contain rounded-xl bg-white"
                           style={{ objectFit: 'contain' }}
@@ -241,7 +241,7 @@ export default function Hero() {
                     <SwiperSlide>
                       <div className="w-full h-full aspect-[9/16]">
                         <img
-                          src="/iot-board/im2.png"
+                          src="/slideshow/im2.png"
                           alt="Screenshot 2"
                           className="w-full h-full object-contain rounded-xl bg-white"
                           style={{ objectFit: 'contain' }}
@@ -251,7 +251,7 @@ export default function Hero() {
                     <SwiperSlide>
                       <div className="w-full h-full aspect-[9/16]">
                         <img
-                          src="/iot-board/im3.png"
+                          src="/slideshow/im3.png"
                           alt="Screenshot 3"
                           className="w-full h-full object-contain rounded-xl bg-white"
                           style={{ objectFit: 'contain' }}
