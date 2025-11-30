@@ -161,7 +161,7 @@ export default function IotBoardClient({ productId }: Props) {
                     <motion.div variants={item} className="relative">
                         <div className="relative rounded-3xl overflow-hidden shadow-xl">
                             <Image
-                                src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=1200&h=900&fit=crop"
+                                src="/iot-board/im4.png"
                                 alt="IoT Development KIT"
                                 width={1200}
                                 height={900}
