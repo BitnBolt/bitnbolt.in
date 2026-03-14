@@ -1,16 +1,36 @@
+"use client";
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
-export default async function SoftwarePage() {
-  // const session = await getServerSession(authOptions);
-  // if (!session) {
-  //   redirect("/auth/signin");
-  // }
+export default function SoftwarePage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<{
+    title: string;
+    description: string;
+  } | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    company: "",
+    message: "",
+  });
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isModalOpen]);
 
   // IoT software solutions data
   const softwareSolutions = [
@@ -110,6 +130,46 @@ export default async function SoftwarePage() {
     },
   ];
 
+  // Handle form input changes
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Here you can add your logic to send the form data to your backend
+    console.log("Form submitted:", {
+      service: selectedService,
+      ...formData,
+    });
+
+    // TODO: Add API call to submit quotation request
+    // For now, just show an alert and close the modal
+    alert(`Thank you for your interest in ${selectedService?.title}! We will contact you soon.`);
+    closeModal();
+  };
+
+  // Close modal and reset form
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedService(null);
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      company: "",
+      message: "",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <Header />
@@ -190,7 +250,7 @@ export default async function SoftwarePage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="p-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                     {solution.title}
@@ -198,7 +258,7 @@ export default async function SoftwarePage() {
                   <p className="text-gray-600 mb-6">
                     {solution.description}
                   </p>
-                  
+
                   <div className="mb-6">
                     <h4 className="text-sm uppercase font-semibold text-gray-500 mb-3">Key Features</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -212,9 +272,18 @@ export default async function SoftwarePage() {
                       ))}
                     </div>
                   </div>
-                  
-                  <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-xl hover:shadow-lg transition-shadow font-medium flex items-center justify-center">
-                    Learn More
+
+                  <button
+                    onClick={() => {
+                      setSelectedService({
+                        title: solution.title,
+                        description: solution.description,
+                      });
+                      setIsModalOpen(true);
+                    }}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-xl hover:shadow-lg transition-shadow font-medium flex items-center justify-center"
+                  >
+                    Get Quotation
                     <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
@@ -240,21 +309,21 @@ export default async function SoftwarePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {customServices.map((service, index) => (
-              <div 
+              <div
                 key={index}
                 className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 relative overflow-hidden group"
               >
                 <div className="absolute right-0 top-0 w-32 h-32 rounded-full bg-blue-100 opacity-10 -mr-10 -mt-10 transform group-hover:scale-150 transition-transform duration-500"></div>
-                
+
                 <div className="relative z-10">
                   <div className="w-16 h-16 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mb-4 transform transition-transform group-hover:scale-110 duration-300">
                     <span className="text-3xl">{service.icon}</span>
                   </div>
-                  
+
                   <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
                     {service.title}
                   </h3>
-                  
+
                   <p className="text-gray-600 group-hover:text-gray-900 transition-colors duration-300">
                     {service.description}
                   </p>
@@ -306,7 +375,7 @@ export default async function SoftwarePage() {
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
                   <p className="text-gray-600">{step.description}</p>
                 </div>
-                
+
                 {/* Connect lines between steps (only for middle items) */}
                 {index < 3 && (
                   <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-blue-200 z-10"></div>
@@ -344,6 +413,161 @@ export default async function SoftwarePage() {
           </div>
         </div>
       </section>
+
+      {/* Quotation Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+          {/* Background backdrop */}
+          <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div
+              className="fixed inset-0 bg-[#00000022] backdrop-blur-sm transition-opacity"
+              aria-hidden="true"
+              onClick={closeModal}
+            ></div>
+
+            {/* Center modal */}
+            <span className="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
+
+            <div className="relative inline-block transform overflow-hidden rounded-2xl bg-white text-left align-bottom shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl sm:align-middle border border-gray-200">
+              {/* Close button */}
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 z-10 rounded-full bg-gray-100 p-2 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-8 sm:px-8">
+                <h3 className="text-2xl font-bold text-white" id="modal-title">
+                  Request Quotation
+                </h3>
+                {selectedService && (
+                  <div className="mt-3 bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                    <p className="text-sm font-medium text-blue-100 mb-1">Selected Service:</p>
+                    <p className="text-lg font-bold text-white">{selectedService.title}</p>
+                    <p className="text-sm text-blue-50 mt-2">{selectedService.description}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Body */}
+              <form onSubmit={handleSubmit} className="px-6 py-6 sm:px-8">
+                <p className="text-gray-600 mb-6">
+                  Fill in your details below and our team will get back to you with a custom quotation within 24 hours.
+                </p>
+
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  {/* Name */}
+                  <div className="sm:col-span-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                      placeholder="John Doe"
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      required
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                  </div>
+
+                  {/* Company */}
+                  <div className="sm:col-span-2">
+                    <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+                      Company Name
+                    </label>
+                    <input
+                      type="text"
+                      id="company"
+                      name="company"
+                      value={formData.company}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                      placeholder="Your Company Ltd."
+                    />
+                  </div>
+
+                  {/* Message */}
+                  <div className="sm:col-span-2">
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                      Additional Requirements
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={4}
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none resize-none"
+                      placeholder="Tell us more about your project requirements..."
+                    />
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="w-full sm:w-auto px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="w-full sm:flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all transform hover:translate-y-[-1px] flex items-center justify-center"
+                  >
+                    Submit Request
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
