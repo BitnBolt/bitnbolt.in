@@ -71,7 +71,6 @@ const productSchema = new mongoose.Schema<IProduct>({
     slug: {
         type: String,
         required: true,
-        unique: true,
     },
     description: {
         type: String,
