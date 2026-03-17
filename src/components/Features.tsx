@@ -3,53 +3,34 @@
 import { motion } from 'framer-motion';
 
 export default function Features() {
-  const features = [
+  const stats = [
     {
-      title: 'Advanced IoT Ecosystem',
-      description: 'Seamlessly connect all devices in a unified, intelligent network that adapts to your needs.',
-      icon: '🌐',
-      color: 'bg-blue-100 text-blue-600'
+      number: '102+',
+      subtitle: 'IoT & hardware specialists',
+      description: "who've deployed sensors in production—not just prototypes"
     },
     {
-      title: 'AI-Powered Automation',
-      description: 'Machine learning algorithms that continuously improve and automate your processes.',
-      icon: '🤖',
-      color: 'bg-purple-100 text-purple-600'
+      number: '148+',
+      subtitle: 'Proven IoT architectures',
+      description: 'for manufacturing, semiconductors, and enterprise systems'
     },
     {
-      title: 'Enterprise Security',
-      description: 'Military-grade encryption and security protocols to keep your data and devices safe.',
-      icon: '🔒',
-      color: 'bg-green-100 text-green-600'
+      number: '291+',
+      subtitle: 'Operational dashboards',
+      description: 'that turned data into decisions line operators actually use'
     },
     {
-      title: 'Custom Development',
-      description: 'Tailor-made IoT solutions designed specifically for your business requirements.',
-      icon: '⚙️',
-      color: 'bg-amber-100 text-amber-600'
-    },
-    {
-      title: 'Cloud Integration',
-      description: 'Seamless connection with leading cloud platforms for unlimited scalability.',
-      icon: '☁️',
-      color: 'bg-cyan-100 text-cyan-600'
-    },
-    {
-      title: '24/7 Expert Support',
-      description: 'Round-the-clock assistance from our team of IoT specialists whenever you need help.',
-      icon: '🛠️',
-      color: 'bg-red-100 text-red-600'
+      number: '1374+',
+      subtitle: 'Transformations that',
+      description: 'started when fragmented systems became too costly to ignore'
     }
   ];
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+      transition: { staggerChildren: 0.15 }
     }
   };
 
@@ -58,93 +39,58 @@ export default function Features() {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { 
-        type: "spring" as const, 
-        stiffness: 100 
-      }
+      transition: { type: "spring" as const, stiffness: 100 }
     }
   };
 
   return (
-    <section className="py-16 bg-white relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-50 rounded-full opacity-70"></div>
-        <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-purple-50 rounded-full opacity-70"></div>
-      </div>
-
+    <section className="py-12 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16">
-          <motion.h2 
-            className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            Why Choose BitnBolt?
-          </motion.h2>
-          <motion.p 
-            className="text-xl text-gray-600 max-w-3xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            We combine cutting-edge technology with industry expertise to deliver IoT solutions that transform businesses.
-          </motion.p>
-        </div>
+        <motion.div 
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#0B1C2D] mb-4 tracking-tight">
+            Why choose BitnBolt
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-light">
+            Over 20 years, we've deployed IoT solutions where reliability isn't optional—it's operational.
+          </p>
+        </motion.div>
 
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16"
           variants={containerVariants}
           initial="hidden"
-          animate="visible"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
         >
-          {features.map((feature, index) => (
+          {stats.map((stat, index) => (
             <motion.div
               key={index}
-              className="bg-white rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 relative overflow-hidden group"
+              className="flex flex-col items-center text-center group"
               variants={itemVariants}
             >
-              <div className={`absolute right-0 top-0 w-32 h-32 rounded-full ${feature.color} opacity-10 -mr-10 -mt-10 transform group-hover:scale-150 transition-transform duration-500`}></div>
-              
-              <div className="relative z-10">
-                <div className={`w-16 h-16 rounded-lg ${feature.color} flex items-center justify-center text-2xl mb-4 transform transition-transform group-hover:scale-110 duration-300`}>
-                  <span className="text-3xl">{feature.icon}</span>
-                </div>
-                
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
-                  {feature.title}
-                </h3>
-                
-                <p className="text-gray-600 group-hover:text-gray-900 transition-colors duration-300">
-                  {feature.description}
-                </p>
-                
-                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
+              <div className="text-5xl md:text-6xl font-bold text-[#1E88E5] mb-6 tracking-tight group-hover:text-[#0B1C2D] transition-colors duration-300">
+                {stat.number}
               </div>
+              
+              <div className="w-full h-px bg-blue-100 mb-6 group-hover:bg-blue-300 transition-colors duration-300"></div>
+              
+              <h3 className="text-[17px] font-bold text-[#0B1C2D] mb-2 leading-snug">
+                {stat.subtitle}
+              </h3>
+              
+              <p className="text-[15px] text-gray-500 leading-relaxed font-light">
+                {stat.description}
+              </p>
             </motion.div>
           ))}
-        </motion.div>
-        
-        {/* Call to action */}
-        <motion.div 
-          className="mt-16 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-        >
-          <a 
-            href="#products" 
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block"
-          >
-            Explore Our Solutions
-          </a>
         </motion.div>
       </div>
     </section>
   );
-} 
+}

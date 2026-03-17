@@ -11,6 +11,18 @@ export default function Header() {
   const { data: session, status } = useSession();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [cartCount, setCartCount] = useState<number>(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Handle scroll event for header transparency
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    // Initial check
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -49,16 +61,16 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+    <header className={`fixed w-full top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm border-b border-gray-100' : 'bg-transparent border-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Header */}
-        <div className="flex justify-between items-center h-12">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <Link href="/">
-                <h1 className="text-lg sm:text-xl font-bold text-gray-900 cursor-pointer">
-                  <span className="text-blue-600">Bit</span>nBolt
+                <h1 className={`text-xl sm:text-2xl font-bold cursor-pointer transition-colors ${isScrolled ? 'text-gray-900' : 'text-white'}`}>
+                  <span className="text-blue-500">Bit</span>nBolt
                 </h1>
               </Link>
             </div>
@@ -66,11 +78,11 @@ export default function Header() {
 
           {/* Search Bar - Visible on all devices */}
           <div className="flex flex-1 max-w-sm sm:max-w-xl mx-3 sm:mx-6">
-            <div className="flex items-center bg-white rounded-full shadow-lg border-2 border-gray-300 pl-2 w-full">
+            <div className={`flex items-center rounded-full shadow-lg border-2 pl-2 w-full transition-colors ${isScrolled ? 'bg-white border-gray-300' : 'bg-white/10 border-white/20 backdrop-blur-sm'}`}>
               <input
                 type="text"
                 placeholder="Search products..."
-                className="flex-1 px-4 py-2 text-sm bg-transparent border-none rounded-full shadow-none outline-none focus:border-none focus:ring-0 focus:outline-none"
+                className={`flex-1 px-4 py-2 text-sm bg-transparent border-none rounded-full shadow-none outline-none focus:border-none focus:ring-0 focus:outline-none placeholder:text-gray-400 ${isScrolled ? 'text-gray-900' : 'text-white'}`}
               />
               <button className="ml-2 bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors text-sm font-medium flex items-center gap-2">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -108,7 +120,9 @@ export default function Header() {
                       {session.user?.name?.[0]?.toUpperCase() || '?'}
                     </div>
                   )}
-                  <span className="hidden md:block text-sm font-medium">{session.user?.name}</span>
+                  <span className={`hidden md:block text-sm font-medium transition-colors ${isScrolled ? 'text-gray-900' : 'text-white'}`}>
+                    {session.user?.name}
+                  </span>
                 </div>
                 {/* Dropdown */}
                 {isDropdownOpen && (
@@ -142,7 +156,7 @@ export default function Header() {
             ) : (
               <Link
                 href="/auth/signin"
-                className="hidden sm:flex items-center space-x-1 hover:text-blue-600"
+                className={`hidden sm:flex items-center space-x-1 hover:text-blue-500 transition-colors ${isScrolled ? 'text-gray-700' : 'text-white'}`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -153,7 +167,7 @@ export default function Header() {
 
             {/* Orders - Only show if logged in */}
             {session && (
-              <Link href="/orders" className="hidden sm:flex items-center space-x-1 hover:text-blue-600">
+              <Link href="/orders" className={`hidden sm:flex items-center space-x-1 hover:text-blue-500 transition-colors ${isScrolled ? 'text-gray-700' : 'text-white'}`}>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
@@ -162,19 +176,19 @@ export default function Header() {
             )}
 
             {/* Cart */}
-            <Link href="/cart" className="flex items-center space-x-1 hover:text-blue-600 relative">
+            <Link href="/cart" className={`flex items-center space-x-1 hover:text-blue-500 relative transition-colors ${isScrolled ? 'text-gray-700' : 'text-white'}`}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 1116 0 2 2 0 01-4 0z" />
               </svg>
               <span className="hidden sm:block text-sm">Cart</span>
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-4 h-4 px-1 flex items-center justify-center">{cartCount}</span>
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-4 h-4 px-1 flex items-center justify-center border border-white">{cartCount}</span>
             </Link>
 
             {/* Mobile menu button */}
             <div className="sm:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600 p-1"
+                className={`focus:outline-none focus:text-blue-500 p-1 transition-colors ${isScrolled ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-gray-200'}`}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   {isMenuOpen ? (
@@ -189,26 +203,26 @@ export default function Header() {
         </div>
 
         {/* Navigation Menu - Desktop */}
-        <nav className="hidden sm:flex space-x-6 py-1 border-t border-gray-100">
-          <Link href="/" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+        <nav className={`hidden sm:flex space-x-6 py-1 border-t transition-colors duration-300 ${isScrolled ? 'border-gray-100' : 'border-white/10'}`}>
+          <Link href="/" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
             Home
           </Link>
-          <Link href="/product" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+          <Link href="/product" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
             Shop IoT Products
           </Link>
-          <Link href="/iot-board" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+          <Link href="/iot-board" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
             IoT Board
           </Link>
-          <Link href="/firmware" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+          <Link href="/firmware" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
             Firmware
           </Link>
-          <Link href="/about" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+          <Link href="/about" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
             About
           </Link>
-          <Link href="/testimonials" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+          <Link href="/testimonials" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
             Testimonials
           </Link>
-          <Link href="/contact" className="text-gray-700 hover:text-blue-600 px-2 py-1 text-sm font-medium transition-colors">
+          <Link href="/contact" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
             Contact
           </Link>
         </nav>

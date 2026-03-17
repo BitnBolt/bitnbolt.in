@@ -139,10 +139,8 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
   const limited = typeof limit === 'number' && limit > 0 ? filteredProducts.slice(0, limit) : filteredProducts;
 
   return (
-    <section id="products" className="py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-blue-50 to-transparent"></div>
-      <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+    <section id="products" className="py-12 bg-white relative overflow-hidden">
+      {/* Background decoration removed for cleaner look */}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header with animations */}
@@ -153,17 +151,12 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
           transition={{ duration: 0.5 }}
         >
           <div>
-            <motion.div 
-              className="inline-block bg-blue-100 text-blue-600 px-4 py-2 rounded-full mb-4 font-medium text-sm"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              Our Products
-            </motion.div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+            <h2 className="text-3xl md:text-3xl lg:text-4xl font-extrabold text-[#0B1C2D] mb-2 tracking-tight">
               Shop IoT Solutions
             </h2>
+            <p className="text-lg text-gray-500 font-light">
+              Discover intelligent products engineered for the connected era
+            </p>
           </div>
         </motion.div>
 
@@ -178,8 +171,8 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
             <motion.div
               key={product.id}
               variants={itemVariants}
-              whileHover={{ y: -8 }}
-              className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
+              whileHover={{ scale: 1 }}
+              className="bg-white rounded-lg shadow-sm border border-transparent hover:border-blue-200 transition-all duration-300 overflow-hidden group"
             >
               {/* Product Image with hover effect */}
               <div className="relative h-64 overflow-hidden">
@@ -188,7 +181,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                   alt={product.name}
                   width={400}
                   height={300}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                 />
                 
                 {/* Badges */}
@@ -281,21 +274,21 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                 {/* Action Buttons */}
                 <div className="space-y-2">
                   {product.inStock ? (
-                    <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2">
+                    <button className="w-full bg-[#0B1C2D] text-white py-3 px-4 rounded-md hover:bg-[#163554] transition-colors font-medium flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
                       Add to Cart
                     </button>
                   ) : (
-                    <button className="w-full bg-gray-400 text-white py-3 px-4 rounded-xl cursor-not-allowed font-medium flex items-center justify-center gap-2">
+                    <button className="w-full bg-gray-400 text-white py-3 px-4 rounded-md cursor-not-allowed font-medium flex items-center justify-center gap-2">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       Out of Stock
                     </button>
                   )}
-                  <button className="w-full border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-xl hover:bg-gray-50 transition-colors font-medium flex items-center justify-center gap-2">
+                  <button className="w-full border-2 border-gray-200 text-[#0B1C2D] py-3 px-4 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors font-medium flex items-center justify-center gap-2">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />

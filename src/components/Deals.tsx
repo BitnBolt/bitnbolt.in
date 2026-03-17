@@ -117,11 +117,8 @@ export default function Deals() {
   const formatTime = (value: number) => value.toString().padStart(2, '0');
 
   return (
-    <section id="deals" className="py-16 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white to-blue-50 -z-10"></div>
-      <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
-      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+    <section id="deals" className="py-12 bg-[#f8fafd] relative overflow-hidden">
+      {/* Background Elements removed for cleaner look matching Services */}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
@@ -132,18 +129,10 @@ export default function Deals() {
           transition={{ duration: 0.5 }}
         >
           <div>
-            <motion.div 
-              className="inline-block bg-red-100 text-red-600 px-4 py-2 rounded-full mb-4 font-medium text-sm"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              Limited Time Offers
-            </motion.div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent mb-2">
+            <h2 className="text-3xl md:text-3xl lg:text-4xl font-extrabold text-[#0B1C2D] mb-2 tracking-tight">
               Flash Deals
             </h2>
-            <p className="text-gray-600">
+            <p className="text-lg text-gray-500 font-light">
               Exclusive discounts on our most popular IoT products • Act fast before they&apos;re gone
             </p>
           </div>
@@ -151,15 +140,15 @@ export default function Deals() {
           <div className="mt-6 md:mt-0">
             <div className="text-sm text-gray-600">Next deal starts in:</div>
             <div className="flex space-x-2 items-center">
-              <div className="bg-gray-900 text-white px-3 py-2 rounded-lg">
+              <div className="bg-[#0A2542] text-white px-3 py-2 rounded-lg">
                 <span className="text-2xl font-bold tabular-nums">{formatTime(timeLeft.hours)}</span>
               </div>
               <span className="text-2xl font-bold text-gray-900">:</span>
-              <div className="bg-gray-900 text-white px-3 py-2 rounded-lg">
+              <div className="bg-[#0A2542] text-white px-3 py-2 rounded-lg">
                 <span className="text-2xl font-bold tabular-nums">{formatTime(timeLeft.minutes)}</span>
               </div>
               <span className="text-2xl font-bold text-gray-900">:</span>
-              <div className="bg-gray-900 text-white px-3 py-2 rounded-lg">
+              <div className="bg-[#0A2542] text-white px-3 py-2 rounded-lg">
                 <span className="text-2xl font-bold tabular-nums">{formatTime(timeLeft.seconds)}</span>
               </div>
             </div>
@@ -177,8 +166,8 @@ export default function Deals() {
             <motion.div
               key={deal.id}
               variants={itemVariants}
-              whileHover={{ y: -8, transition: { duration: 0.2 } }}
-              className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 relative group"
+              whileHover={{ scale: 1 }}
+              className="bg-white rounded-lg overflow-hidden shadow-sm border border-transparent hover:border-red-200 transition-all duration-300 relative group"
             >
               {/* Deal Badge */}
               <div className="absolute top-4 left-4 bg-red-600 text-white text-sm font-bold px-3 py-1.5 rounded-full z-10 transform -rotate-2">
@@ -197,9 +186,9 @@ export default function Deals() {
                   alt={deal.name}
                   width={400}
                   height={300}
-                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
 
               {/* Product Info */}
@@ -222,7 +211,7 @@ export default function Deals() {
                   </div>
                   <div className="w-full h-2 bg-gray-100 rounded-full">
                     <motion.div 
-                      className="h-2 bg-gradient-to-r from-red-600 to-orange-500 rounded-full"
+                      className="h-2 bg-linear-to-r from-red-600 to-orange-500 rounded-full"
                       style={{ width: `${deal.sold}%` }}
                       initial={{ width: 0 }}
                       animate={{ width: `${deal.sold}%` }}
@@ -232,7 +221,7 @@ export default function Deals() {
                 </div>
 
                 {/* Action Button */}
-                <button className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center transform transition-all duration-300 hover:shadow-lg">
+                <button className="w-full bg-[#0B1C2D] hover:bg-[#163554] text-white py-3 px-4 rounded-md font-semibold flex items-center justify-center transition-colors duration-300">
                   <span>Claim Deal</span>
                   <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />

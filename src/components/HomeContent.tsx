@@ -34,15 +34,19 @@ export default function HomeContent({ children }: HomeContentProps) {
       animate="show"
       variants={staggerContainer}
     >
-      {childrenArray.map((child, index) => (
-        <motion.div 
-          key={index} 
-          variants={fadeInUp}
-          className={index === 2 ? "py-10" : ""} // Add py-10 to the Features component (index 2)
-        >
-          {child}
-        </motion.div>
-      ))}
+      {childrenArray.map((child, index) => {
+        // Skip animating the Header (index 0) so its position: fixed works properly
+        if (index === 0) return <React.Fragment key={index}>{child}</React.Fragment>;
+        
+        return (
+          <motion.div 
+            key={index} 
+            variants={fadeInUp}
+          >
+            {child}
+          </motion.div>
+        );
+      })}
     </motion.div>
   );
 } 

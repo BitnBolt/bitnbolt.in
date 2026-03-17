@@ -4,6 +4,11 @@ import Deals from '../components/Deals';
 import Products from '../components/Products';
 import Footer from '../components/Footer';
 import Features from '../components/Features';
+import Services from '../components/Services';
+import SuccessStories from '../components/SuccessStories';
+import Industries from '../components/Industries';
+import FeaturedInsights from '../components/FeaturedInsights';
+import Contact from '../components/Contact';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
@@ -26,12 +31,17 @@ export default async function Home() {
       </div>
 
       {/* Content */}
+      <Header />
       <HomeContent>
-        <Header />
         <Hero />
+        <Services />
+        <Industries />
+        <SuccessStories />
         <Deals />
         <Products limit={3} showAllLink={true} />
         <Features />
+        <FeaturedInsights />
+        <Contact />
         <Footer />
       </HomeContent>
     </main>

@@ -74,19 +74,13 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gradient-to-r from-gray-900 to-indigo-900 text-white pt-20 pb-10 relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent"></div>
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-10"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-overlay filter blur-3xl opacity-10"></div>
-        <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-10"></div>
-      </div>
+    <footer className="bg-[#0B1C2D] text-white pt-12 pb-10 relative overflow-hidden">
+      {/* Background elements removed for minimal design */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Newsletter Section */}
         <motion.div 
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 md:p-10 mb-16 shadow-xl"
+          className="bg-[#132A46] border border-white/10 rounded-lg p-8 md:p-10 mb-16 shadow-none"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -96,7 +90,7 @@ export default function Footer() {
               <h3 className="text-2xl md:text-3xl font-bold mb-2">
                 Stay Updated
               </h3>
-              <p className="text-blue-100">
+              <p className="text-gray-400">
                 Subscribe to our newsletter for the latest products, deals, and IoT insights.
               </p>
             </div>
@@ -106,12 +100,12 @@ export default function Footer() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-blue-100"
+                className="flex-1 bg-white/5 backdrop-blur-sm text-white border border-white/10 rounded-md px-6 py-3 focus:outline-none focus:border-[#1E88E5] focus:bg-white/10 placeholder:text-gray-500 transition-colors"
                 required
               />
               <button 
                 type="submit"
-                className="bg-white text-blue-600 hover:text-blue-800 font-semibold rounded-full px-6 py-3 transition-colors duration-300"
+                className="bg-[#1E88E5] hover:bg-[#1565C0] text-white font-semibold rounded-md px-6 py-3 transition-colors duration-300"
               >
                 Subscribe
               </button>
@@ -119,7 +113,7 @@ export default function Footer() {
           </div>
           {isSubscribed && (
             <motion.div 
-              className="mt-4 text-center text-white bg-white/20 rounded-full py-2 px-4"
+              className="mt-4 text-center text-green-400 bg-green-500/10 border border-green-500/20 rounded-md py-2 px-4 text-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
@@ -154,8 +148,7 @@ export default function Footer() {
                 <motion.a
                   key={link.name}
                   href={link.href}
-                  className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-gray-300 hover:bg-blue-600 hover:text-white transition-all duration-300"
-                  whileHover={{ scale: 1.1 }}
+                  className="w-10 h-10 bg-white/5 border border-white/5 rounded-md flex items-center justify-center text-gray-400 hover:bg-[#1E88E5] hover:border-[#1E88E5] hover:text-white transition-all duration-300"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 * index, duration: 0.3 }}
