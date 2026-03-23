@@ -82,7 +82,6 @@ export async function POST(request: NextRequest) {
       shopName: `${seller_name}'s Shop`, // Default shop name
       emailVerificationToken,
       emailVerificationTokenExpiry,
-      pickupAddresses: [], // Empty array initially
       approved: false,
       emailVerified: false,
       phoneVerified: false,

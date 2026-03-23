@@ -8,7 +8,7 @@ export interface IVendor extends mongoose.Document {
     shopName: string;
     gstNumber?: string;
     profileImage?:string;
-    pickupAddress: {
+    pickupAddress?: {
         addressType: 'primary' | 'secondary' | 'warehouse';
         buildingNumber: string;
         streetName: string;
@@ -65,31 +65,24 @@ const vendorSchema = new mongoose.Schema<IVendor>({
         addressType: {
             type: String,
             enum: ['primary', 'secondary', 'warehouse'],
-            default: 'warehouse'
         },
         buildingNumber: {
             type: String,
-            required: [true, 'Building/House number is required'],
         },
         streetName: {
             type: String,
-            required: [true, 'Street name is required'],
         },
         city: {
             type: String,
-            required: [true, 'City is required'],
         },
         state: {
             type: String,
-            required: [true, 'State is required'],
         },
         postalCode: {
             type: String,
-            required: [true, 'Postal code is required'],
         },
         country: {
             type: String,
-            required: [true, 'Country is required'],
         },
         landmark: {
             type: String,
