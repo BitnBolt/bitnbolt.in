@@ -5,7 +5,11 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 
-export default function Header() {
+interface HeaderProps {
+  forceWhite?: boolean;
+}
+
+export default function Header({ forceWhite = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { data: session, status } = useSession();
@@ -16,13 +20,13 @@ export default function Header() {
   // Handle scroll event for header transparency
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(forceWhite || window.scrollY > 20);
     };
     // Initial check
     handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [forceWhite]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -67,7 +71,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <Link href="/">
                 <h1 className={`text-xl sm:text-2xl font-bold cursor-pointer transition-colors ${isScrolled ? 'text-gray-900' : 'text-white'}`}>
                   <span className="text-blue-500">Bit</span>nBolt

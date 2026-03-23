@@ -113,7 +113,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { 
+      transition: {
         staggerChildren: 0.1
       }
     }
@@ -132,8 +132,8 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
   };
 
   // Filter products based on active category
-  const filteredProducts = activeCategory === "All" 
-    ? products 
+  const filteredProducts = activeCategory === "All"
+    ? products
     : products.filter(product => product.category === activeCategory);
 
   const limited = typeof limit === 'number' && limit > 0 ? filteredProducts.slice(0, limit) : filteredProducts;
@@ -141,10 +141,10 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
   return (
     <section id="products" className="py-12 bg-white relative overflow-hidden">
       {/* Background decoration removed for cleaner look */}
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header with animations */}
-        <motion.div 
+        <motion.div
           className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -161,7 +161,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
         </motion.div>
 
         {/* Products Grid with staggered animations */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           variants={containerVariants}
           initial="hidden"
@@ -183,7 +183,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                   height={300}
                   className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                 />
-                
+
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
                   {product.prime && (
@@ -219,7 +219,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                     {product.category}
                   </span>
                 </div>
-                
+
                 {/* Product Name */}
                 <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                   {product.name}
@@ -302,7 +302,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
         </motion.div>
 
         {/* Footer actions */}
-        <motion.div 
+        <motion.div
           className="mt-12 flex justify-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
