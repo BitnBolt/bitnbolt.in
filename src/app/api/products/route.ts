@@ -11,13 +11,20 @@ export async function GET(req: Request) {
     const pageSize = Math.min(50, Math.max(1, parseInt(searchParams.get('pageSize') || '6', 10)));
     const category = searchParams.get('category');
     const q = searchParams.get('q');
+    const minPrice = searchParams.get('minPrice');
+    const maxPrice = searchParams.get('maxPrice');
 
-    const filter: { isPublished: boolean; isSuspended: boolean; category?: string; $or?: Array<{ name: { $regex: string; $options: string } } | { description: { $regex: string; $options: string } }>; $text?: { $search: string } } = { isPublished: true, isSuspended: false };
+    const filter: Record<string, any> = { isPublished: true, isSuspended: false };
     if (category && category !== 'All') {
       filter.category = category;
     }
     if (q) {
       filter.$text = { $search: q };
+    }
+    if (minPrice || maxPrice) {
+      filter.finalPrice = {};
+      if (minPrice && !isNaN(parseFloat(minPrice))) filter.finalPrice.$gte = parseFloat(minPrice);
+      if (maxPrice && !isNaN(parseFloat(maxPrice))) filter.finalPrice.$lte = parseFloat(maxPrice);
     }
 
     const total = await Product.countDocuments(filter);

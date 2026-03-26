@@ -236,7 +236,7 @@ export default function Footer() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 0.5 }}
             >
-              © {new Date().getFullYear()} BitnBolt. All rights reserved.
+              © {new Date().getFullYear()} BitnBolt Pvt. Ltd. All rights reserved.
             </motion.div>
             <motion.div 
               className="flex flex-wrap justify-center gap-x-6 gap-y-2"
