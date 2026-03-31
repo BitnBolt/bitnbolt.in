@@ -40,6 +40,11 @@ export interface IProduct extends mongoose.Document {
         returnWindow: number;   // Number of days
         returnConditions: string[];
     };
+    replacePolicy: {
+        isReplaceable: boolean;
+        replaceWindow: number;   // Number of days
+        replaceConditions: string[];
+    };
     shippingInfo: {
         weight: number;         // in grams
         dimensions: {
@@ -199,6 +204,19 @@ const productSchema = new mongoose.Schema<IProduct>({
             default: 7,  // 7 days by default
         },
         returnConditions: [{
+            type: String,
+        }],
+    },
+    replacePolicy: {
+        isReplaceable: {
+            type: Boolean,
+            default: false,
+        },
+        replaceWindow: {
+            type: Number,
+            default: 7,  // 7 days by default
+        },
+        replaceConditions: [{
             type: String,
         }],
     },

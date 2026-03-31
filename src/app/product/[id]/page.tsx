@@ -32,6 +32,7 @@ type ProductDoc = {
   isSuspended: boolean;
   suspensionReason?: string;
   returnPolicy?: { isReturnable: boolean; returnWindow: number; returnConditions: string[] };
+  replacePolicy?: { isReplaceable: boolean; replaceWindow: number; replaceConditions: string[] };
   shippingInfo?: { weight: number; dimensions: { length: number; width: number; height: number } };
 };
 
@@ -472,6 +473,47 @@ export default function ProductViewPage() {
                 </div>
               ) : (
                 <p className="text-gray-500 text-sm italic">Standard return policy applies.</p>
+              )}
+            </div>
+
+            <div className="pt-8 border-t border-gray-100 mt-2">
+              <h3 className="text-xl font-bold mb-5 flex items-center gap-3 text-[#0B1C2D]">
+                <div className="p-2.5 bg-orange-50 rounded-xl text-orange-600">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9m-9 9a9 9 0 0 1 9-9"></path></svg>
+                </div>
+                Replace Policy
+              </h3>
+              {product.replacePolicy ? (
+                <div className="space-y-4 text-sm text-gray-700">
+                  <div className="flex items-center gap-2 font-medium">
+                    {product.replacePolicy.isReplaceable ? (
+                      <span className="flex items-center gap-2 text-green-700 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                        Replaceable within {product.replacePolicy.replaceWindow} days
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2 text-red-700 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Not Replaceable
+                      </span>
+                    )}
+                  </div>
+                  {product.replacePolicy.replaceConditions?.length > 0 && (
+                    <div className="pl-1 bg-orange-50/50 p-4 rounded-xl border border-orange-100">
+                      <p className="text-xs font-bold text-gray-600 uppercase tracking-widest mb-3">Conditions</p>
+                      <ul className="space-y-2 text-gray-600 font-medium">
+                        {product.replacePolicy.replaceConditions.map((c, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0 mt-1.5"></span>
+                            <span>{c}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm italic">Standard replace policy applies.</p>
               )}
             </div>
           </div>
