@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import Product from '@/models/Products';
 import { verifyVendorToken, extractTokenFromHeader } from '@/lib/vendor-jwt';
 import slugify from 'slugify';
+import { filterKeyValuePairs, filterTextLines } from '@/lib/product-detail';
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,20 +70,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!Array.isArray(productData.whatsInTheBox) || !productData.whatsInTheBox.some((item: string) => item.trim())) {
-      return NextResponse.json(
-        { success: false, message: 'What\'s in the box is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!Array.isArray(productData.aboutItem) || !productData.aboutItem.some((item: string) => item.trim())) {
-      return NextResponse.json(
-        { success: false, message: 'About this item is required' },
-        { status: 400 }
-      );
-    }
-
     // Validate shipping info
     if (!productData.shippingInfo?.weight || productData.shippingInfo.weight <= 0) {
       return NextResponse.json(
@@ -117,6 +104,10 @@ export async function POST(request: NextRequest) {
     // Create product with default values
     const product = new Product({
       ...productData,
+      whatsInTheBox: filterTextLines(productData.whatsInTheBox),
+      aboutItem: filterTextLines(productData.aboutItem),
+      features: filterKeyValuePairs(productData.features),
+      specifications: filterKeyValuePairs(productData.specifications),
       slug,
       vendorId: tokenPayload.vendorId,
       profitMargin: 80, // Default 80% markup

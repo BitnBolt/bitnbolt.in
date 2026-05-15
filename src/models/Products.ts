@@ -83,21 +83,15 @@ const productSchema = new mongoose.Schema<IProduct>({
     },
     whatsInTheBox: [{
         type: String,
-        required: [true, 'What\'s in the box is required'],
+        trim: true,
     }],
     aboutItem: [{
         type: String,
-        required: [true, 'About this item is required'],
+        trim: true,
     }],
     features: [{
-        key: {
-            type: String,
-            required: true,
-        },
-        value: {
-            type: String,
-            required: true,
-        }
+        key: { type: String, trim: true },
+        value: { type: String, trim: true },
     }],
     images: [{
         type: String,
@@ -170,14 +164,8 @@ const productSchema = new mongoose.Schema<IProduct>({
         }
     },
     specifications: [{
-        key: {
-            type: String,
-            required: true,
-        },
-        value: {
-            type: String,
-            required: true,
-        },
+        key: { type: String, trim: true },
+        value: { type: String, trim: true },
     }],
     isFeatured: {
         type: Boolean,

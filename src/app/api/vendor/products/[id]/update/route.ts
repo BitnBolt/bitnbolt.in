@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import Product from '@/models/Products';
 import { verifyVendorToken, extractTokenFromHeader } from '@/lib/vendor-jwt';
 import { deleteFromCloudinary } from '@/lib/cloudinary';
+import { filterKeyValuePairs, filterTextLines } from '@/lib/product-detail';
 
 export async function PUT(
   request: NextRequest,
@@ -35,6 +36,19 @@ export async function PUT(
 
     // Parse request body
     const body = await request.json();
+
+    if (body.whatsInTheBox !== undefined) {
+      body.whatsInTheBox = filterTextLines(body.whatsInTheBox);
+    }
+    if (body.aboutItem !== undefined) {
+      body.aboutItem = filterTextLines(body.aboutItem);
+    }
+    if (body.features !== undefined) {
+      body.features = filterKeyValuePairs(body.features);
+    }
+    if (body.specifications !== undefined) {
+      body.specifications = filterKeyValuePairs(body.specifications);
+    }
 
     // Check for removed images and delete them from Cloudinary
     if (product.images && product.images.length > 0 && body.images) {

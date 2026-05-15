@@ -5,6 +5,7 @@ import Footer from '../../../components/Footer';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { filterKeyValuePairs, filterTextLines, hasKeyValuePairs, hasTextLines } from '@/lib/product-detail';
 
 type ProductDoc = {
   _id: string;
@@ -138,6 +139,37 @@ export default function ProductViewPage() {
       return Math.round(((product.basePrice - product.finalPrice) / product.basePrice) * 100);
     }
     return Math.round(product.discount || 0);
+  }, [product]);
+
+  const detailSections = useMemo(() => {
+    if (!product) {
+      return {
+        features: [] as Array<{ key: string; value: string }>,
+        whatsInTheBox: [] as string[],
+        aboutItem: [] as string[],
+        specifications: [] as Array<{ key: string; value: string }>,
+        showFeatures: false,
+        showWhatsInTheBox: false,
+        showAboutItem: false,
+        showSpecifications: false,
+      };
+    }
+
+    const features = filterKeyValuePairs(product.features);
+    const whatsInTheBox = filterTextLines(product.whatsInTheBox);
+    const aboutItem = filterTextLines(product.aboutItem);
+    const specifications = filterKeyValuePairs(product.specifications);
+
+    return {
+      features,
+      whatsInTheBox,
+      aboutItem,
+      specifications,
+      showFeatures: hasKeyValuePairs(features),
+      showWhatsInTheBox: hasTextLines(whatsInTheBox),
+      showAboutItem: hasTextLines(aboutItem),
+      showSpecifications: hasKeyValuePairs(specifications),
+    };
   }, [product]);
 
   if (loading) {
@@ -312,9 +344,17 @@ export default function ProductViewPage() {
           </div>
         </div>
 
-        {/* Description and Product Details Sections */}
-        <div className="max-w-7xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 hover:shadow transition-shadow">
+        {/* Description (required) and optional detail sections */}
+        <div
+          className={`max-w-7xl mx-auto mt-10 grid grid-cols-1 gap-6 lg:gap-8 ${
+            detailSections.showFeatures ? 'md:grid-cols-2' : ''
+          }`}
+        >
+          <div
+            className={`bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 hover:shadow transition-shadow ${
+              !detailSections.showFeatures ? 'md:col-span-2' : ''
+            }`}
+          >
             <h2 className="text-xl font-bold mb-5 flex items-center gap-3 text-[#0B1C2D]">
               <div className="p-2.5 bg-blue-50 rounded-xl text-blue-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -324,6 +364,7 @@ export default function ProductViewPage() {
             <p className="text-gray-600 leading-relaxed whitespace-pre-line">{product.description}</p>
           </div>
 
+          {detailSections.showFeatures && (
           <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 hover:shadow transition-shadow">
             <h3 className="text-xl font-bold mb-5 flex items-center gap-3 text-[#0B1C2D]">
               <div className="p-2.5 bg-yellow-50 rounded-xl text-yellow-600">
@@ -331,22 +372,21 @@ export default function ProductViewPage() {
               </div>
               Key Features
             </h3>
-            {product.features?.length ? (
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {product.features.map((f, idx) => (
+                {detailSections.features.map((f, idx) => (
                   <div key={idx} className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 hover:border-yellow-200 transition-colors">
                     <dt className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">{f.key}</dt>
                     <dd className="text-sm font-medium text-gray-900">{f.value}</dd>
                   </div>
                 ))}
               </dl>
-            ) : (
-              <p className="text-gray-500 text-sm italic">No features listed.</p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
+        {(detailSections.showWhatsInTheBox || detailSections.showAboutItem) && (
         <div className="max-w-7xl mx-auto mt-6 lg:mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {detailSections.showWhatsInTheBox && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 hover:shadow transition-shadow">
             <h3 className="text-xl font-bold mb-5 flex items-center gap-3 text-[#0B1C2D]">
               <div className="p-2.5 bg-indigo-50 rounded-xl text-indigo-600">
@@ -354,19 +394,17 @@ export default function ProductViewPage() {
               </div>
               What&apos;s in the box
             </h3>
-            {product.whatsInTheBox?.length ? (
               <ul className="text-gray-600 space-y-3">
-                {product.whatsInTheBox.map((item, idx) => (
+                {detailSections.whatsInTheBox.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="text-gray-500 text-sm italic">Not specified.</p>
-            )}
           </div>
+          )}
+          {detailSections.showAboutItem && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 hover:shadow transition-shadow">
             <h3 className="text-xl font-bold mb-5 flex items-center gap-3 text-[#0B1C2D]">
               <div className="p-2.5 bg-emerald-50 rounded-xl text-emerald-600">
@@ -374,22 +412,23 @@ export default function ProductViewPage() {
               </div>
               About this item
             </h3>
-            {product.aboutItem?.length ? (
               <ul className="text-gray-600 space-y-3">
-                {product.aboutItem.map((item, idx) => (
+                {detailSections.aboutItem.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 mt-2"></span>
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="text-gray-500 text-sm italic">Not provided.</p>
-            )}
           </div>
+          )}
         </div>
+        )}
 
-        <div className="max-w-7xl mx-auto mt-6 lg:mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        <div
+          className={`max-w-7xl mx-auto mt-6 lg:mt-8 grid grid-cols-1 gap-6 lg:gap-8 ${detailSections.showSpecifications ? 'md:grid-cols-2' : ''}`}
+        >
+          {detailSections.showSpecifications && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 hover:shadow transition-shadow">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-[#0B1C2D]">
               <div className="p-2.5 bg-slate-100 rounded-xl text-slate-700">
@@ -397,21 +436,20 @@ export default function ProductViewPage() {
               </div>
               Specifications
             </h3>
-            {product.specifications?.length ? (
               <div className="grid grid-cols-1 gap-0 border border-gray-100 rounded-xl overflow-hidden">
-                {product.specifications.map((s, idx) => (
+                {detailSections.specifications.map((s, idx) => (
                   <div key={idx} className={`flex max-sm:flex-col sm:grid sm:grid-cols-3 px-5 py-3 ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
                     <dt className="text-sm font-semibold text-gray-700">{s.key}</dt>
                     <dd className="text-sm text-gray-600 sm:col-span-2">{s.value}</dd>
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="text-gray-500 text-sm italic">No specifications listed.</p>
-            )}
-          </div>
-          
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 hover:shadow transition-shadow flex flex-col gap-8">
+            </div>
+          )}
+
+          <div
+            className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 hover:shadow transition-shadow flex flex-col gap-8 ${!detailSections.showSpecifications ? 'md:col-span-2' : ''}`}
+          >
             <div>
               <h3 className="text-xl font-bold mb-5 flex items-center gap-3 text-[#0B1C2D]">
                 <div className="p-2.5 bg-cyan-50 rounded-xl text-cyan-600">
