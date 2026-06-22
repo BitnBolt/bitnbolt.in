@@ -6,40 +6,69 @@ import { motion, AnimatePresence } from 'framer-motion';
 const industries = [
   {
     id: 1,
-    title: "Semiconductor",
-    description: "Elevating fab performance with AI-powered automation and analytics solutions",
+    title: "Smart Agriculture (Agri-Tech)",
+    description:
+      "We automate and optimize farming environments with smart sensor networks and localized control systems that maximize crop yield and resource efficiency.",
     bullets: [
-      "Real-time monitoring of the equipment status for alerts and actionable feedback",
-      "Optimize production workflows by predicting equipment failures early",
-      "Strengthen yield analysis by spotting defect patterns faster",
-      "Automate quality checks using computer vision and ML algorithms"
+      "Integrated nutrient dosing, pH/TDS monitoring, and environment regulation for hydroponics and aeroponics",
+      "Low-power soil sensors for moisture, temperature, and light-driven precision irrigation",
+      "Automated lighting and EMS to maintain optimal greenhouse microclimates",
+      "Edge-based crop health analytics for yield prediction in remote rural areas",
     ],
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&h=800&fit=crop"
+    image: "industries/im1.png",
   },
   {
     id: 2,
-    title: "Manufacturing",
-    description: "Modernizing legacy manufacturing plants with IoT and real-time data.",
+    title: "Industrial IoT & Smart Manufacturing (Industry 4.0)",
+    description:
+      "We bring legacy machinery into the digital age with custom data-logging hardware and edge analytics that prevent costly downtime.",
     bullets: [
-      "Predictive maintenance to reduce machinery downtime",
-      "Supply chain optimization through precise asset tracking",
-      "Energy management and automated sustainability tracking",
-      "Enhancing worker safety with smart wearables"
+      "Vibration, temperature, and acoustic sensors that flag equipment failure before it happens",
+      "Industrial gateways using Modbus RS485, LoRa, or ESP-NOW for factory-floor telemetry",
+      "Real-time tracking of inventory and heavy machinery location, status, and movement",
+      "Smart power meters that analyze factory energy loads to cut utility overhead",
     ],
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=800&fit=crop"
+    image: "industries/im2.png",
   },
   {
     id: 3,
-    title: "Healthcare",
-    description: "Transforming patient care and hospital operations with connected devices.",
+    title: "Electric Vehicles (EV) & Charging Infrastructure",
+    description:
+      "We design the electronics and connected firmware that make charging stations and vehicle sub-systems reliable, secure, and smart.",
     bullets: [
-      "Remote patient monitoring with highly-sensitive wearable IoT devices",
-      "Automated inventory management for critical medical supplies",
-      "Real-time asset tracking for movable hospital equipment",
-      "Environmental monitoring for delicate laboratories and cold storage"
+      "Custom PCBs and BOM architectures for smart AC/DC EV charging piles",
+      "AWS/Azure integration for slot booking, user authentication, and billing analytics",
+      "Optimized BMS firmware for cell voltage, temperature, and state-of-charge monitoring",
+      "Edge intelligence at charging hubs for dynamic power distribution based on grid demand",
     ],
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&h=800&fit=crop"
-  }
+    image: "industries/im3.png",
+  },
+  {
+    id: 4,
+    title: "Smart Home & Commercial Building Automation",
+    description:
+      "We build power-efficient hardware ecosystems for lighting, water automation, and real-time building dashboards.",
+    bullets: [
+      "Custom embedded boards for climate control, adaptive lighting, and water tank automation",
+      "Ultra-low-power firmware for smart locks, security switches, and occupancy sensors",
+      "Local edge gateways that process in-building data before syncing relevant telemetry to the cloud",
+      "Secure OTA updates to refresh security protocols across thousands of units instantly",
+    ],
+    image: "industries/im4.png",
+  },
+  {
+    id: 5,
+    title: "Renewable Energy & Smart Grid Inverters",
+    description:
+      "We design advanced control electronics, optimized switching firmware, and cloud-connected telemetry for efficient power conversion and stable grid synchronization.",
+    bullets: [
+      "Custom PCB designs for solar string inverters, micro-inverters, and wind energy converters",
+      "Low-latency firmware for MPPT and Space Vector PWM switching algorithms",
+      "Edge algorithms for grid fault detection, load balancing, and phase synchronization",
+      "Cloud telemetry dashboards for generation metrics and predictive maintenance alerts",
+    ],
+    image: "industries/im5.png",
+  },
 ];
 
 export default function Industries() {
