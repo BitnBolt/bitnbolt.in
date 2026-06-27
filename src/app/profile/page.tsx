@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import AuthPageShell from '@/components/skeletons/AuthPageShell';
+import ProfileSkeleton from '@/components/skeletons/ProfileSkeleton';
+import { PAGE_TOP } from '@/lib/layout';
 
 const INDIAN_STATES = [
     'Andhra Pradesh',
@@ -169,45 +172,17 @@ export default function ProfilePage() {
 
     if (status === 'loading' || isLoading) {
         return (
-            <main className="min-h-screen">
-                <Header />
-                <div className="min-h-screen bg-gray-50 py-12">
-                    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="animate-pulse flex space-x-4">
-                            <div className="flex-1 space-y-4 py-1">
-                                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                <div className="space-y-2">
-                                    <div className="h-4 bg-gray-200 rounded"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <Footer />
-            </main>
+            <AuthPageShell>
+                <ProfileSkeleton />
+            </AuthPageShell>
         );
     }
 
     return (
         <main className="min-h-screen">
-            <Header />
-            
-            {/* Hero Section */}
-            {/* <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                            Your <span className="text-blue-600">Profile</span>
-                        </h1>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Manage your personal information and delivery preferences
-                        </p>
-                    </div>
-                </div>
-            </section> */}
+            <Header forceWhite />
 
-            <section className="py-12 bg-gray-50">
+            <section className={`${PAGE_TOP} pb-12 bg-gray-50`}>
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                         {/* Profile Header */}

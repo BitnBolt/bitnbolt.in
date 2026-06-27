@@ -5,6 +5,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import AuthPageShell from '@/components/skeletons/AuthPageShell';
+import CheckoutSkeleton, { OrderSummarySkeleton } from '@/components/skeletons/CheckoutSkeleton';
+import { PAGE_TOP } from '@/lib/layout';
 
 type CartItem = {
   productId: string;
@@ -23,6 +26,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [cartLoading, setCartLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [deliveryCost, setDeliveryCost] = useState<number | null>(null);
@@ -161,7 +165,7 @@ export default function CheckoutPage() {
 
   const fetchCart = async () => {
     try {
-      setLoading(true);
+      setCartLoading(true);
       setError(null);
       const res = await fetch('/api/cart');
       if (!res.ok) throw new Error('Failed to load cart');
@@ -176,7 +180,7 @@ export default function CheckoutPage() {
     } catch (e: unknown) {
       setError((e as Error)?.message || 'Something went wrong');
     } finally {
-      setLoading(false);
+      setCartLoading(false);
     }
   };
 
@@ -321,13 +325,9 @@ export default function CheckoutPage() {
 
   if (status === 'loading') {
     return (
-      <main className="min-h-screen bg-gray-100">
-        <Header />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-        <Footer />
-      </main>
+      <AuthPageShell>
+        <CheckoutSkeleton />
+      </AuthPageShell>
     );
   }
 
@@ -337,8 +337,8 @@ export default function CheckoutPage() {
 
   return (
     <main className="min-h-screen bg-gray-100">
-      <Header />
-      <section className="py-10">
+      <Header forceWhite />
+      <section className={`${PAGE_TOP} pb-10`}>
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Left: Shipping & Payment */}
           <div className="md:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 flex flex-col gap-8">
@@ -558,8 +558,8 @@ export default function CheckoutPage() {
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 flex flex-col gap-6">
             <h3 className="text-xl font-bold mb-2">Order Summary</h3>
             
-            {loading ? (
-              <div className="text-gray-500">Loading cart...</div>
+            {cartLoading ? (
+              <OrderSummarySkeleton />
             ) : items.length === 0 ? (
               <div className="text-gray-500">Your cart is empty</div>
             ) : (

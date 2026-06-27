@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { companyInfo, formatCompanyAddress } from '@/lib/company';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -80,6 +81,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Newsletter Section */}
         <motion.div 
+          id="newsletter"
           className="bg-[#132A46] border border-white/10 rounded-lg p-8 md:p-10 mb-16 shadow-none"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -137,8 +139,15 @@ export default function Footer() {
                   <span className="text-blue-400">Bit</span>nBolt
                 </h3>
               </Link>
-              <p className="text-gray-400 mt-4">
-                Your trusted partner for custom IoT solutions and innovative products designed for the modern business.
+              <p className="text-gray-400 mt-4 text-sm leading-relaxed">
+                {companyInfo.tradeName} — your trusted partner for custom IoT solutions and
+                innovative products.
+              </p>
+              <p className="text-gray-500 mt-3 text-xs leading-relaxed">
+                {formatCompanyAddress(false)}
+              </p>
+              <p className="text-gray-500 mt-2 text-xs">
+                GSTIN: <span className="font-mono">{companyInfo.gstin}</span>
               </p>
             </div>
             
@@ -236,7 +245,7 @@ export default function Footer() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 0.5 }}
             >
-              © {new Date().getFullYear()} BitnBolt Pvt. Ltd. All rights reserved.
+              © {new Date().getFullYear()} {companyInfo.legalName}. All rights reserved.
             </motion.div>
             <motion.div 
               className="flex flex-wrap justify-center gap-x-6 gap-y-2"

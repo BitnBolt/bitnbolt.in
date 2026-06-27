@@ -1,6 +1,7 @@
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Image from 'next/image';
+import { PAGE_TOP } from '@/lib/layout';
 
 export default function TestimonialsPage() {
   const testimonials = [
@@ -75,10 +76,9 @@ export default function TestimonialsPage() {
 
   return (
     <main className="min-h-screen">
-      <Header />
-      
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
+      <Header forceWhite />
+
+      <section className={`bg-gradient-to-br from-blue-50 to-indigo-100 ${PAGE_TOP} pb-16`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">

@@ -8,6 +8,9 @@ import Image from 'next/image';
 // import Footer from '../../components/Footer';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AuthPageShell from '@/components/skeletons/AuthPageShell';
+import OrderDetailSkeleton from '@/components/skeletons/OrderDetailSkeleton';
+import { PAGE_TOP } from '@/lib/layout';
 
 type OrderItem = {
   productId: {
@@ -188,13 +191,9 @@ export default function OrderDetailPage() {
 
   if (status === 'loading') {
     return (
-      <main className="min-h-screen bg-gray-100">
-        <Header />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-        <Footer />
-      </main>
+      <AuthPageShell>
+        <OrderDetailSkeleton />
+      </AuthPageShell>
     );
   }
 
@@ -204,21 +203,17 @@ export default function OrderDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-100">
-        <Header />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-gray-500">Loading order details...</div>
-        </div>
-        <Footer />
-      </main>
+      <AuthPageShell>
+        <OrderDetailSkeleton />
+      </AuthPageShell>
     );
   }
 
   if (error) {
     return (
       <main className="min-h-screen bg-gray-100">
-        <Header />
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <Header forceWhite />
+        <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${PAGE_TOP} pb-10`}>
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
             {error}
           </div>
@@ -231,8 +226,8 @@ export default function OrderDetailPage() {
   if (!order) {
     return (
       <main className="min-h-screen bg-gray-100">
-        <Header />
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <Header forceWhite />
+        <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${PAGE_TOP} pb-10`}>
           <div className="text-gray-500 text-center">Order not found</div>
         </div>
         <Footer />
@@ -242,8 +237,8 @@ export default function OrderDetailPage() {
 
   return (
     <main className="min-h-screen bg-gray-100">
-      <Header />
-      <section className="py-10">
+      <Header forceWhite />
+      <section className={`${PAGE_TOP} pb-10`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-6">
             <div>

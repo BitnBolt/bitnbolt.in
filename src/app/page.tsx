@@ -5,22 +5,11 @@ import Products from '../components/Products';
 import Footer from '../components/Footer';
 import Features from '../components/Features';
 import Services from '../components/Services';
-import SuccessStories from '../components/SuccessStories';
 import Industries from '../components/Industries';
-import FeaturedInsights from '../components/FeaturedInsights';
 import Contact from '../components/Contact';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-// import HomeContent from '@/components/HomeContent';
 import HomeContent from '@/components/HomeContent';
 
 export default async function Home() {
-  // const session = await getServerSession(authOptions);
-  // if (!session) {
-  //   redirect('/auth/signin');
-  // }
-
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 overflow-hidden">
       {/* Background decorations */}
@@ -34,13 +23,11 @@ export default async function Home() {
       <Header />
       <HomeContent>
         <Hero />
-        <Services />
-        <Industries />
-        <SuccessStories />
         <Deals />
         <Products limit={3} showAllLink={true} />
+        <Services />
+        <Industries />
         <Features />
-        <FeaturedInsights />
         <Contact />
         <Footer />
       </HomeContent>

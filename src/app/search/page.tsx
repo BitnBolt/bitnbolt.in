@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { PAGE_TOP } from '@/lib/layout';
 
 const dummyProducts = [
   {
@@ -102,8 +103,8 @@ function ProductSearchContent() {
 export default function ProductSearchPage() {
   return (
     <main className="min-h-screen">
-      <Header />
-      <section className="py-10 bg-gray-50 min-h-[60vh]">
+      <Header forceWhite />
+      <section className={`${PAGE_TOP} pb-10 bg-gray-50 min-h-[60vh]`}>
         <div className="max-w-6xl mx-auto px-4">
           <Suspense fallback={<div>Loading...</div>}>
             <ProductSearchContent />

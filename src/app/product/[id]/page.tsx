@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { filterKeyValuePairs, filterTextLines, hasKeyValuePairs, hasTextLines } from '@/lib/product-detail';
+import { PAGE_TOP } from '@/lib/layout';
 
 type ProductDoc = {
   _id: string;
@@ -174,9 +175,9 @@ export default function ProductViewPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen">
-        <Header />
-        <div className="max-w-2xl mx-auto py-24 text-center text-gray-500">Loading product…</div>
+      <main className="min-h-screen bg-gray-100">
+        <Header forceWhite />
+        <div className={`max-w-2xl mx-auto ${PAGE_TOP} pb-24 text-center text-gray-500`}>Loading product…</div>
         <Footer />
       </main>
     );
@@ -184,17 +185,17 @@ export default function ProductViewPage() {
 
   if (error || !product) {
     return (
-      <main className="min-h-screen">
-        <Header />
-        <div className="max-w-2xl mx-auto py-24 text-center text-red-600">{error || 'Product not found.'}</div>
+      <main className="min-h-screen bg-gray-100">
+        <Header forceWhite />
+        <div className={`max-w-2xl mx-auto ${PAGE_TOP} pb-24 text-center text-red-600`}>{error || 'Product not found.'}</div>
         <Footer />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 pt-32">
-      <Header forceWhite={true} />
+    <main className={`min-h-screen bg-gray-100 ${PAGE_TOP}`}>
+      <Header forceWhite />
       <section className="py-8">
         <div className="max-w-7xl mx-auto bg-white rounded-md border-gray-100 px-6 py-8 grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-8">
           {/* Image Gallery */}

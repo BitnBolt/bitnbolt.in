@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import VerifyEmailSkeleton from '@/components/skeletons/VerifyEmailSkeleton';
 
 function VerifyEmailContent() {
     const router = useRouter();
@@ -43,6 +44,10 @@ function VerifyEmailContent() {
         verifyEmail();
     }, [searchParams, router]);
 
+    if (status === 'loading') {
+        return <VerifyEmailSkeleton />;
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -54,16 +59,6 @@ function VerifyEmailContent() {
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     <div className="text-center">
-                        {status === 'loading' && (
-                            <div className="animate-pulse">
-                                <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-                                <div className="space-y-3 mt-4">
-                                    <div className="h-4 bg-gray-200 rounded"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-5/6 mx-auto"></div>
-                                </div>
-                            </div>
-                        )}
-
                         {status === 'success' && (
                             <div>
                                 <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
@@ -116,26 +111,7 @@ function VerifyEmailContent() {
 }
 
 function LoadingFallback() {
-    return (
-        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-            <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Email Verification
-                </h2>
-            </div>
-            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                    <div className="animate-pulse">
-                        <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-                        <div className="space-y-3 mt-4">
-                            <div className="h-4 bg-gray-200 rounded"></div>
-                            <div className="h-4 bg-gray-200 rounded w-5/6 mx-auto"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+    return <VerifyEmailSkeleton />;
 }
 
 export default function VerifyEmailPage() {

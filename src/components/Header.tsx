@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
+import HeaderAuthSkeleton from '@/components/skeletons/HeaderAuthSkeleton';
 
 interface HeaderProps {
   forceWhite?: boolean;
@@ -70,14 +71,24 @@ export default function Header({ forceWhite = false }: HeaderProps) {
         {/* Main Header */}
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <div className="shrink-0">
-              <Link href="/">
-                <h1 className={`text-xl sm:text-2xl font-bold cursor-pointer transition-colors ${isScrolled ? 'text-gray-900' : 'text-white'}`}>
-                  <span className="text-blue-500">Bit</span>nBolt
-                </h1>
-              </Link>
-            </div>
+          <div className="flex items-center shrink-0">
+            <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group">
+              <span className="bg-white rounded-lg p-1 shadow-sm ring-1 ring-black/5 shrink-0 transition-shadow group-hover:shadow-md">
+                <Image
+                  src="/icon.png"
+                  alt=""
+                  width={36}
+                  height={36}
+                  className="h-8 w-8 sm:h-9 sm:w-9 object-contain"
+                  priority
+                />
+              </span>
+              {/* <span
+                className={`text-xl sm:text-2xl font-bold transition-colors ${isScrolled ? 'text-gray-900' : 'text-white'}`}
+              >
+                <span className="text-blue-500">Bit</span>nBolt
+              </span> */}
+            </Link>
           </div>
 
           {/* Search Bar - Visible on all devices */}
@@ -102,9 +113,7 @@ export default function Header({ forceWhite = false }: HeaderProps) {
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Account Section */}
             {status === 'loading' ? (
-              <div className="hidden sm:flex items-center space-x-1">
-                <div className="animate-pulse h-8 w-8 bg-gray-200 rounded-full"></div>
-              </div>
+              <HeaderAuthSkeleton />
             ) : session ? (
               <div className="hidden sm:flex items-center space-x-3 relative" ref={dropdownRef}>
                 <div
@@ -215,7 +224,7 @@ export default function Header({ forceWhite = false }: HeaderProps) {
             Shop IoT Products
           </Link>
           <Link href="/iot-board" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
-            IoT Board
+            IoT DIY Kit
           </Link>
           <Link href="/firmware" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
             Firmware
@@ -223,12 +232,22 @@ export default function Header({ forceWhite = false }: HeaderProps) {
           <Link href="/about" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
             About
           </Link>
-          <Link href="/testimonials" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
-            Testimonials
-          </Link>
-          <Link href="/contact" className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}>
-            Contact
-          </Link>
+          <a
+            href="https://career.bitnbolt.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}
+          >
+            Career
+          </a>
+          <a
+            href="https://career.bitnbolt.in/cap"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`hover:text-blue-500 px-2 py-1 text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700' : 'text-gray-100'}`}
+          >
+            CAP
+          </a>
         </nav>
 
         {/* Mobile Navigation */}
@@ -279,7 +298,7 @@ export default function Header({ forceWhite = false }: HeaderProps) {
                 Custom Made
               </Link>
               <Link href="/iot-board" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
-                IoT Board
+                IoT DIY Kit
               </Link>
               <Link href="/#deals" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
                 Deals
@@ -287,12 +306,22 @@ export default function Header({ forceWhite = false }: HeaderProps) {
               <Link href="/about" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
                 About
               </Link>
-              <Link href="/testimonials" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
-                Testimonials
-              </Link>
-              <Link href="/contact" className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium">
-                Contact
-              </Link>
+              <a
+                href="https://career.bitnbolt.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium"
+              >
+                Career
+              </a>
+              <a
+                href="https://career.bitnbolt.in/cap"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium"
+              >
+                CAP
+              </a>
 
               {/* Mobile Sign Out Button - Only show if logged in */}
               {session && (

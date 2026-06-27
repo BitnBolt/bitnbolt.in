@@ -1,9 +1,11 @@
 'use client'
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import CartSkeleton from '@/components/skeletons/CartSkeleton';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { PAGE_TOP } from '@/lib/layout';
 
 type CartItem = {
   productId: string;
@@ -19,8 +21,9 @@ type CartItem = {
 
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isInitialLoad = useRef(true);
 
   const fetchCart = async () => {
     try {
@@ -40,6 +43,7 @@ export default function CartPage() {
       setError((e as Error)?.message || 'Something went wrong');
     } finally {
       setLoading(false);
+      isInitialLoad.current = false;
     }
   };
 
@@ -72,15 +76,16 @@ export default function CartPage() {
 
   return (
     <main className="min-h-screen bg-gray-100">
-      <Header />
-      <section className="py-10">
+      <Header forceWhite />
+      {loading && isInitialLoad.current ? (
+        <CartSkeleton />
+      ) : (
+      <section className={`${PAGE_TOP} pb-10`}>
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Cart Products */}
           <div className="md:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
             <h2 className="text-2xl font-bold mb-6">Shopping Cart</h2>
-            {loading ? (
-              <div className="text-gray-500">Loading…</div>
-            ) : error ? (
+            {error ? (
               <div className="text-red-600">{error}</div>
             ) : items.length === 0 ? (
               <div className="text-gray-500">Your cart is empty.</div>
@@ -141,6 +146,7 @@ export default function CartPage() {
           </div>
         </div>
       </section>
+      )}
       <Footer />
     </main>
   );

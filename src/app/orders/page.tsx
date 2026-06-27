@@ -6,6 +6,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import AuthPageShell from '@/components/skeletons/AuthPageShell';
+import OrdersListSkeleton from '@/components/skeletons/OrdersListSkeleton';
+import { PAGE_TOP } from '@/lib/layout';
 
 type OrderItem = {
   productId: {
@@ -151,13 +154,9 @@ export default function OrdersPage() {
 
   if (status === 'loading') {
     return (
-      <main className="min-h-screen bg-gray-100">
-        <Header />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-        <Footer />
-      </main>
+      <AuthPageShell>
+        <OrdersListSkeleton />
+      </AuthPageShell>
     );
   }
 
@@ -167,8 +166,8 @@ export default function OrdersPage() {
 
   return (
     <main className="min-h-screen bg-gray-100">
-      <Header />
-      <section className="py-10">
+      <Header forceWhite />
+      <section className={`${PAGE_TOP} pb-10`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
@@ -197,9 +196,7 @@ export default function OrdersPage() {
           )}
 
           {loading ? (
-            <div className="text-center py-12">
-              <div className="text-gray-500">Loading your orders...</div>
-            </div>
+            <OrdersListSkeleton contentOnly />
           ) : orders.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-500 text-lg mb-4">No orders found</div>
