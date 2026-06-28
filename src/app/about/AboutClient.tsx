@@ -63,13 +63,14 @@ const item: Variants = {
 
 export default function AboutClient() {
   return (
-    <main className="min-h-screen bg-white overflow-hidden">
+    <>
+      <Header forceWhite />
+      <main className="min-h-screen bg-white">
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-32 right-0 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40" />
         <div className="absolute bottom-40 left-0 w-80 h-80 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30" />
       </div>
 
-      <Header forceWhite />
       <HomeContent>
         {/* Hero */}
         <section className={`relative z-10 ${PAGE_TOP} pb-14 lg:pb-16`}>
@@ -356,5 +357,6 @@ export default function AboutClient() {
         <Footer />
       </HomeContent>
     </main>
+    </>
   );
 }

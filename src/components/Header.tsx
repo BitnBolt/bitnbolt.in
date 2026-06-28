@@ -66,7 +66,7 @@ export default function Header({ forceWhite = false }: HeaderProps) {
   };
 
   return (
-    <header className={`fixed w-full top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm border-b border-gray-100' : 'bg-transparent border-transparent'}`}>
+    <header className={`fixed inset-x-0 top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm border-b border-gray-100' : 'bg-transparent border-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Header */}
         <div className="flex justify-between items-center h-16">

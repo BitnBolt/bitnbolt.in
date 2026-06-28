@@ -186,14 +186,15 @@ export default function IotBoardClient({ productId }: Props) {
     };
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 overflow-hidden">
-            <div className="fixed inset-0 z-0">
+        <>
+            <Header />
+            <main className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+            <div className="fixed inset-0 z-0 pointer-events-none">
                 <div className="absolute top-20 right-20 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
                 <div className="absolute bottom-20 left-20 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
                 <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" />
             </div>
 
-            <Header />
             <HomeContent>
                 {/* Hero */}
                 <section className={`relative bg-[#0B1C2D] text-white ${PAGE_TOP} pb-16 lg:pb-20 overflow-hidden`}>
@@ -553,5 +554,6 @@ export default function IotBoardClient({ productId }: Props) {
                 <Footer />
             </HomeContent>
         </main>
+        </>
     );
 }

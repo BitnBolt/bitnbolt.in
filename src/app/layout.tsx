@@ -64,6 +64,15 @@ export default function RootLayout({
             gtag('config', 'G-Z2EV5Y5WP1');
           `}
         </Script>
+        {/* Zoho SalesIQ chat widget */}
+        <Script id="zoho-salesiq-init" strategy="afterInteractive">
+          {`window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){}}`}
+        </Script>
+        <Script
+          id="zsiqscript"
+          src="https://salesiq.zohopublic.in/widget?wc=siq4c3a3c037d87fbb37c74753259e65c4ffc8edc7c415bd33451ded22fcd757123"
+          strategy="lazyOnload"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
