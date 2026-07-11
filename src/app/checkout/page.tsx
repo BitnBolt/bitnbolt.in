@@ -151,10 +151,10 @@ export default function CheckoutPage() {
     }
   }, [items, shippingAddress.pincode, deliveryCost, calculateDeliveryCost]);
 
-  // Load Razorpay script
+  // Load Cashfree checkout script
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
     script.async = true;
     document.body.appendChild(script);
 
@@ -237,61 +237,59 @@ export default function CheckoutPage() {
         throw new Error(data.message || 'Checkout failed');
       }
 
-      if (payment === 'online' && data.razorpayOrder) {
-        // Handle Razorpay payment
-        const options = {
-          key: data.razorpayOrder.key,
-          amount: data.razorpayOrder.amount,
-          currency: data.razorpayOrder.currency,
-          name: 'BitnBolt',
-          description: 'Order Payment',
-          order_id: data.razorpayOrder.id,
-          handler: async function (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
-            try {
-              const verifyRes = await fetch('/api/payment/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                  orderId: data.orderId,
-                }),
-              });
-
-              const verifyData = await verifyRes.json();
-              if (verifyRes.ok) {
-                router.push(`/orders/${data.orderId}?success=true`);
-              } else {
-                // If payment verification fails, restore stock
-                try {
-                  await fetch('/api/payment/failed', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ orderId: data.orderId }),
-                  });
-                } catch (error) {
-                  console.error('Failed to handle payment verification failure:', error);
-                }
-                setError(verifyData.message || 'Payment verification failed. Stock has been restored.');
-              }
-            } catch (error) {
-              setError('Payment verification failed');
-            }
-          },
-          prefill: {
-            name: session?.user?.name || '',
-            email: session?.user?.email || '',
-          },
-          theme: {
-            color: '#2563eb',
-          },
+      if (payment === 'online' && data.cashfreeOrder?.paymentSessionId) {
+        type CashfreeCheckoutResult = {
+          error?: unknown;
+          redirect?: boolean;
+          paymentDetails?: { paymentMessage?: string };
         };
 
-        const razorpay = new (window as unknown as { Razorpay: new (options: object) => { on: (event: string, handler: (response: unknown) => void) => void; open: () => void } }).Razorpay(options);
-        razorpay.on('payment.failed', async function (response: unknown) {
+        type CashfreeInstance = {
+          checkout: (options: {
+            paymentSessionId: string;
+            redirectTarget?: string;
+          }) => Promise<CashfreeCheckoutResult>;
+        };
+
+        const CashfreeCtor = (window as unknown as {
+          Cashfree: (options: { mode: string }) => CashfreeInstance;
+        }).Cashfree;
+
+        if (!CashfreeCtor) {
+          throw new Error('Cashfree checkout failed to load. Please refresh and try again.');
+        }
+
+        const mode =
+          data.cashfreeOrder.mode ||
+          process.env.NEXT_PUBLIC_CASHFREE_MODE ||
+          'sandbox';
+
+        const cashfree = CashfreeCtor({ mode });
+        const result = await cashfree.checkout({
+          paymentSessionId: data.cashfreeOrder.paymentSessionId,
+          redirectTarget: '_modal',
+        });
+
+        if (result?.error) {
+          // User closed modal or payment errored — confirm status before restoring stock
+          const verifyRes = await fetch('/api/payment/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId: data.orderId }),
+          });
+
+          if (verifyRes.ok) {
+            router.push(`/orders/${data.orderId}?success=true`);
+            return;
+          }
+
+          const verifyData = await verifyRes.json().catch(() => ({}));
+          if (verifyData.orderStatus === 'ACTIVE' || verifyData.orderStatus === 'PENDING') {
+            setError('Payment is still processing. Please check your orders page in a moment.');
+            return;
+          }
+
           try {
-            // Call API to restore stock and mark order as cancelled
             await fetch('/api/payment/failed', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -300,9 +298,40 @@ export default function CheckoutPage() {
           } catch (error) {
             console.error('Failed to handle payment failure:', error);
           }
-          setError('Payment failed. Stock has been restored. Please try again.');
-        });
-        razorpay.open();
+          setError('Payment was cancelled or failed. Stock has been restored. Please try again.');
+          return;
+        }
+
+        if (result?.redirect) {
+          // Rare in-app browser case — Cashfree will hit return_url
+          return;
+        }
+
+        if (result?.paymentDetails) {
+          const verifyRes = await fetch('/api/payment/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId: data.orderId }),
+          });
+
+          const verifyData = await verifyRes.json();
+          if (verifyRes.ok) {
+            router.push(`/orders/${data.orderId}?success=true`);
+          } else if (verifyData.orderStatus === 'ACTIVE' || verifyData.orderStatus === 'PENDING') {
+            setError('Payment is still processing. Please check your orders page in a moment.');
+          } else {
+            try {
+              await fetch('/api/payment/failed', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: data.orderId }),
+              });
+            } catch (error) {
+              console.error('Failed to handle payment verification failure:', error);
+            }
+            setError(verifyData.message || 'Payment verification failed. Stock has been restored.');
+          }
+        }
       } else {
         // COD order
         router.push(`/orders/${data.orderId}?success=true`);
@@ -547,7 +576,7 @@ export default function CheckoutPage() {
                   />
                   <div>
                     <div className="font-medium">Online Payment</div>
-                    <div className="text-sm text-gray-500">Pay securely with Razorpay (Cards, UPI, Net Banking)</div>
+                    <div className="text-sm text-gray-500">Pay securely with Cashfree (Cards, UPI, Net Banking)</div>
                   </div>
                 </label>
               </div>

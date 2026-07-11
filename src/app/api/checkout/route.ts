@@ -7,9 +7,8 @@ import User from '@/models/User';
 import Product from '@/models/Products';
 import Order from '@/models/Order';
 import Vendor from '@/models/Vendor';
-// RazorpayConfig removed - using environment variables
-import Razorpay from 'razorpay';
 import { getShiprocketDeliveryCost } from '@/lib/shiprocket';
+import { getAppBaseUrl, getCashfreeClient, getCashfreeMode } from '@/lib/cashfree';
 
 interface CheckoutProduct {
   _id: string;
@@ -287,47 +286,71 @@ export async function POST(req: Request) {
       // In production, you might want to implement a more robust rollback mechanism
     }
 
-    // If online payment, create Razorpay order
+    // If online payment, create Cashfree order
     if (paymentMethod === 'online') {
-      const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
-      const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
-      
-      if (!razorpayKeyId || !razorpayKeySecret) {
-        return NextResponse.json({ 
-          message: 'Payment gateway not configured' 
-        }, { status: 500 });
+      try {
+        const cashfree = getCashfreeClient();
+        const customerPhone = String(shippingAddress.phoneNumber || '')
+          .replace(/\D/g, '')
+          .slice(-10);
+
+        if (customerPhone.length !== 10) {
+          return NextResponse.json({
+            message: 'A valid 10-digit phone number is required for online payment',
+          }, { status: 400 });
+        }
+
+        const cfOrderResponse = await cashfree.PGCreateOrder({
+          order_id: orderId,
+          order_amount: Number(totalAmount.toFixed(2)),
+          order_currency: 'INR',
+          customer_details: {
+            customer_id: String(user._id),
+            customer_phone: customerPhone,
+            customer_name: shippingAddress.fullName || user.name || undefined,
+            customer_email: user.email || undefined,
+          },
+          order_meta: {
+            return_url: `${getAppBaseUrl()}/orders/${orderId}?payment=return`,
+            notify_url: `${getAppBaseUrl()}/api/payment/webhook/cashfree`,
+          },
+          order_note: `BitnBolt order ${orderId}`,
+        });
+
+        const cfOrder = cfOrderResponse.data;
+        const paymentSessionId = cfOrder.payment_session_id;
+
+        if (!paymentSessionId) {
+          return NextResponse.json({
+            message: 'Failed to create payment session',
+          }, { status: 500 });
+        }
+
+        order.paymentDetails.cashfreeOrderId = cfOrder.order_id || orderId;
+        order.paymentDetails.cashfreePaymentSessionId = paymentSessionId;
+        order.paymentDetails.gatewayResponse = cfOrder as unknown as Record<string, unknown>;
+        await order.save();
+
+        return NextResponse.json({
+          success: true,
+          orderId: order.orderId,
+          cashfreeOrder: {
+            orderId: cfOrder.order_id || orderId,
+            paymentSessionId,
+            orderAmount: cfOrder.order_amount,
+            orderCurrency: cfOrder.order_currency || 'INR',
+            mode: getCashfreeMode(),
+          },
+          totalAmount,
+        });
+      } catch (paymentError: unknown) {
+        console.error('Cashfree order creation failed:', paymentError);
+        const message =
+          (paymentError as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          (paymentError as Error)?.message ||
+          'Failed to initialise online payment';
+        return NextResponse.json({ message }, { status: 500 });
       }
-
-      const razorpay = new Razorpay({
-        key_id: razorpayKeyId,
-        key_secret: razorpayKeySecret,
-      });
-
-      const razorpayOrder = await razorpay.orders.create({
-        amount: Math.round(totalAmount * 100), // Convert to paise
-        currency: 'INR',
-        receipt: orderId,
-        notes: {
-          orderId: orderId,
-          userId: String(user._id),
-        },
-      });
-
-      // Update order with Razorpay order ID
-      order.paymentDetails.razorpayOrderId = razorpayOrder.id;
-      await order.save();
-
-      return NextResponse.json({
-        success: true,
-        orderId: order.orderId,
-        razorpayOrder: {
-          id: razorpayOrder.id,
-          amount: razorpayOrder.amount,
-          currency: razorpayOrder.currency,
-          key: razorpayKeyId,
-        },
-        totalAmount,
-      });
     }
 
     // For COD orders, clear cart and return success

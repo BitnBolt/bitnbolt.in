@@ -5,9 +5,41 @@ import { authOptions } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
 import Order from '@/models/Order';
 import User from '@/models/User';
-// RazorpayConfig removed - using environment variables
-import Razorpay from 'razorpay';
-import crypto from 'crypto';
+import { getCashfreeClient } from '@/lib/cashfree';
+
+type CashfreePayment = {
+  cf_payment_id?: string | number;
+  payment_status?: string;
+  payment_amount?: number;
+  payment_currency?: string;
+  payment_time?: string;
+  payment_method?: unknown;
+};
+
+async function markOrderPaid(
+  order: InstanceType<typeof Order>,
+  gatewayPayload: Record<string, unknown>,
+  paymentId?: string,
+) {
+  order.paymentDetails.status = 'paid';
+  order.paymentDetails.paidAt = new Date();
+  if (paymentId) {
+    order.paymentDetails.cashfreePaymentId = paymentId;
+    order.paymentDetails.transactionId = paymentId;
+  }
+  order.paymentDetails.gatewayResponse = gatewayPayload;
+
+  if (order.status === 'pending') {
+    order.status = 'confirmed';
+    order.statusHistory.push({
+      status: 'confirmed',
+      comment: 'Payment verified via Cashfree and order confirmed',
+      timestamp: new Date(),
+    });
+  }
+
+  await order.save();
+}
 
 export async function POST(req: Request) {
   try {
@@ -17,82 +49,71 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { 
-      razorpay_order_id, 
-      razorpay_payment_id, 
-      razorpay_signature,
-      orderId 
-    } = body;
+    const { orderId } = body as { orderId?: string };
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !orderId) {
-      return NextResponse.json({ 
-        message: 'Missing required payment verification data' 
+    if (!orderId) {
+      return NextResponse.json({
+        message: 'Missing required payment verification data',
       }, { status: 400 });
     }
 
     await connectDB();
 
-    // Get order
     const order = await Order.findOne({ orderId });
     if (!order) {
       return NextResponse.json({ message: 'Order not found' }, { status: 404 });
     }
 
-    // Verify user owns this order
     if (String(order.userId) !== session.user.id) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
     }
 
-    // Get Razorpay credentials from environment
-    const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
-    const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
-    
-    if (!razorpayKeyId || !razorpayKeySecret) {
-      return NextResponse.json({ 
-        message: 'Payment gateway not configured' 
-      }, { status: 500 });
+    if (order.paymentDetails.status === 'paid') {
+      return NextResponse.json({
+        success: true,
+        message: 'Payment already verified',
+        orderId: order.orderId,
+      });
     }
 
-    // Verify signature
-    const razorpay = new Razorpay({
-      key_id: razorpayKeyId,
-      key_secret: razorpayKeySecret,
-    });
+    const cashfreeOrderId = order.paymentDetails.cashfreeOrderId || order.orderId;
+    const cashfree = getCashfreeClient();
 
-    const body_signature = razorpay_order_id + "|" + razorpay_payment_id;
-    const expected_signature = crypto
-      .createHmac("sha256", razorpayKeySecret)
-      .update(body_signature.toString())
-      .digest("hex");
+    const orderResponse = await cashfree.PGFetchOrder(cashfreeOrderId);
+    const cfOrder = orderResponse.data;
 
-    if (expected_signature !== razorpay_signature) {
-      return NextResponse.json({ 
-        message: 'Invalid payment signature' 
+    if (cfOrder.order_status !== 'PAID') {
+      return NextResponse.json({
+        success: false,
+        message: `Payment not completed yet (status: ${cfOrder.order_status || 'UNKNOWN'})`,
+        orderStatus: cfOrder.order_status,
       }, { status: 400 });
     }
 
-    // Update order payment details
-    order.paymentDetails.status = 'paid';
-    order.paymentDetails.razorpayPaymentId = razorpay_payment_id;
-    order.paymentDetails.razorpaySignature = razorpay_signature;
-    order.paymentDetails.paidAt = new Date();
-    order.paymentDetails.gatewayResponse = {
-      order_id: razorpay_order_id,
-      payment_id: razorpay_payment_id,
-      signature: razorpay_signature,
-    };
+    let paymentId: string | undefined;
+    try {
+      const paymentsResponse = await cashfree.PGOrderFetchPayments(cashfreeOrderId);
+      const payments = (paymentsResponse.data || []) as CashfreePayment[];
+      const successful = payments.find((p) => p.payment_status === 'SUCCESS') || payments[0];
+      if (successful?.cf_payment_id != null) {
+        paymentId = String(successful.cf_payment_id);
+      }
+    } catch (paymentsError) {
+      console.error('Failed to fetch Cashfree payments:', paymentsError);
+    }
 
-    // Update order status
-    order.status = 'confirmed';
-    order.statusHistory.push({
-      status: 'confirmed',
-      comment: 'Payment verified and order confirmed',
-      timestamp: new Date(),
-    });
+    await markOrderPaid(
+      order,
+      {
+        order_id: cfOrder.order_id,
+        order_status: cfOrder.order_status,
+        order_amount: cfOrder.order_amount,
+        cf_order_id: cfOrder.cf_order_id,
+        payment_session_id: cfOrder.payment_session_id,
+      },
+      paymentId,
+    );
 
-    await order.save();
-
-    // Clear user's cart
     const user = await User.findById(session.user.id);
     if (user) {
       user.cart = [];
@@ -104,12 +125,11 @@ export async function POST(req: Request) {
       message: 'Payment verified successfully',
       orderId: order.orderId,
     });
-
   } catch (error) {
     console.error('Payment verification error:', error);
-    return NextResponse.json({ 
-      message: 'Failed to verify payment' 
-    }, { status: 500 });
+    const message =
+      (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+      'Failed to verify payment';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
-

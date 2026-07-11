@@ -63,6 +63,8 @@ type Order = {
     status: 'pending' | 'paid' | 'failed' | 'refunded';
     transactionId?: string;
     paidAt?: Date;
+    cashfreeOrderId?: string;
+    cashfreePaymentId?: string;
     razorpayOrderId?: string;
     razorpayPaymentId?: string;
   };
@@ -144,6 +146,38 @@ export default function OrderDetailPage() {
       fetchOrderDetails();
     }
   }, [session, orderId, fetchOrderDetails]);
+
+  // After Cashfree redirect return, confirm payment server-side
+  useEffect(() => {
+    if (!session?.user?.id || !orderId || typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') !== 'return') return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const verifyRes = await fetch('/api/payment/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId }),
+        });
+        if (!cancelled) {
+          await fetchOrderDetails();
+          if (verifyRes.ok) {
+            router.replace(`/orders/${orderId}?success=true`);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to verify payment on return:', e);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session, orderId, fetchOrderDetails, router]);
 
 
   const fetchTrackingData = async () => {

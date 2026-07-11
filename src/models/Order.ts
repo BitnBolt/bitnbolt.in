@@ -39,6 +39,10 @@ export interface IOrder extends mongoose.Document {
         status: 'pending' | 'paid' | 'failed' | 'refunded';
         transactionId?: string;
         paidAt?: Date;
+        cashfreeOrderId?: string;
+        cashfreePaymentId?: string;
+        cashfreePaymentSessionId?: string;
+        /** @deprecated Legacy Razorpay fields retained for old orders */
         razorpayOrderId?: string;
         razorpayPaymentId?: string;
         razorpaySignature?: string;
@@ -244,6 +248,10 @@ const orderSchema = new mongoose.Schema<IOrder>({
         },
         transactionId: String,
         paidAt: Date,
+        cashfreeOrderId: String,
+        cashfreePaymentId: String,
+        cashfreePaymentSessionId: String,
+        // Legacy Razorpay fields retained for historical orders
         razorpayOrderId: String,
         razorpayPaymentId: String,
         razorpaySignature: String,
