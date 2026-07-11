@@ -31,8 +31,9 @@ export function getAppBaseUrl() {
 }
 
 /**
- * Verify Cashfree webhook HMAC using the dashboard webhook Secret Key
- * (falls back to API client secret if webhook secret is unset).
+ * Verify Cashfree webhook HMAC.
+ * Dashboard "Webhook Secret Key" and API Client Secret are both tried,
+ * because Cashfree docs/dashboards differ on which key signs the payload.
  */
 export function verifyCashfreeWebhookSignature(
   signature: string,
@@ -43,24 +44,31 @@ export function verifyCashfreeWebhookSignature(
     return false;
   }
 
-  const secret =
-    process.env.CASHFREE_WEBHOOK_SECRET || process.env.CASHFREE_CLIENT_SECRET;
+  const secrets = [
+    process.env.CASHFREE_WEBHOOK_SECRET,
+    process.env.CASHFREE_CLIENT_SECRET,
+  ].filter((value, index, arr): value is string => Boolean(value) && arr.indexOf(value) === index);
 
-  if (!secret) {
+  if (secrets.length === 0) {
     throw new Error('Cashfree webhook secret is not configured');
   }
 
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(timestamp + rawBody)
-    .digest('base64');
-
-  const expectedBuf = Buffer.from(expected);
   const receivedBuf = Buffer.from(signature);
 
-  if (expectedBuf.length !== receivedBuf.length) {
-    return false;
+  for (const secret of secrets) {
+    const expected = crypto
+      .createHmac('sha256', secret)
+      .update(timestamp + rawBody)
+      .digest('base64');
+
+    const expectedBuf = Buffer.from(expected);
+    if (
+      expectedBuf.length === receivedBuf.length &&
+      crypto.timingSafeEqual(expectedBuf, receivedBuf)
+    ) {
+      return true;
+    }
   }
 
-  return crypto.timingSafeEqual(expectedBuf, receivedBuf);
+  return false;
 }
