@@ -148,7 +148,7 @@ export const ALGOLIA_INDEX_SETTINGS = {
     'stock',
     'isPublished',
   ],
-} as const;
+};
 
 export async function configureAlgoliaIndex() {
   const client = getAdminClient();
@@ -156,7 +156,7 @@ export async function configureAlgoliaIndex() {
 
   await client.setSettings({
     indexName: ALGOLIA_INDEX_NAME,
-    indexSettings: { ...ALGOLIA_INDEX_SETTINGS },
+    indexSettings: ALGOLIA_INDEX_SETTINGS,
   });
 }
 
