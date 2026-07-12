@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import Product from '@/models/Products';
 import { verifyVendorToken, extractTokenFromHeader } from '@/lib/vendor-jwt';
 import { deleteFromCloudinary } from '@/lib/cloudinary';
+import { removeProductFromAlgolia } from '@/lib/algolia-sync';
 
 export async function DELETE(
   request: NextRequest,
@@ -57,6 +58,7 @@ export async function DELETE(
       _id: id2,
       vendorId: tokenPayload.vendorId,
     });
+    void removeProductFromAlgolia(id2);
 
     return NextResponse.json({
       success: true,

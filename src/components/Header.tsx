@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import HeaderAuthSkeleton from '@/components/skeletons/HeaderAuthSkeleton';
+import HeaderSearch from '@/components/HeaderSearch';
 import { getCartItems, getCartUnitCount } from '@/lib/client-cart';
 
 const desktopNavLinks = [
@@ -141,26 +142,8 @@ export default function Header({ forceWhite = false }: HeaderProps) {
             </Link>
           </div>
 
-          {/* Search Bar - Visible on all devices */}
-          <div className="flex flex-1 max-w-sm sm:max-w-xl mx-2 sm:mx-6">
-            <div className={`flex items-center rounded-full shadow-md sm:shadow-lg border sm:border-2 pl-1.5 sm:pl-2 w-full transition-colors outline-none focus-within:outline-none ${isScrolled ? 'bg-white border-gray-300' : 'bg-white/10 border-white/20 backdrop-blur-sm'}`}>
-              <input
-                type="text"
-                placeholder="Search products..."
-                className={`flex-1 min-w-0 px-2.5 py-1.5 sm:px-4 sm:py-2 text-sm bg-transparent border-0 rounded-full shadow-none outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 placeholder:text-gray-400 ${isScrolled ? 'text-gray-900' : 'text-white'}`}
-              />
-              <button
-                type="button"
-                className="ml-1 sm:ml-2 bg-blue-600 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full hover:bg-blue-700 transition-colors text-sm font-medium flex items-center gap-2 shrink-0 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                <span className="hidden sm:inline">Search</span>
-              </button>
-            </div>
-          </div>
+          {/* Search Bar - Algolia */}
+          <HeaderSearch isScrolled={isScrolled} />
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-1.5 sm:space-x-4">

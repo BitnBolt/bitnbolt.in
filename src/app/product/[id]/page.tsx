@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react';
 import { filterKeyValuePairs, filterTextLines, hasKeyValuePairs, hasTextLines } from '@/lib/product-detail';
 import { PAGE_TOP } from '@/lib/layout';
 import { addToCart, getCartItems, removeFromCart } from '@/lib/client-cart';
+import ProductDetailSkeleton from '@/components/skeletons/ProductDetailSkeleton';
 
 type ProductDoc = {
   _id: string;
@@ -115,23 +116,34 @@ export default function ProductViewPage() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`/api/products/${idOrSlug}`, { signal: controller.signal });
-        if (!res.ok) throw new Error(res.status === 404 ? 'Product not found' : 'Failed to load product');
+        setProduct(null);
+        const res = await fetch(`/api/products/${encodeURIComponent(idOrSlug)}`, {
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          throw new Error(res.status === 404 ? 'Product not found' : 'Failed to load product');
+        }
         const data = (await res.json()) as ProductDoc;
+        if (controller.signal.aborted) return;
         setProduct(data);
         setMainImg(data.images?.[0] || '');
         if (status === 'loading') return;
         try {
           const cart = await getCartItems(isAuthenticated);
+          if (controller.signal.aborted) return;
           const present = cart.some(
-            (it) => String(it.productId) === String(data._id) || it?.product?.slug === data.slug
+            (it) => String(it.productId) === String(data._id) || it?.product?.slug === data.slug,
           );
           setInCart(present);
-        } catch {}
+        } catch {
+          /* cart optional while browsing */
+        }
       } catch (e: unknown) {
-        if ((e as Error)?.name !== 'AbortError') setError((e as Error)?.message || 'Something went wrong');
+        if (controller.signal.aborted || (e as Error)?.name === 'AbortError') return;
+        setError((e as Error)?.message || 'Something went wrong');
+        setProduct(null);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     }
     load();
@@ -181,7 +193,7 @@ export default function ProductViewPage() {
     return (
       <main className="min-h-screen bg-gray-100">
         <Header forceWhite />
-        <div className={`max-w-2xl mx-auto ${PAGE_TOP} pb-24 text-center text-gray-500`}>Loading product…</div>
+        <ProductDetailSkeleton />
         <Footer />
       </main>
     );
@@ -191,7 +203,21 @@ export default function ProductViewPage() {
     return (
       <main className="min-h-screen bg-gray-100">
         <Header forceWhite />
-        <div className={`max-w-2xl mx-auto ${PAGE_TOP} pb-24 text-center text-red-600`}>{error || 'Product not found.'}</div>
+        <div className={`max-w-2xl mx-auto ${PAGE_TOP} pb-24 px-4 text-center`}>
+          <p className="text-xl font-bold text-[#0B1C2D] mb-2">Product not found</p>
+          <p className="text-sm text-gray-500 mb-6">
+            {error && error !== 'Product not found'
+              ? error
+              : 'This product may be unpublished or the link is incorrect.'}
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push('/product')}
+            className="bg-[#0B1C2D] text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-[#163554]"
+          >
+            Browse products
+          </button>
+        </div>
         <Footer />
       </main>
     );

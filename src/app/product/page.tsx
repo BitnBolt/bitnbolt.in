@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { PAGE_TOP } from '@/lib/layout';
 import { addToCart, getCartItems } from '@/lib/client-cart';
+import ProductGridSkeleton from '@/components/skeletons/ProductGridSkeleton';
+import { Skeleton } from '@/components/skeletons/Skeleton';
 
 type ApiProduct = {
   _id: string;
@@ -192,7 +194,11 @@ export default function Page() {
               </p>
             </div>
             <p className="text-xs sm:text-sm text-gray-500 font-medium">
-              {loading ? 'Loading…' : `Showing ${items.length} of ${total} products`}
+              {loading ? (
+                <Skeleton className="h-4 w-40" />
+              ) : (
+                `Showing ${items.length} of ${total} products`
+              )}
             </p>
           </motion.div>
 
@@ -331,11 +337,7 @@ export default function Page() {
             {/* Product grid */}
             <div className="flex-1 min-w-0">
               {loading ? (
-                <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-5">
-                  {Array.from({ length: pageSize }).map((_, i) => (
-                    <div key={i} className="bg-white rounded-xl sm:rounded-lg h-64 sm:h-[380px] animate-pulse border border-gray-100 shadow-sm" />
-                  ))}
-                </div>
+                <ProductGridSkeleton count={pageSize} />
               ) : items.length === 0 ? (
                 <div className="text-center py-10 sm:py-16 bg-white rounded-2xl border border-gray-100 shadow-sm px-4">
                   <p className="text-lg sm:text-xl font-semibold text-[#0B1C2D] mb-2">No products found</p>

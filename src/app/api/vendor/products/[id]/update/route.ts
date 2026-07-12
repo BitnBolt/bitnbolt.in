@@ -4,6 +4,7 @@ import Product from '@/models/Products';
 import { verifyVendorToken, extractTokenFromHeader } from '@/lib/vendor-jwt';
 import { deleteFromCloudinary } from '@/lib/cloudinary';
 import { filterKeyValuePairs, filterTextLines } from '@/lib/product-detail';
+import { syncProductToAlgolia } from '@/lib/algolia-sync';
 
 export async function PUT(
   request: NextRequest,
@@ -87,6 +88,10 @@ export async function PUT(
       },
       { new: true, runValidators: true }
     );
+
+    if (updatedProduct) {
+      void syncProductToAlgolia(updatedProduct);
+    }
 
     return NextResponse.json({
       success: true,

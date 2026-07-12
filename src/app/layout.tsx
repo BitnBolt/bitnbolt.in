@@ -4,6 +4,8 @@ import Script from "next/script";
 import "./globals.css";
 import { NextAuthProvider } from '@/components/NextAuthProvider'
 import GuestCartSync from '@/components/GuestCartSync'
+import { SearchProvider } from '@/components/search/SearchProvider'
+import SearchModal from '@/components/search/SearchModal'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -79,8 +81,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextAuthProvider>
+        <SearchProvider>
         <GuestCartSync />
         {children}
+        <SearchModal />
+        </SearchProvider>
         </NextAuthProvider>
       </body>
     </html>

@@ -4,6 +4,7 @@ import Product from '@/models/Products';
 import { verifyVendorToken, extractTokenFromHeader } from '@/lib/vendor-jwt';
 import slugify from 'slugify';
 import { filterKeyValuePairs, filterTextLines } from '@/lib/product-detail';
+import { syncProductToAlgolia } from '@/lib/algolia-sync';
 
 export async function POST(request: NextRequest) {
   try {
@@ -130,6 +131,9 @@ export async function POST(request: NextRequest) {
     product.finalPrice = priceWithMargin * (1 - product.discount / 100);
 
     await product.save();
+
+    // Draft products are not searchable until published
+    void syncProductToAlgolia(product);
 
     return NextResponse.json({
       success: true,
