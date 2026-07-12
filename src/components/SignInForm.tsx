@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 type FormData = {
     email: string
@@ -14,10 +14,12 @@ export default function SignInForm() {
     const [error, setError] = useState<string>('')
     const [showPassword, setShowPassword] = useState(false)
     const router = useRouter()
+    const searchParams = useSearchParams()
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>()
 
     const onSubmit = async (data: FormData) => {
         try {
+            const callbackUrl = searchParams.get('callbackUrl') || '/'
             const result = await signIn('credentials', {
                 email: data.email,
                 password: data.password,
@@ -29,7 +31,7 @@ export default function SignInForm() {
                 return
             }
 
-            router.push('/')
+            router.push(callbackUrl.startsWith('/') ? callbackUrl : '/')
             router.refresh()
         } catch {
             setError('Something went wrong')

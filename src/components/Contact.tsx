@@ -27,27 +27,25 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-12 bg-gray-50">
+    <section id="contact" className="py-8 sm:py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-3xl lg:text-4xl font-extrabold text-[#0B1C2D] mb-4 tracking-tight">
+        <div className="text-center mb-8 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0B1C2D] mb-2 sm:mb-4 tracking-tight">
             Get In Touch
           </h2>
-          <p className="text-lg text-gray-500 font-light max-w-3xl mx-auto">
-            Have a project in mind? Tell us about your IoT goals and we&apos;ll help you bridge
-            digital innovation with real-world engineering.
+          <p className="text-sm sm:text-lg text-gray-500 font-light max-w-2xl mx-auto">
+            Have a project in mind? Tell us your IoT goals and we&apos;ll help you build it.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-8 md:p-10">
-            <h3 className="text-2xl font-bold text-[#0B1C2D] mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-12">
+          <div className="bg-white rounded-xl sm:rounded-lg shadow-sm border border-gray-100 p-4 sm:p-8 md:p-10">
+            <h3 className="text-lg sm:text-2xl font-bold text-[#0B1C2D] mb-4 sm:mb-6">
               Send us a Message
             </h3>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                     Full Name *
@@ -59,7 +57,7 @@ export default function Contact() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                     placeholder="Your full name"
                   />
                 </div>
@@ -75,13 +73,13 @@ export default function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                     placeholder="your.email@company.com"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
                     Company
@@ -92,7 +90,7 @@ export default function Contact() {
                     name="company"
                     value={formData.company}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                     placeholder="Your company name"
                   />
                 </div>
@@ -107,7 +105,7 @@ export default function Contact() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                     placeholder="+91 XXXXX XXXXX"
                   />
                 </div>
@@ -122,7 +120,7 @@ export default function Contact() {
                   name="service"
                   value={formData.service}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 >
                   <option value="general">General Inquiry</option>
                   <option value="iot-platform">IoT Platform</option>
@@ -146,14 +144,14 @@ export default function Contact() {
                   onChange={handleChange}
                   required
                   rows={5}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="Tell us about your project requirements..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-[#0B1C2D] text-white py-3 px-6 rounded-md font-semibold hover:bg-[#163554] transition-colors"
+                className="w-full bg-[#0B1C2D] text-white py-2.5 sm:py-3 px-6 rounded-md font-semibold text-sm sm:text-base hover:bg-[#163554] transition-colors"
               >
                 Send Message
               </button>
@@ -163,7 +161,7 @@ export default function Contact() {
           {/* Contact Information */}
           <div className="space-y-5">
             <div>
-              <h3 className="text-xl font-bold text-[#0B1C2D] mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-[#0B1C2D] mb-3">
                 Contact Information
               </h3>
               
@@ -171,7 +169,7 @@ export default function Contact() {
             </div>
 
             {/* Quick Contact */}
-            <div className="bg-[#132A46] rounded-lg p-5 text-white border border-white/10">
+            <div className="bg-[#132A46] rounded-lg p-4 sm:p-5 text-white border border-white/10">
               <h4 className="text-base font-bold mb-2">How We Can Help</h4>
               <p className="mb-4 text-sm text-white/90 leading-relaxed">
                 From custom hardware and firmware to cloud integration and analytics—we support

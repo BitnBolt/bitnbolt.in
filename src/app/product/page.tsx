@@ -6,7 +6,9 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { PAGE_TOP } from '@/lib/layout';
+import { addToCart, getCartItems } from '@/lib/client-cart';
 
 type ApiProduct = {
   _id: string;
@@ -37,6 +39,8 @@ type UiProduct = {
 };
 
 export default function Page() {
+  const { status } = useSession();
+  const isAuthenticated = status === 'authenticated';
   const [activeCategory, setActiveCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const minRange = 10;
@@ -111,12 +115,11 @@ export default function Page() {
 
   const loadCart = async () => {
     try {
-      const res = await fetch('/api/cart');
-      if (!res.ok) return;
-      const data = await res.json();
+      if (status === 'loading') return;
+      const data = await getCartItems(isAuthenticated);
       const ids = new Set<string>();
       const slugs = new Set<string>();
-      for (const it of data.items || []) {
+      for (const it of data) {
         if (it?.productId) ids.add(String(it.productId));
         if (it?.product?.slug) slugs.add(String(it.product.slug));
       }
@@ -126,11 +129,13 @@ export default function Page() {
   };
 
   useEffect(() => {
+    if (status === 'loading') return;
     loadCart();
     const handler = () => loadCart();
     window.addEventListener('cart-updated' as keyof WindowEventMap, handler);
     return () => window.removeEventListener('cart-updated' as keyof WindowEventMap, handler);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   const handleCategoryClick = (cat: string) => {
     setActiveCategory(cat);
@@ -140,16 +145,7 @@ export default function Page() {
   const handleAddToCart = async (slug: string) => {
     try {
       setAdding(slug);
-      const res = await fetch('/api/cart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: slug, quantity: 1 }),
-      });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j.message || 'Failed to add to cart');
-      }
-      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('cart-updated'));
+      await addToCart(slug, 1, isAuthenticated);
       await loadCart();
     } catch (e) {
       console.error(e);
@@ -178,24 +174,24 @@ export default function Page() {
         <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" />
       </div>
 
-      <section className={`relative z-10 ${PAGE_TOP} pb-12`}>
+      <section className={`relative z-10 ${PAGE_TOP} pb-8 sm:pb-12`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header — same as home Products block */}
           <motion.div
-            className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4"
+            className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 sm:mb-8 gap-2 sm:gap-4"
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
             <div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-[#0B1C2D] mb-2 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0B1C2D] mb-1 sm:mb-2 tracking-tight">
                 Shop IoT Products
               </h1>
-              <p className="text-lg text-gray-500 font-light">
+              <p className="text-sm sm:text-lg text-gray-500 font-light">
                 Discover intelligent products engineered for the connected era
               </p>
             </div>
-            <p className="text-sm text-gray-500 font-medium">
+            <p className="text-xs sm:text-sm text-gray-500 font-medium">
               {loading ? 'Loading…' : `Showing ${items.length} of ${total} products`}
             </p>
           </motion.div>
@@ -207,12 +203,12 @@ export default function Page() {
           )}
 
           {/* Mobile categories */}
-          <div className="lg:hidden mb-6 flex flex-wrap gap-2">
+          <div className="lg:hidden mb-4 sm:mb-6 flex flex-wrap gap-1.5 sm:gap-2">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => handleCategoryClick(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
                   activeCategory === cat
                     ? 'bg-[#0B1C2D] text-white'
                     : 'bg-white text-gray-600 border border-gray-200 hover:border-blue-200'
@@ -223,7 +219,7 @@ export default function Page() {
             ))}
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
             {/* Filters sidebar */}
             <aside className="hidden lg:block w-64 shrink-0">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sticky top-24 sm:top-32">
@@ -335,15 +331,15 @@ export default function Page() {
             {/* Product grid */}
             <div className="flex-1 min-w-0">
               {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-5">
                   {Array.from({ length: pageSize }).map((_, i) => (
-                    <div key={i} className="bg-white rounded-lg h-[380px] animate-pulse border border-gray-100 shadow-sm" />
+                    <div key={i} className="bg-white rounded-xl sm:rounded-lg h-64 sm:h-[380px] animate-pulse border border-gray-100 shadow-sm" />
                   ))}
                 </div>
               ) : items.length === 0 ? (
-                <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                  <p className="text-xl font-semibold text-[#0B1C2D] mb-2">No products found</p>
-                  <p className="text-gray-500 mb-6">Try adjusting your filters or browse all categories.</p>
+                <div className="text-center py-10 sm:py-16 bg-white rounded-2xl border border-gray-100 shadow-sm px-4">
+                  <p className="text-lg sm:text-xl font-semibold text-[#0B1C2D] mb-2">No products found</p>
+                  <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6">Try adjusting your filters or browse all categories.</p>
                   <button
                     onClick={() => {
                       setActiveCategory('All');
@@ -351,14 +347,14 @@ export default function Page() {
                       setPriceRange([minRange, maxRange]);
                       setCurrentPage(1);
                     }}
-                    className="bg-[#0B1C2D] text-white px-6 py-3 rounded-full font-medium hover:bg-[#163554] transition-colors"
+                    className="bg-[#0B1C2D] text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-medium text-sm hover:bg-[#163554] transition-colors"
                   >
                     Clear filters
                   </button>
                 </div>
               ) : (
                 <motion.div
-                  className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                  className="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-5"
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
@@ -374,10 +370,10 @@ export default function Page() {
                       <motion.div
                         key={p.id}
                         variants={itemVariants}
-                        className="bg-white rounded-lg shadow-sm border border-transparent hover:border-blue-200 transition-all duration-300 overflow-hidden group flex flex-col"
+                        className="bg-white rounded-xl sm:rounded-lg shadow-sm border border-gray-100 hover:border-blue-200 transition-all duration-300 overflow-hidden group flex flex-col"
                       >
                         <Link href={`/product/${p.slug || p.id}`} className="block">
-                          <div className="relative h-48 overflow-hidden">
+                          <div className="relative h-36 sm:h-48 overflow-hidden">
                             <Image
                               src={p.image}
                               alt={p.name}
@@ -386,26 +382,26 @@ export default function Page() {
                               className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                             />
                             {!p.inStock && (
-                              <span className="absolute top-2 left-2 bg-red-600 text-white px-2.5 py-1 rounded-full text-xs font-medium shadow">
+                              <span className="absolute top-2 left-2 bg-red-600 text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium shadow">
                                 OUT OF STOCK
                               </span>
                             )}
                           </div>
                         </Link>
 
-                        <div className="p-4 flex flex-col flex-1">
-                          <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full w-fit mb-2">
+                        <div className="p-3 sm:p-4 flex flex-col flex-1">
+                          <span className="hidden sm:inline-block text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full w-fit mb-2">
                             {p.category}
                           </span>
 
                           <Link href={`/product/${p.slug || p.id}`}>
-                            <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                            <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                               {p.name}
                             </h3>
                           </Link>
 
                           {p.rating > 0 && (
-                            <div className="flex items-center mb-2">
+                            <div className="hidden sm:flex items-center mb-2">
                               <div className="flex text-yellow-400">
                                 {[...Array(5)].map((_, i) => (
                                   <svg
@@ -425,7 +421,7 @@ export default function Page() {
                           )}
 
                           {p.features.length > 0 && (
-                            <div className="mb-3">
+                            <div className="hidden sm:block mb-3">
                               <div className="flex flex-wrap gap-1">
                                 {p.features.map((feature, index) => (
                                   <span
@@ -439,22 +435,22 @@ export default function Page() {
                             </div>
                           )}
 
-                          <div className="flex items-baseline mb-3 mt-auto">
-                            <span className="text-xl font-bold text-gray-900">₹{p.price}</span>
+                          <div className="flex items-baseline mb-2 sm:mb-3 mt-auto flex-wrap gap-x-1">
+                            <span className="text-base sm:text-xl font-bold text-gray-900">₹{p.price}</span>
                             {discount > 0 && (
                               <>
-                                <span className="text-sm text-gray-500 line-through ml-2">₹{p.originalPrice}</span>
-                                <span className="text-xs text-green-600 font-medium ml-1.5">{discount}% off</span>
+                                <span className="hidden sm:inline text-sm text-gray-500 line-through ml-2">₹{p.originalPrice}</span>
+                                <span className="text-[10px] sm:text-xs text-green-600 font-medium sm:ml-1.5">{discount}% off</span>
                               </>
                             )}
                           </div>
 
-                          <div className="space-y-2">
+                          <div className="space-y-1.5 sm:space-y-2">
                             {p.inStock ? (
                               inCart ? (
                                 <Link
                                   href="/cart"
-                                  className="w-full bg-[#0B1C2D] text-white py-2.5 px-4 rounded-md hover:bg-[#163554] transition-colors font-medium text-sm flex items-center justify-center gap-2"
+                                  className="w-full bg-[#0B1C2D] text-white py-2 sm:py-2.5 px-2 sm:px-4 rounded-md hover:bg-[#163554] transition-colors font-medium text-xs sm:text-sm flex items-center justify-center gap-2"
                                 >
                                   View Cart
                                 </Link>
@@ -462,7 +458,7 @@ export default function Page() {
                                 <button
                                   onClick={() => handleAddToCart(p.slug)}
                                   disabled={adding === p.slug}
-                                  className={`w-full bg-[#0B1C2D] text-white py-2.5 px-4 rounded-md transition-colors font-medium text-sm flex items-center justify-center gap-2 ${
+                                  className={`w-full bg-[#0B1C2D] text-white py-2 sm:py-2.5 px-2 sm:px-4 rounded-md transition-colors font-medium text-xs sm:text-sm flex items-center justify-center gap-2 ${
                                     adding === p.slug ? 'opacity-70 cursor-wait' : 'hover:bg-[#163554]'
                                   }`}
                                 >
@@ -472,14 +468,14 @@ export default function Page() {
                             ) : (
                               <button
                                 disabled
-                                className="w-full bg-gray-400 text-white py-2.5 px-4 rounded-md cursor-not-allowed font-medium text-sm"
+                                className="w-full bg-gray-400 text-white py-2 sm:py-2.5 px-2 sm:px-4 rounded-md cursor-not-allowed font-medium text-xs sm:text-sm"
                               >
                                 Out of Stock
                               </button>
                             )}
                             <Link
                               href={`/product/${p.slug || p.id}`}
-                              className="w-full border-2 border-gray-200 text-[#0B1C2D] py-2.5 px-4 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors font-medium text-sm flex items-center justify-center"
+                              className="w-full border border-gray-200 sm:border-2 text-[#0B1C2D] py-2 sm:py-2.5 px-2 sm:px-4 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors font-medium text-xs sm:text-sm flex items-center justify-center"
                             >
                               View Details
                             </Link>
@@ -492,11 +488,11 @@ export default function Page() {
               )}
 
               {totalPages > 1 && (
-                <div className="mt-10 flex items-center justify-center gap-2">
+                <div className="mt-6 sm:mt-10 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border text-xs sm:text-sm font-medium transition-colors ${
                       currentPage === 1
                         ? 'text-gray-400 border-gray-200 cursor-not-allowed bg-white'
                         : 'text-[#0B1C2D] border-gray-300 bg-white hover:bg-gray-50'
@@ -508,7 +504,7 @@ export default function Page() {
                     <button
                       key={n}
                       onClick={() => setCurrentPage(n)}
-                      className={`w-9 h-9 rounded-full text-sm font-medium transition-colors ${
+                      className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                         currentPage === n
                           ? 'bg-[#0B1C2D] text-white'
                           : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
@@ -520,7 +516,7 @@ export default function Page() {
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border text-xs sm:text-sm font-medium transition-colors ${
                       currentPage === totalPages
                         ? 'text-gray-400 border-gray-200 cursor-not-allowed bg-white'
                         : 'text-[#0B1C2D] border-gray-300 bg-white hover:bg-gray-50'

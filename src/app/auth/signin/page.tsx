@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
+import { Suspense } from "react"
 import { authOptions } from "@/lib/auth"
 import SignInForm from "@/components/SignInForm"
 import SignInButton from "@/components/SignInButton"
@@ -29,27 +30,29 @@ export default async function SignInPage() {
 
             {/* Right Side - Sign In Form */}
             <div className="flex-1 min-h-screen overflow-y-auto lg:ml-[50%]">
-                <div className="flex items-center justify-center p-8 sm:p-12">
-                    <div className="w-full max-w-md space-y-8">
+                <div className="flex items-center justify-center p-4 sm:p-8 md:p-12">
+                    <div className="w-full max-w-md space-y-6 sm:space-y-8">
                         <div className="text-center">
                             <Image
                                 src="/vercel.svg"
                                 alt="Logo"
                                 width={60}
                                 height={60}
-                                className="mx-auto mb-4"
+                                className="mx-auto mb-3 sm:mb-4 w-12 h-12 sm:w-[60px] sm:h-[60px]"
                             />
-                            <h1 className="text-3xl font-bold text-gray-900">Welcome back</h1>
-                            <p className="mt-2 text-sm text-gray-600">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back</h1>
+                            <p className="mt-1.5 sm:mt-2 text-sm text-gray-600">
                                 Please sign in to your account
                             </p>
                         </div>
 
-                        <div className="mt-8">
-                            <SignInForm />
+                        <div className="mt-4 sm:mt-8">
+                            <Suspense fallback={<div className="text-sm text-gray-500">Loading…</div>}>
+                                <SignInForm />
+                            </Suspense>
                         </div>
 
-                        <div className="relative my-6">
+                        <div className="relative my-4 sm:my-6">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-200"></div>
                             </div>
@@ -59,10 +62,12 @@ export default async function SignInPage() {
                         </div>
 
                         <div className="flex justify-center">
-                            <SignInButton mode="signin" />
+                            <Suspense fallback={null}>
+                                <SignInButton mode="signin" />
+                            </Suspense>
                         </div>
 
-                        <div className="mt-6 flex flex-col space-y-4 text-center text-sm">
+                        <div className="mt-4 sm:mt-6 flex flex-col space-y-3 sm:space-y-4 text-center text-sm">
                             <p className="text-gray-600">
                                 Don&apos;t have an account?{" "}
                                 <Link href="/auth/signup" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
@@ -81,4 +86,4 @@ export default async function SignInPage() {
             </div>
         </div>
     )
-} 
+}

@@ -7,7 +7,10 @@ import Footer from '@/components/Footer';
 import HomeContent from '@/components/HomeContent';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { PAGE_TOP } from '@/lib/layout';
+import { addToCart, getCartItems } from '@/lib/client-cart';
 
 type Props = {
     productId?: string;
@@ -23,41 +26,45 @@ function SectionHeading({
     align?: 'center' | 'left';
 }) {
     return (
-        <div className={`mb-10 max-w-3xl ${align === 'center' ? 'mx-auto text-center' : ''}`}>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#0B1C2D] mb-3 tracking-tight">
+        <div className={`mb-6 sm:mb-10 max-w-3xl ${align === 'center' ? 'mx-auto text-center' : ''}`}>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0B1C2D] mb-2 sm:mb-3 tracking-tight">
                 {title}
             </h2>
             {subtitle && (
-                <p className="text-lg text-gray-500 font-light leading-relaxed">{subtitle}</p>
+                <p className="text-sm sm:text-lg text-gray-500 font-light leading-snug sm:leading-relaxed">{subtitle}</p>
             )}
         </div>
     );
 }
 
 export default function IotBoardClient({ productId }: Props) {
+    const router = useRouter();
+    const { status } = useSession();
+    const isAuthenticated = status === 'authenticated';
     const [adding, setAdding] = useState(false);
     const [inCart, setInCart] = useState(false);
 
     useEffect(() => {
-        if (!productId) return;
-        const controller = new AbortController();
+        if (!productId || status === 'loading') return;
+        let cancelled = false;
         async function checkCart() {
             try {
-                const cartRes = await fetch('/api/cart', { signal: controller.signal });
-                if (cartRes.ok) {
-                    const cart = await cartRes.json();
-                    const present = (cart.items || []).some(
-                        (it: { productId: string }) => String(it.productId) === String(productId)
-                    );
-                    setInCart(present);
+                const cart = await getCartItems(isAuthenticated);
+                if (!cancelled) {
+                    setInCart(cart.some((it) => String(it.productId) === String(productId)));
                 }
             } catch {
                 // ignore
             }
         }
         checkCart();
-        return () => controller.abort();
-    }, [productId]);
+        const handler = () => checkCart();
+        window.addEventListener('cart-updated' as keyof WindowEventMap, handler);
+        return () => {
+            cancelled = true;
+            window.removeEventListener('cart-updated' as keyof WindowEventMap, handler);
+        };
+    }, [productId, status, isAuthenticated]);
 
     const container: Variants = {
         hidden: { opacity: 0 },
@@ -136,15 +143,9 @@ export default function IotBoardClient({ productId }: Props) {
         }
         try {
             setAdding(true);
-            const res = await fetch('/api/cart', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId, quantity: 1 }),
-            });
-            if (res.ok) {
-                setInCart(true);
-                if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('cart-updated'));
-            }
+            await addToCart(productId, 1, isAuthenticated);
+            setInCart(true);
+            router.push('/cart');
         } catch (error) {
             console.error('Error adding to cart:', error);
         } finally {
@@ -156,10 +157,10 @@ export default function IotBoardClient({ productId }: Props) {
         inCart ? (
             <Link
                 href="/cart"
-                className={`bg-green-600 hover:bg-green-700 text-white px-8 py-3.5 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-md ${className}`}
+                className={`bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2 shadow-md ${className}`}
             >
                 View Cart
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
             </Link>
@@ -167,11 +168,11 @@ export default function IotBoardClient({ productId }: Props) {
             <button
                 onClick={handleBuyNow}
                 disabled={adding}
-                className={`bg-[#FFD166] hover:bg-[#FFC033] text-[#0B1C2D] px-8 py-3.5 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-70 ${className}`}
+                className={`bg-[#FFD166] hover:bg-[#FFC033] text-[#0B1C2D] px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-70 ${className}`}
             >
                 {adding ? 'Adding...' : 'Buy Now'}
                 {!adding && (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                 )}
@@ -197,34 +198,34 @@ export default function IotBoardClient({ productId }: Props) {
 
             <HomeContent>
                 {/* Hero */}
-                <section className={`relative bg-[#0B1C2D] text-white ${PAGE_TOP} pb-16 lg:pb-20 overflow-hidden`}>
+                <section className={`relative bg-[#0B1C2D] text-white ${PAGE_TOP} pb-8 sm:pb-16 lg:pb-20 overflow-hidden`}>
                     <div className="absolute inset-0 bg-gradient-to-r from-[#0B1C2D] via-[#0B1C2D]/95 to-[#163554]/80 pointer-events-none" />
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#1E88E5]/15 to-transparent pointer-events-none" />
 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                         <motion.div
-                            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+                            className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-12 items-center"
                             variants={container}
                             initial="hidden"
                             animate="show"
                         >
                             <motion.div variants={item}>
-                                <span className="inline-block bg-[#FFD166] text-[#0B1C2D] px-4 py-1.5 rounded-full font-semibold text-xs uppercase tracking-wide mb-5">
+                                <span className="inline-block bg-[#FFD166] text-[#0B1C2D] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full font-semibold text-xs uppercase tracking-wide mb-3 sm:mb-5">
                                     IoT Learning Kit
                                 </span>
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-5 tracking-tight">
+                                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-3 sm:mb-5 tracking-tight">
                                     IoT Development{' '}
                                     <span className="text-[#1E88E5]">KIT</span>
                                 </h1>
-                                <p className="text-gray-300 text-lg leading-relaxed mb-8 max-w-xl font-light">
+                                <p className="text-gray-300 text-sm sm:text-lg leading-snug sm:leading-relaxed mb-5 sm:mb-8 max-w-xl font-light">
                                     A one-stop solution for IoT, ML/DL, and Web/App enthusiasts — explore connected
                                     technology with practical, hands-on experience.
                                 </p>
-                                <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                     <BuyButton />
                                     <Link
                                         href="/product/iot-board"
-                                        className="border-2 border-white/30 hover:border-white/60 text-white px-8 py-3.5 rounded-full font-semibold flex items-center justify-center transition-all duration-300 hover:bg-white/10"
+                                        className="border-2 border-white/30 hover:border-white/60 text-white px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base flex items-center justify-center transition-all duration-300 hover:bg-white/10"
                                     >
                                         View Product
                                     </Link>
@@ -232,13 +233,13 @@ export default function IotBoardClient({ productId }: Props) {
                             </motion.div>
 
                             <motion.div variants={item} className="relative">
-                                <div className="relative rounded-lg overflow-hidden shadow-2xl ring-1 ring-white/10">
+                                <div className="relative rounded-lg overflow-hidden shadow-2xl ring-1 ring-white/10 max-h-56 sm:max-h-none">
                                     <Image
                                         src="/iot-board/im4.png"
                                         alt="IoT Development KIT"
                                         width={1200}
                                         height={900}
-                                        className="w-full h-auto object-cover"
+                                        className="w-full h-auto object-cover max-h-56 sm:max-h-none"
                                         priority
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#0B1C2D]/40 to-transparent pointer-events-none" />
@@ -249,7 +250,7 @@ export default function IotBoardClient({ productId }: Props) {
                 </section>
 
                 {/* Benefits */}
-                <section id="details" className="py-12 bg-white relative">
+                <section id="details" className="py-8 sm:py-12 bg-white relative">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <motion.div
                             variants={container}
@@ -261,15 +262,15 @@ export default function IotBoardClient({ productId }: Props) {
                                 title="Kit overview & benefits"
                                 subtitle="Everything a beginner or builder needs to start prototyping without hunting for parts."
                             />
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                                 {benefits.map((benefit, i) => (
                                     <motion.div
                                         key={i}
                                         variants={item}
-                                        className="bg-[#f8fafd] rounded-lg p-6 border border-transparent hover:border-blue-100 hover:shadow-lg transition-all duration-300 flex items-start gap-3"
+                                        className="bg-[#f8fafd] rounded-lg p-3.5 sm:p-6 border border-transparent hover:border-blue-100 hover:shadow-lg transition-all duration-300 flex items-start gap-2 sm:gap-3"
                                     >
                                         <span className="text-[#1E88E5] mt-0.5 shrink-0">
-                                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                                                 <path
                                                     fillRule="evenodd"
                                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -277,7 +278,7 @@ export default function IotBoardClient({ productId }: Props) {
                                                 />
                                             </svg>
                                         </span>
-                                        <p className="text-gray-700 text-sm leading-relaxed">{benefit}</p>
+                                        <p className="text-gray-700 text-xs sm:text-sm leading-snug sm:leading-relaxed line-clamp-4 sm:line-clamp-none">{benefit}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -286,7 +287,7 @@ export default function IotBoardClient({ productId }: Props) {
                 </section>
 
                 {/* Academic Years */}
-                <section className="py-12 relative">
+                <section className="py-8 sm:py-12 relative">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <motion.div
                             variants={container}
@@ -298,15 +299,15 @@ export default function IotBoardClient({ productId }: Props) {
                                 title="How it helps across all academic years"
                                 subtitle="A multidisciplinary board that combines IoT, Machine Learning, Web development, and server-side skills — the building blocks of modern solutions."
                             />
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                                 {academicYears.map((academicYear, idx) => (
                                     <motion.div
                                         key={idx}
                                         variants={item}
-                                        className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-300"
+                                        className="bg-white rounded-lg p-3.5 sm:p-6 shadow-sm border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-300"
                                     >
-                                        <div className="text-[#1E88E5] font-bold text-xl mb-2">{academicYear.year}</div>
-                                        <p className="text-gray-600 text-sm leading-relaxed">{academicYear.focus}</p>
+                                        <div className="text-[#1E88E5] font-bold text-base sm:text-xl mb-1.5 sm:mb-2">{academicYear.year}</div>
+                                        <p className="text-gray-600 text-xs sm:text-sm leading-snug sm:leading-relaxed line-clamp-4 sm:line-clamp-none">{academicYear.focus}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -315,7 +316,7 @@ export default function IotBoardClient({ productId }: Props) {
                 </section>
 
                 {/* Who It's For */}
-                <section className="py-12 bg-white relative">
+                <section className="py-8 sm:py-12 bg-white relative">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <motion.div
                             variants={container}
@@ -324,14 +325,14 @@ export default function IotBoardClient({ productId }: Props) {
                             viewport={{ once: true, amount: 0.2 }}
                         >
                             <SectionHeading title="Who it's for" />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                                 {targetAudience.map((audience, i) => (
                                     <motion.div
                                         key={i}
                                         variants={item}
-                                        className="bg-[#0B1C2D] text-white rounded-lg p-6 shadow-md flex items-center justify-center min-h-[130px] text-center hover:bg-[#163554] transition-colors duration-300"
+                                        className="bg-[#0B1C2D] text-white rounded-lg p-3.5 sm:p-6 shadow-md flex items-center justify-center min-h-[100px] sm:min-h-[130px] text-center hover:bg-[#163554] transition-colors duration-300"
                                     >
-                                        <p className="font-medium text-sm leading-relaxed">{audience}</p>
+                                        <p className="font-medium text-xs sm:text-sm leading-snug sm:leading-relaxed line-clamp-4 sm:line-clamp-none">{audience}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -340,7 +341,7 @@ export default function IotBoardClient({ productId }: Props) {
                 </section>
 
                 {/* What's in the KIT */}
-                <section className="py-12 relative">
+                <section className="py-8 sm:py-12 relative">
                     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                         <motion.div
                             variants={container}
@@ -359,19 +360,19 @@ export default function IotBoardClient({ productId }: Props) {
                                             <tr className="bg-[#0B1C2D]">
                                                 <th
                                                     scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider"
+                                                    className="px-3 sm:px-6 py-2.5 sm:py-3 text-left text-xs font-semibold text-white uppercase tracking-wider"
                                                 >
                                                     Sr No.
                                                 </th>
                                                 <th
                                                     scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider"
+                                                    className="px-3 sm:px-6 py-2.5 sm:py-3 text-left text-xs font-semibold text-white uppercase tracking-wider"
                                                 >
                                                     Module [On-Board]
                                                 </th>
                                                 <th
                                                     scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider"
+                                                    className="px-3 sm:px-6 py-2.5 sm:py-3 text-left text-xs font-semibold text-white uppercase tracking-wider"
                                                 >
                                                     Nature
                                                 </th>
@@ -380,15 +381,15 @@ export default function IotBoardClient({ productId }: Props) {
                                         <tbody className="divide-y divide-gray-100">
                                             {kitModules.map((mod) => (
                                                 <tr key={mod.id} className="hover:bg-[#f8fafd] transition-colors">
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    <td className="px-3 sm:px-6 py-2.5 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                                                         {mod.id}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#0B1C2D]">
+                                                    <td className="px-3 sm:px-6 py-2.5 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-[#0B1C2D]">
                                                         {mod.name}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                    <td className="px-3 sm:px-6 py-2.5 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
                                                         <span
-                                                            className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${natureBadgeClass(mod.nature)}`}
+                                                            className={`px-2 sm:px-2.5 py-0.5 sm:py-1 inline-flex text-[10px] sm:text-xs leading-5 font-semibold rounded-full ${natureBadgeClass(mod.nature)}`}
                                                         >
                                                             {mod.nature}
                                                         </span>
@@ -404,10 +405,10 @@ export default function IotBoardClient({ productId }: Props) {
                 </section>
 
                 {/* Gallery */}
-                <section className="py-12 bg-white relative">
+                <section className="py-8 sm:py-12 bg-white relative">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <SectionHeading title="Gallery" align="left" />
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
                             {['/iot-board/im1.png', '/iot-board/im2.png', '/iot-board/im3.png', '/iot-board/im4.png'].map(
                                 (src, i) => (
                                     <div
@@ -429,7 +430,7 @@ export default function IotBoardClient({ productId }: Props) {
                 </section>
 
                 {/* Blog */}
-                <section className="py-12 relative">
+                <section className="py-8 sm:py-12 relative">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <motion.div
                             variants={container}
@@ -437,12 +438,12 @@ export default function IotBoardClient({ productId }: Props) {
                             whileInView="show"
                             viewport={{ once: true, amount: 0.2 }}
                         >
-                            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+                            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-10">
                                 <div>
-                                    <h2 className="text-3xl md:text-4xl font-extrabold text-[#0B1C2D] mb-2 tracking-tight">
+                                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0B1C2D] mb-1 sm:mb-2 tracking-tight">
                                         Blog
                                     </h2>
-                                    <p className="text-lg text-gray-500 font-light max-w-2xl">
+                                    <p className="text-sm sm:text-lg text-gray-500 font-light max-w-2xl">
                                         Guides, tutorials, and project ideas to get the most out of your IoT kit.
                                     </p>
                                 </div>
@@ -455,7 +456,7 @@ export default function IotBoardClient({ productId }: Props) {
                                     View all posts →
                                 </a>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8">
                                 {blogPosts.map((post) => (
                                     <motion.a
                                         key={post.title}
@@ -465,7 +466,7 @@ export default function IotBoardClient({ productId }: Props) {
                                         variants={item}
                                         className="group bg-white rounded-lg shadow-sm border border-transparent hover:border-blue-200 transition-all duration-300 overflow-hidden"
                                     >
-                                        <div className="relative h-52 overflow-hidden">
+                                        <div className="relative h-36 sm:h-52 overflow-hidden">
                                             <Image
                                                 src={post.image}
                                                 alt={post.title}
@@ -474,11 +475,11 @@ export default function IotBoardClient({ productId }: Props) {
                                                 className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                                             />
                                         </div>
-                                        <div className="p-5">
-                                            <span className="text-xs font-medium text-[#1E88E5] bg-blue-50 px-2.5 py-1 rounded-full">
+                                        <div className="p-3 sm:p-5">
+                                            <span className="text-[10px] sm:text-xs font-medium text-[#1E88E5] bg-blue-50 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">
                                                 {post.category}
                                             </span>
-                                            <h3 className="text-gray-900 font-bold mt-3 leading-snug group-hover:text-[#1E88E5] transition-colors line-clamp-2">
+                                            <h3 className="text-gray-900 font-bold mt-2 sm:mt-3 text-sm sm:text-base leading-snug group-hover:text-[#1E88E5] transition-colors line-clamp-2">
                                                 {post.title}
                                             </h3>
                                         </div>
@@ -490,24 +491,24 @@ export default function IotBoardClient({ productId }: Props) {
                 </section>
 
                 {/* CAP + Buy CTA */}
-                <section id="buy" className="py-12 bg-white relative">
+                <section id="buy" className="py-8 sm:py-12 bg-white relative">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
                             <motion.div
                                 variants={item}
                                 initial="hidden"
                                 whileInView="show"
                                 viewport={{ once: true, amount: 0.2 }}
-                                className="bg-[#0B1C2D] rounded-lg p-8 lg:p-10 text-white flex flex-col gap-6 shadow-xl h-full"
+                                className="bg-[#0B1C2D] rounded-lg p-5 sm:p-8 lg:p-10 text-white flex flex-col gap-4 sm:gap-6 shadow-xl h-full"
                             >
                                 <div>
-                                    <span className="inline-block bg-[#FFD166] text-[#0B1C2D] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-4">
+                                    <span className="inline-block bg-[#FFD166] text-[#0B1C2D] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-3 sm:mb-4">
                                         Career Accelerator Program
                                     </span>
-                                    <h2 className="text-2xl font-bold mb-3 tracking-tight">
+                                    <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight">
                                         Take your IoT skills further with CAP
                                     </h2>
-                                    <p className="text-gray-300 leading-relaxed font-light text-sm">
+                                    <p className="text-gray-300 leading-snug sm:leading-relaxed font-light text-xs sm:text-sm">
                                         Ready to move beyond the kit? BitnBolt&apos;s Career Accelerator Program is a
                                         cohort-based track for early-career engineers in IoT, embedded systems, and hardware.
                                     </p>
@@ -516,7 +517,7 @@ export default function IotBoardClient({ productId }: Props) {
                                     href="https://career.bitnbolt.in/cap"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="mt-auto bg-[#FFD166] hover:bg-[#FFC033] text-[#0B1C2D] px-8 py-3.5 rounded-full font-bold text-center transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 w-full sm:w-auto sm:self-start"
+                                    className="mt-auto bg-[#FFD166] hover:bg-[#FFC033] text-[#0B1C2D] px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-bold text-sm sm:text-base text-center transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 w-full sm:w-auto sm:self-start"
                                 >
                                     Explore CAP
                                 </a>
@@ -527,13 +528,13 @@ export default function IotBoardClient({ productId }: Props) {
                                 initial="hidden"
                                 whileInView="show"
                                 viewport={{ once: true, amount: 0.2 }}
-                                className="bg-[#0B1C2D] rounded-lg p-8 lg:p-10 text-white flex flex-col gap-6 shadow-xl h-full"
+                                className="bg-[#0B1C2D] rounded-lg p-5 sm:p-8 lg:p-10 text-white flex flex-col gap-4 sm:gap-6 shadow-xl h-full"
                             >
                                 <div>
-                                    <h3 className="text-2xl font-bold mb-3 tracking-tight">
+                                    <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight">
                                         Ready to start your IoT journey?
                                     </h3>
-                                    <p className="text-gray-300 font-light text-sm">
+                                    <p className="text-gray-300 font-light text-xs sm:text-sm">
                                         Get the IoT Development KIT today.
                                     </p>
                                 </div>
@@ -541,7 +542,7 @@ export default function IotBoardClient({ productId }: Props) {
                                     <BuyButton className="w-full sm:flex-1" />
                                     <Link
                                         href="/contact"
-                                        className="border-2 border-white/30 hover:border-white/60 text-white px-8 py-3.5 rounded-full font-semibold text-center transition-all duration-300 hover:bg-white/10 w-full sm:flex-1"
+                                        className="border-2 border-white/30 hover:border-white/60 text-white px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base text-center transition-all duration-300 hover:bg-white/10 w-full sm:flex-1"
                                     >
                                         Talk to Us
                                     </Link>

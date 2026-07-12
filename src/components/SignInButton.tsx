@@ -1,15 +1,20 @@
 'use client'
 
 import { signIn } from "next-auth/react"
+import { useSearchParams } from "next/navigation"
 
 interface SignInButtonProps {
     mode?: 'signin' | 'signup'
 }
 
 export default function SignInButton({ mode = 'signin' }: SignInButtonProps) {
+    const searchParams = useSearchParams()
+    const rawCallback = searchParams.get('callbackUrl') || '/'
+    const callbackUrl = rawCallback.startsWith('/') ? rawCallback : '/'
+
     return (
         <button
-            onClick={() => signIn('google', { callbackUrl: '/' })}
+            onClick={() => signIn('google', { callbackUrl })}
             className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-black shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
         >
             <svg viewBox="0 0 24 24" className="h-6 w-6">
@@ -33,4 +38,4 @@ export default function SignInButton({ mode = 'signin' }: SignInButtonProps) {
             {mode === 'signin' ? 'Sign in with Google' : 'Sign up with Google'}
         </button>
     )
-} 
+}

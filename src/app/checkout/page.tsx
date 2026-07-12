@@ -367,20 +367,20 @@ export default function CheckoutPage() {
   return (
     <main className="min-h-screen bg-gray-100">
       <Header forceWhite />
-      <section className={`${PAGE_TOP} pb-10`}>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section className={`${PAGE_TOP} pb-8 sm:pb-10 px-4`}>
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
           {/* Left: Shipping & Payment */}
-          <div className="md:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 flex flex-col gap-8">
+          <div className="md:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-6 flex flex-col gap-5 sm:gap-8">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm">
                 {error}
               </div>
             )}
 
             {/* Shipping Address */}
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">Shipping Address</h2>
+              <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
+                <h2 className="text-lg sm:text-xl font-bold">Shipping Address</h2>
                 {profileLoaded && (
                   <button
                     type="button"
@@ -391,19 +391,19 @@ export default function CheckoutPage() {
                         calculateDeliveryCost(shippingAddress.pincode);
                       }
                     }}
-                    className="text-sm text-blue-600 hover:text-blue-800 underline"
+                    className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline shrink-0"
                   >
                     Use Saved Address
                   </button>
                 )}
               </div>
-              <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <input 
                   name="fullName" 
                   value={shippingAddress.fullName} 
                   onChange={(e) => handleAddressChange(e, 'shipping')} 
                   placeholder="Full Name *" 
-                  className="px-4 py-3 border border-gray-300 rounded" 
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                   required 
                 />
                 <input 
@@ -411,7 +411,7 @@ export default function CheckoutPage() {
                   value={shippingAddress.phoneNumber} 
                   onChange={(e) => handleAddressChange(e, 'shipping')} 
                   placeholder="Phone Number *" 
-                  className="px-4 py-3 border border-gray-300 rounded" 
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                   required 
                 />
                 <input 
@@ -419,7 +419,7 @@ export default function CheckoutPage() {
                   value={shippingAddress.addressLine1} 
                   onChange={(e) => handleAddressChange(e, 'shipping')} 
                   placeholder="Street Address *" 
-                  className="px-4 py-3 border border-gray-300 rounded md:col-span-2" 
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base md:col-span-2" 
                   required 
                 />
                 <input 
@@ -427,14 +427,14 @@ export default function CheckoutPage() {
                   value={shippingAddress.addressLine2} 
                   onChange={(e) => handleAddressChange(e, 'shipping')} 
                   placeholder="Address Line 2" 
-                  className="px-4 py-3 border border-gray-300 rounded md:col-span-2" 
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base md:col-span-2" 
                 />
                 <input 
                   name="city" 
                   value={shippingAddress.city} 
                   onChange={(e) => handleAddressChange(e, 'shipping')} 
                   placeholder="City *" 
-                  className="px-4 py-3 border border-gray-300 rounded" 
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                   required 
                 />
                 <input 
@@ -442,7 +442,7 @@ export default function CheckoutPage() {
                   value={shippingAddress.state} 
                   onChange={(e) => handleAddressChange(e, 'shipping')} 
                   placeholder="State *" 
-                  className="px-4 py-3 border border-gray-300 rounded" 
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                   required 
                 />
                 <input 
@@ -450,7 +450,7 @@ export default function CheckoutPage() {
                   value={shippingAddress.pincode} 
                   onChange={(e) => handleAddressChange(e, 'shipping')} 
                   placeholder="Pincode *" 
-                  className="px-4 py-3 border border-gray-300 rounded" 
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                   required 
                 />
                 <input 
@@ -458,14 +458,14 @@ export default function CheckoutPage() {
                   value={shippingAddress.landmark} 
                   onChange={(e) => handleAddressChange(e, 'shipping')} 
                   placeholder="Landmark" 
-                  className="px-4 py-3 border border-gray-300 rounded" 
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                 />
               </form>
             </div>
 
             {/* Billing Address */}
             <div>
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
                 <input 
                   type="checkbox" 
                   id="sameAddress" 
@@ -477,14 +477,14 @@ export default function CheckoutPage() {
               
               {!useSameAddress && (
                 <div>
-                  <h2 className="text-xl font-bold mb-4">Billing Address</h2>
-                  <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Billing Address</h2>
+                  <form className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     <input 
                       name="fullName" 
                       value={billingAddress.fullName} 
                       onChange={(e) => handleAddressChange(e, 'billing')} 
                       placeholder="Full Name *" 
-                      className="px-4 py-3 border border-gray-300 rounded" 
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                       required 
                     />
                     <input 
@@ -492,7 +492,7 @@ export default function CheckoutPage() {
                       value={billingAddress.phoneNumber} 
                       onChange={(e) => handleAddressChange(e, 'billing')} 
                       placeholder="Phone Number *" 
-                      className="px-4 py-3 border border-gray-300 rounded" 
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                       required 
                     />
                     <input 
@@ -500,7 +500,7 @@ export default function CheckoutPage() {
                       value={billingAddress.addressLine1} 
                       onChange={(e) => handleAddressChange(e, 'billing')} 
                       placeholder="Street Address *" 
-                      className="px-4 py-3 border border-gray-300 rounded md:col-span-2" 
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base md:col-span-2" 
                       required 
                     />
                     <input 
@@ -508,14 +508,14 @@ export default function CheckoutPage() {
                       value={billingAddress.addressLine2} 
                       onChange={(e) => handleAddressChange(e, 'billing')} 
                       placeholder="Address Line 2" 
-                      className="px-4 py-3 border border-gray-300 rounded md:col-span-2" 
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base md:col-span-2" 
                     />
                     <input 
                       name="city" 
                       value={billingAddress.city} 
                       onChange={(e) => handleAddressChange(e, 'billing')} 
                       placeholder="City *" 
-                      className="px-4 py-3 border border-gray-300 rounded" 
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                       required 
                     />
                     <input 
@@ -523,7 +523,7 @@ export default function CheckoutPage() {
                       value={billingAddress.state} 
                       onChange={(e) => handleAddressChange(e, 'billing')} 
                       placeholder="State *" 
-                      className="px-4 py-3 border border-gray-300 rounded" 
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                       required 
                     />
                     <input 
@@ -531,7 +531,7 @@ export default function CheckoutPage() {
                       value={billingAddress.pincode} 
                       onChange={(e) => handleAddressChange(e, 'billing')} 
                       placeholder="Pincode *" 
-                      className="px-4 py-3 border border-gray-300 rounded" 
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                       required 
                     />
                     <input 
@@ -539,7 +539,7 @@ export default function CheckoutPage() {
                       value={billingAddress.landmark} 
                       onChange={(e) => handleAddressChange(e, 'billing')} 
                       placeholder="Landmark" 
-                      className="px-4 py-3 border border-gray-300 rounded" 
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded text-sm sm:text-base" 
                     />
               </form>
             </div>
@@ -548,9 +548,9 @@ export default function CheckoutPage() {
 
             {/* Payment Options */}
             <div>
-              <h2 className="text-xl font-bold mb-4">Payment Method</h2>
-              <div className="flex flex-col gap-4">
-                <label className="flex items-center gap-3 cursor-pointer p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Payment Method</h2>
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <label className="flex items-center gap-3 cursor-pointer p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
                   <input 
                     type="radio" 
                     name="payment" 
@@ -560,12 +560,12 @@ export default function CheckoutPage() {
                     className="w-4 h-4" 
                   />
                   <div>
-                    <div className="font-medium">Cash on Delivery (COD)</div>
-                    <div className="text-sm text-gray-500">Pay when your order is delivered</div>
+                    <div className="font-medium text-sm sm:text-base">Cash on Delivery (COD)</div>
+                    <div className="text-xs sm:text-sm text-gray-500">Pay when your order is delivered</div>
                   </div>
                 </label>
                 
-                <label className="flex items-center gap-3 cursor-pointer p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <label className="flex items-center gap-3 cursor-pointer p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
                   <input 
                     type="radio" 
                     name="payment" 
@@ -575,8 +575,8 @@ export default function CheckoutPage() {
                     className="w-4 h-4" 
                   />
                   <div>
-                    <div className="font-medium">Online Payment</div>
-                    <div className="text-sm text-gray-500">Pay securely with Cashfree (Cards, UPI, Net Banking)</div>
+                    <div className="font-medium text-sm sm:text-base">Online Payment</div>
+                    <div className="text-xs sm:text-sm text-gray-500">Pay securely with Cashfree (Cards, UPI, Net Banking)</div>
                   </div>
                 </label>
               </div>
@@ -584,43 +584,43 @@ export default function CheckoutPage() {
           </div>
 
           {/* Right: Order Summary */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 flex flex-col gap-6">
-            <h3 className="text-xl font-bold mb-2">Order Summary</h3>
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-6 flex flex-col gap-4 sm:gap-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-0 sm:mb-2">Order Summary</h3>
             
             {cartLoading ? (
               <OrderSummarySkeleton />
             ) : items.length === 0 ? (
-              <div className="text-gray-500">Your cart is empty</div>
+              <div className="text-gray-500 text-sm sm:text-base">Your cart is empty</div>
             ) : (
               <>
-            <ul className="mb-4 divide-y divide-gray-200">
+            <ul className="mb-2 sm:mb-4 divide-y divide-gray-200">
                   {items.map(item => (
-                    <li key={item.productId} className="py-3 flex items-center gap-3">
+                    <li key={item.productId} className="py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
                       <Image 
                         src={item.product.images?.[0] || '/next.svg'} 
                         alt={item.product.name} 
                         width={50} 
                         height={50} 
-                        className="rounded object-cover" 
+                        className="rounded object-cover w-10 h-10 sm:w-[50px] sm:h-[50px] shrink-0" 
                       />
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{item.product.name}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm line-clamp-2">{item.product.name}</div>
                         <div className="text-xs text-gray-500">Qty: {item.quantity}</div>
                       </div>
-                      <span className="font-semibold text-blue-600">₹{(item.product.finalPrice * item.quantity).toFixed(2)}</span>
+                      <span className="font-semibold text-blue-600 text-sm shrink-0">₹{(item.product.finalPrice * item.quantity).toFixed(2)}</span>
                 </li>
               ))}
             </ul>
                 
-            <div className="flex items-center justify-between text-base">
+            <div className="flex items-center justify-between text-sm sm:text-base">
               <span>Subtotal</span>
                   <span>₹{subtotal.toFixed(2)}</span>
             </div>
-            <div className="flex items-center justify-between text-base">
+            <div className="flex items-center justify-between text-sm sm:text-base">
                   <span>GST (18%)</span>
                   <span>₹{estimatedTax.toFixed(2)}</span>
             </div>
-            <div className="flex items-center justify-between text-base">
+            <div className="flex items-center justify-between text-sm sm:text-base">
               <span>Shipping</span>
               <span>
                 {deliveryLoading ? (
@@ -628,17 +628,17 @@ export default function CheckoutPage() {
                 ) : deliveryCost !== null ? (
                   `₹${shipping.toFixed(2)}`
                 ) : (
-                  <span className="text-gray-500">Enter pincode to calculate</span>
+                  <span className="text-gray-500 text-xs sm:text-sm">Enter pincode to calculate</span>
                 )}
               </span>
             </div>
             {deliveryCost !== null && deliveryCost > 0 && (
-              <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+              <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded hidden sm:block">
                 <p>✓ Real-time shipping cost calculated</p>
                 <p>✓ Multiple vendors supported</p>
               </div>
             )}
-            <div className="border-t pt-4 flex items-center justify-between text-lg font-bold">
+            <div className="border-t pt-3 sm:pt-4 flex items-center justify-between text-base sm:text-lg font-bold">
               <span>Total</span>
                   <span>₹{total.toFixed(2)}</span>
             </div>
@@ -646,14 +646,14 @@ export default function CheckoutPage() {
                 <button 
                   onClick={handleCheckout}
                   disabled={loading || items.length === 0 || deliveryCost === null}
-                  className="bg-teal-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-teal-700 transition-colors w-full mt-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="bg-teal-600 text-white px-6 py-2.5 sm:py-3 rounded-lg font-semibold text-sm sm:text-lg hover:bg-teal-700 transition-colors w-full mt-1 sm:mt-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Processing...' : deliveryCost === null ? 'Calculate Shipping First' : 'Place Order'}
                 </button>
                 
-            <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-700">
+            <div className="bg-blue-50 rounded-lg p-3 sm:p-4 text-xs sm:text-sm text-blue-700">
                   <p>Real-time shipping costs calculated by Shiprocket.</p>
-              <p className="mt-1 text-gray-500">30-day returns • Secure checkout • 24/7 support</p>
+              <p className="mt-1 text-gray-500 hidden sm:block">30-day returns • Secure checkout • 24/7 support</p>
             </div>
               </>
             )}

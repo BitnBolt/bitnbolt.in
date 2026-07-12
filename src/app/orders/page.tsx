@@ -167,16 +167,16 @@ export default function OrdersPage() {
   return (
     <main className="min-h-screen bg-gray-100">
       <Header forceWhite />
-      <section className={`${PAGE_TOP} pb-10`}>
+      <section className={`${PAGE_TOP} pb-8 sm:pb-10`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Orders</h1>
 
-            <div className="flex gap-4">
+            <div className="flex gap-2 sm:gap-4">
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full sm:w-auto px-3 py-2 sm:px-4 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All Orders</option>
                 <option value="pending">Pending</option>
@@ -190,7 +190,7 @@ export default function OrdersPage() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg mb-4 sm:mb-6 text-sm">
               {error}
             </div>
           )}
@@ -198,69 +198,69 @@ export default function OrdersPage() {
           {loading ? (
             <OrdersListSkeleton contentOnly />
           ) : orders.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-gray-500 text-lg mb-4">No orders found</div>
+            <div className="text-center py-8 sm:py-12">
+              <div className="text-gray-500 text-base sm:text-lg mb-3 sm:mb-4">No orders found</div>
               <Link
                 href="/product"
-                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-block bg-blue-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
               >
                 Start Shopping
               </Link>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-3 sm:space-y-6">
               {orders.map((order) => (
-                <div key={order._id} className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold">
+                <div key={order._id} className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+                  <div className="flex justify-between items-start gap-2 mb-3 sm:mb-4">
+                    <div className="min-w-0">
+                      <h3 className="text-base sm:text-lg font-semibold truncate">
                         Order #{order.orderId}
                       </h3>
                       <p className="text-sm text-gray-500">
                         Placed on {new Date(order.createdAt).toLocaleDateString()}
                       </p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+                    <span className={`shrink-0 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${getStatusColor(order.status)}`}>
                       {getStatusText(order.status)}
                     </span>
                   </div>
 
-                  <div className="mb-4">
-                    <h4 className="font-medium mb-2">Order Items</h4>
-                    <div className="space-y-2">
+                  <div className="mb-3 sm:mb-4">
+                    <h4 className="font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">Order Items</h4>
+                    <div className="space-y-1.5 sm:space-y-2">
                       {order.items.map((item, index) => (
-                        <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded">
+                        <div key={index} className="flex items-center gap-2.5 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded">
                           <Image
                             src={item.productId?.images?.[0] || '/next.svg'}
                             alt={item.productId?.name || 'Product'}
                             width={50}
                             height={50}
-                            className="rounded object-cover"
+                            className="rounded object-cover w-10 h-10 sm:w-[50px] sm:h-[50px] shrink-0"
                           />
-                          <div className="flex-1">
-                            <p className="font-medium">{item.productId?.name || 'Product Unavailable'}</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm sm:text-base truncate">{item.productId?.name || 'Product Unavailable'}</p>
                             <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
-                            <p className="text-sm text-gray-500">Sold by: {item.vendorId?.businessName || item.vendorId?.seller_name || 'Vendor Unavailable'}</p>
+                            <p className="text-sm text-gray-500 truncate">Sold by: {item.vendorId?.businessName || item.vendorId?.seller_name || 'Vendor Unavailable'}</p>
                           </div>
-                          <p className="font-semibold">₹{(item.finalPrice * item.quantity).toFixed(2)}</p>
+                          <p className="font-semibold text-sm sm:text-base shrink-0">₹{(item.finalPrice * item.quantity).toFixed(2)}</p>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                     <div>
                       <p className="text-sm text-gray-500">
                         Payment: {order.paymentDetails.method.toUpperCase()} •
                         Status: {order.paymentDetails.status.charAt(0).toUpperCase() + order.paymentDetails.status.slice(1)}
                       </p>
-                      <p className="text-lg font-semibold">Total: ₹{order.orderSummary.totalAmount.toFixed(2)}</p>
+                      <p className="text-base sm:text-lg font-semibold">Total: ₹{order.orderSummary.totalAmount.toFixed(2)}</p>
                     </div>
 
                     <div className="flex gap-2">
                       <Link
                         href={`/orders/${order.orderId}`}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        className="flex-1 sm:flex-none text-center px-3 py-2 sm:px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                       >
                         View Details
                       </Link>
@@ -276,7 +276,7 @@ export default function OrdersPage() {
                               alert(`Shiprocket Order ID: ${order.deliveryDetails.shiprocketOrderId}\nTracking will be available once AWB is generated.`);
                             }
                           }}
-                          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                          className="flex-1 sm:flex-none px-3 py-2 sm:px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
                         >
                           Track Package
                         </button>
@@ -288,23 +288,23 @@ export default function OrdersPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-8">
+                <div className="flex justify-center gap-2 mt-6 sm:mt-8">
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="px-3 py-2 sm:px-4 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                   >
                     Previous
                   </button>
 
-                  <span className="px-4 py-2 flex items-center">
+                  <span className="px-3 py-2 sm:px-4 flex items-center text-sm">
                     Page {currentPage} of {totalPages}
                   </span>
 
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="px-3 py-2 sm:px-4 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                   >
                     Next
                   </button>

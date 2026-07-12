@@ -139,30 +139,30 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
   const limited = typeof limit === 'number' && limit > 0 ? filteredProducts.slice(0, limit) : filteredProducts;
 
   return (
-    <section id="products" className="py-12 bg-white relative overflow-hidden">
+    <section id="products" className="py-8 sm:py-12 bg-white relative overflow-hidden">
       {/* Background decoration removed for cleaner look */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header with animations */}
         <motion.div
-          className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12"
+          className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 sm:mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           <div>
-            <h2 className="text-3xl md:text-3xl lg:text-4xl font-extrabold text-[#0B1C2D] mb-2 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0B1C2D] mb-1 sm:mb-2 tracking-tight">
               Shop IoT Solutions
             </h2>
-            <p className="text-lg text-gray-500 font-light">
-              Discover intelligent products engineered for the connected era
+            <p className="text-sm sm:text-lg text-gray-500 font-light">
+              Products engineered for the connected era
             </p>
           </div>
         </motion.div>
 
         {/* Products Grid with staggered animations */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -172,10 +172,10 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
               key={product.id}
               variants={itemVariants}
               whileHover={{ scale: 1 }}
-              className="bg-white rounded-lg shadow-sm border border-transparent hover:border-blue-200 transition-all duration-300 overflow-hidden group"
+              className="bg-white rounded-xl sm:rounded-lg shadow-sm border border-gray-100 hover:border-blue-200 transition-all duration-300 overflow-hidden group"
             >
               {/* Product Image with hover effect */}
-              <div className="relative h-64 overflow-hidden">
+              <div className="relative h-36 sm:h-64 overflow-hidden">
                 <Image
                   src={product.image}
                   alt={product.name}
@@ -192,7 +192,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                     </span>
                   )}
                   {product.fastDelivery && (
-                    <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+                    <span className="hidden sm:inline-block bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
                       FAST DELIVERY
                     </span>
                   )}
@@ -204,7 +204,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                 </div>
 
                 {/* Wishlist Button */}
-                <button className="absolute top-3 right-3 w-9 h-9 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 group">
+                <button className="hidden sm:flex absolute top-3 right-3 w-9 h-9 bg-white rounded-full shadow-lg items-center justify-center hover:bg-gray-100 group">
                   <svg className="w-5 h-5 text-gray-600 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
@@ -212,7 +212,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
               </div>
 
               {/* Product Info */}
-              <div className="p-5">
+              <div className="p-3 sm:p-5">
                 {/* Category Badge */}
                 <div className="mb-2">
                   <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2.5 py-1 rounded-full">
@@ -221,12 +221,12 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                 </div>
 
                 {/* Product Name */}
-                <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-sm sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                   {product.name}
                 </h3>
 
                 {/* Rating */}
-                <div className="flex items-center mb-3">
+                <div className="hidden sm:flex items-center mb-3">
                   <div className="flex text-yellow-400">
                     {[...Array(5)].map((_, i) => (
                       <svg
@@ -245,7 +245,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                 </div>
 
                 {/* Features Pills */}
-                <div className="mb-4">
+                <div className="hidden sm:block mb-4">
                   <div className="flex flex-wrap gap-1.5">
                     {product.features.slice(0, 3).map((feature, index) => (
                       <span
@@ -260,7 +260,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
 
                 {/* Price */}
                 <div className="flex items-baseline mb-4">
-                  <span className="text-2xl font-bold text-gray-900">${product.price}</span>
+                  <span className="text-base sm:text-2xl font-bold text-gray-900">${product.price}</span>
                   {product.originalPrice > product.price && (
                     <>
                       <span className="text-lg text-gray-500 line-through ml-2">${product.originalPrice}</span>
@@ -274,7 +274,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                 {/* Action Buttons */}
                 <div className="space-y-2">
                   {product.inStock ? (
-                    <button className="w-full bg-[#0B1C2D] text-white py-3 px-4 rounded-md hover:bg-[#163554] transition-colors font-medium flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
+                    <button className="w-full bg-[#0B1C2D] text-white py-2 sm:py-3 px-2 sm:px-4 rounded-md hover:bg-[#163554] transition-colors text-xs sm:text-base font-medium flex items-center justify-center gap-1.5">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
@@ -288,7 +288,7 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
                       Out of Stock
                     </button>
                   )}
-                  <button className="w-full border-2 border-gray-200 text-[#0B1C2D] py-3 px-4 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors font-medium flex items-center justify-center gap-2">
+                  <button className="w-full border border-gray-200 text-[#0B1C2D] py-2 sm:py-3 px-2 rounded-md hover:bg-gray-50 text-xs sm:text-base font-medium">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -303,13 +303,13 @@ export default function Products({ limit, showAllLink = false }: ProductsProps) 
 
         {/* Footer actions */}
         <motion.div
-          className="mt-12 flex justify-center"
+          className="mt-8 sm:mt-12 flex justify-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.8 }}
         >
           {showAllLink && (
-            <Link href="/product" className="px-6 py-3 rounded-full bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-800 font-medium">
+            <Link href="/product" className="px-5 py-2.5 sm:px-6 sm:py-3 rounded-full bg-white border border-gray-200 text-sm sm:text-base hover:border-gray-300 text-gray-800 font-medium">
               Show all products
             </Link>
           )}

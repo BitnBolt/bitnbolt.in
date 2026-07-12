@@ -11,22 +11,23 @@ export default function Footer() {
 
   const quickLinks = [
     { name: 'Home', href: '/' },
-    { name: 'All Products', href: '/#products' },
-    { name: 'Custom Made', href: '/#custom' },
-    { name: 'IoT Solutions', href: '/#iot' },
-    { name: 'Deals', href: '/#deals' },
+    { name: 'All Products', href: '/product' },
+    { name: 'Custom PCB', href: '/pcb' },
+    { name: 'Firmware', href: '/firmware' },
+    { name: 'IoT DIY Kit', href: '/iot-board' },
     { name: 'About Us', href: '/about' },
     { name: 'Testimonials', href: '/testimonials' },
-    { name: 'Contact', href: '/#contact' }
+    { name: 'Contact', href: '/contact' }
   ];
 
   const categories = [
-    { name: 'Smart Home', href: '/#products' },
-    { name: 'Industrial IoT', href: '/#iot' },
-    { name: 'Custom Solutions', href: '/#custom' },
-    { name: 'Sensors & Devices', href: '/#products' },
-    { name: 'Software Platforms', href: '/#iot' },
-    { name: 'Consulting Services', href: '/#contact' }
+    { name: 'Smart Home', href: '/product' },
+    { name: 'Industrial IoT', href: '/#services' },
+    { name: 'Custom PCB Design', href: '/pcb' },
+
+    { name: 'Sensors & Devices', href: '/product' },
+    { name: 'Firmware & Software', href: '/firmware' },
+    { name: 'Consulting Services', href: '/contact' }
   ];
 
   const support = [
@@ -75,39 +76,39 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#0B1C2D] text-white pt-12 pb-10 relative overflow-hidden">
+    <footer className="bg-[#0B1C2D] text-white pt-8 sm:pt-12 pb-8 sm:pb-10 relative overflow-hidden">
       {/* Background elements removed for minimal design */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Newsletter Section */}
         <motion.div 
           id="newsletter"
-          className="bg-[#132A46] border border-white/10 rounded-lg p-8 md:p-10 mb-16 shadow-none"
+          className="bg-[#132A46] border border-white/10 rounded-lg p-4 sm:p-8 md:p-10 mb-8 sm:mb-16 shadow-none"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex flex-col md:flex-row md:items-center justify-between">
-            <div className="mb-6 md:mb-0 md:mr-8">
-              <h3 className="text-2xl md:text-3xl font-bold mb-2">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="md:mr-8">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1.5 sm:mb-2">
                 Stay Updated
               </h3>
-              <p className="text-gray-400">
+              <p className="text-gray-400 text-sm sm:text-base leading-snug sm:leading-relaxed">
                 Subscribe to our newsletter for the latest products, deals, and IoT insights.
               </p>
             </div>
-            <form onSubmit={handleSubscribe} className="flex-1 flex flex-col sm:flex-row gap-3">
+            <form onSubmit={handleSubscribe} className="flex-1 flex flex-col sm:flex-row gap-2 sm:gap-3">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 bg-white/5 backdrop-blur-sm text-white border border-white/10 rounded-md px-6 py-3 focus:outline-none focus:border-[#1E88E5] focus:bg-white/10 placeholder:text-gray-500 transition-colors"
+                className="flex-1 bg-white/5 backdrop-blur-sm text-white border border-white/10 rounded-md px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-[#1E88E5] focus:bg-white/10 placeholder:text-gray-500 transition-colors"
                 required
               />
               <button 
                 type="submit"
-                className="bg-[#1E88E5] hover:bg-[#1565C0] text-white font-semibold rounded-md px-6 py-3 transition-colors duration-300"
+                className="bg-[#1E88E5] hover:bg-[#1565C0] text-white font-semibold rounded-md px-5 py-2.5 sm:px-6 sm:py-3 text-sm sm:text-base transition-colors duration-300"
               >
                 Subscribe
               </button>
@@ -115,7 +116,7 @@ export default function Footer() {
           </div>
           {isSubscribed && (
             <motion.div 
-              className="mt-4 text-center text-green-400 bg-green-500/10 border border-green-500/20 rounded-md py-2 px-4 text-sm"
+              className="mt-3 sm:mt-4 text-center text-green-400 bg-green-500/10 border border-green-500/20 rounded-md py-2 px-4 text-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
@@ -125,25 +126,25 @@ export default function Footer() {
           )}
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12">
           {/* Company Info */}
           <motion.div 
-            className="lg:col-span-1"
+            className="col-span-2 lg:col-span-1"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="mb-8">
+            <div className="mb-5 sm:mb-8">
               <Link href="/" className="inline-block">
-                <h3 className="text-3xl font-bold">
+                <h3 className="text-2xl sm:text-3xl font-bold">
                   <span className="text-blue-400">Bit</span>nBolt
                 </h3>
               </Link>
-              <p className="text-gray-400 mt-4 text-sm leading-relaxed">
+              <p className="text-gray-400 mt-3 sm:mt-4 text-xs sm:text-sm leading-snug sm:leading-relaxed">
                 {companyInfo.tradeName} — your trusted partner for custom IoT solutions and
                 innovative products.
               </p>
-              <p className="text-gray-500 mt-3 text-xs leading-relaxed">
+              <p className="text-gray-500 mt-2 sm:mt-3 text-xs leading-relaxed">
                 {formatCompanyAddress(false)}
               </p>
               <p className="text-gray-500 mt-2 text-xs">
@@ -152,12 +153,12 @@ export default function Footer() {
             </div>
             
             {/* Social Links */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               {socialLinks.map((link, index) => (
                 <motion.a
                   key={link.name}
                   href={link.href}
-                  className="w-10 h-10 bg-white/5 border border-white/5 rounded-md flex items-center justify-center text-gray-400 hover:bg-[#1E88E5] hover:border-[#1E88E5] hover:text-white transition-all duration-300"
+                  className="w-9 h-9 sm:w-10 sm:h-10 bg-white/5 border border-white/5 rounded-md flex items-center justify-center text-gray-400 hover:bg-[#1E88E5] hover:border-[#1E88E5] hover:text-white transition-all duration-300"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 * index, duration: 0.3 }}
@@ -175,13 +176,13 @@ export default function Footer() {
             initial="hidden"
             animate="visible"
           >
-            <h4 className="text-lg font-semibold mb-6 text-white/90">Quick Links</h4>
-            <motion.ul className="space-y-3" variants={containerVariants}>
+            <h4 className="text-sm sm:text-lg font-semibold mb-3 sm:mb-6 text-white/90">Quick Links</h4>
+            <motion.ul className="space-y-2 sm:space-y-3" variants={containerVariants}>
               {quickLinks.map((link) => (
                 <motion.li key={link.name} variants={itemVariants}>
                   <Link 
                     href={link.href}
-                    className="text-gray-400 hover:text-white transition-colors text-sm flex items-center group"
+                    className="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm flex items-center group"
                   >
                     <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     {link.name}
@@ -197,13 +198,13 @@ export default function Footer() {
             initial="hidden"
             animate="visible"
           >
-            <h4 className="text-lg font-semibold mb-6 text-white/90">Categories</h4>
-            <motion.ul className="space-y-3" variants={containerVariants}>
+            <h4 className="text-sm sm:text-lg font-semibold mb-3 sm:mb-6 text-white/90">Categories</h4>
+            <motion.ul className="space-y-2 sm:space-y-3" variants={containerVariants}>
               {categories.map((category) => (
                 <motion.li key={category.name} variants={itemVariants}>
                   <Link 
                     href={category.href}
-                    className="text-gray-400 hover:text-white transition-colors text-sm flex items-center group"
+                    className="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm flex items-center group"
                   >
                     <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     {category.name}
@@ -215,17 +216,18 @@ export default function Footer() {
 
           {/* Support */}
           <motion.div
+            className="col-span-2 lg:col-span-1"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
           >
-            <h4 className="text-lg font-semibold mb-6 text-white/90">Support</h4>
-            <motion.ul className="space-y-3" variants={containerVariants}>
+            <h4 className="text-sm sm:text-lg font-semibold mb-3 sm:mb-6 text-white/90">Support</h4>
+            <motion.ul className="grid grid-cols-2 lg:grid-cols-1 gap-x-4 gap-y-2 lg:gap-y-3" variants={containerVariants}>
               {support.map((item) => (
                 <motion.li key={item.name} variants={itemVariants}>
                   <Link 
                     href={item.href}
-                    className="text-gray-400 hover:text-white transition-colors text-sm flex items-center group"
+                    className="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm flex items-center group"
                   >
                     <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     {item.name}
@@ -237,10 +239,10 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-white/10 mt-16 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-white/10 mt-8 sm:mt-16 pt-5 sm:pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3">
             <motion.div 
-              className="text-gray-400 text-sm mb-4 md:mb-0"
+              className="text-gray-400 text-xs sm:text-sm text-center md:text-left"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 0.5 }}
@@ -248,18 +250,18 @@ export default function Footer() {
               © {new Date().getFullYear()} {companyInfo.legalName}. All rights reserved.
             </motion.div>
             <motion.div 
-              className="flex flex-wrap justify-center gap-x-6 gap-y-2"
+              className="flex flex-wrap justify-center gap-x-4 sm:gap-x-6 gap-y-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9, duration: 0.5 }}
             >
-              <Link href="/#contact" className="text-gray-400 hover:text-white transition-colors text-sm">
+              <Link href="/#contact" className="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm">
                 Privacy Policy
               </Link>
-              <Link href="/#contact" className="text-gray-400 hover:text-white transition-colors text-sm">
+              <Link href="/#contact" className="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm">
                 Terms of Service
               </Link>
-              <Link href="/#contact" className="text-gray-400 hover:text-white transition-colors text-sm">
+              <Link href="/#contact" className="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm">
                 Cookie Policy
               </Link>
             </motion.div>

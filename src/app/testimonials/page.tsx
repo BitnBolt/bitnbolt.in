@@ -78,13 +78,13 @@ export default function TestimonialsPage() {
     <main className="min-h-screen">
       <Header forceWhite />
 
-      <section className={`bg-gradient-to-br from-blue-50 to-indigo-100 ${PAGE_TOP} pb-16`}>
+      <section className={`bg-gradient-to-br from-blue-50 to-indigo-100 ${PAGE_TOP} pb-8 sm:pb-16`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-6">
               What Our <span className="text-blue-600">Clients Say</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-sm sm:text-xl text-gray-600 max-w-3xl mx-auto">
               Don&apos;t just take our word for it. Here&apos;s what our clients have to say about 
               their experience with BitnBolt&apos;s IoT solutions.
             </p>
@@ -93,13 +93,13 @@ export default function TestimonialsPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section className="py-8 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">{stat.number}</div>
-                <div className="text-gray-600">{stat.label}</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600 mb-1 sm:mb-2">{stat.number}</div>
+                <div className="text-xs sm:text-base text-gray-600">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -107,29 +107,29 @@ export default function TestimonialsPage() {
       </section>
 
       {/* Testimonials Grid */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-8 sm:py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-8 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
               Client Success Stories
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-sm sm:text-xl text-gray-600 max-w-3xl mx-auto">
               Real results from real clients across various industries
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {testimonials.map((testimonial) => (
               <div
                 key={testimonial.id}
-                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-shadow duration-300"
+                className="bg-white rounded-xl p-4 sm:p-8 shadow-sm hover:shadow-lg transition-shadow duration-300"
               >
                 {/* Rating */}
-                <div className="flex mb-4">
+                <div className="flex mb-3 sm:mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <svg
                       key={i}
-                      className="w-5 h-5 text-yellow-400"
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -139,14 +139,14 @@ export default function TestimonialsPage() {
                 </div>
 
                 {/* Industry Badge */}
-                <div className="mb-4">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
+                <div className="mb-3 sm:mb-4">
+                  <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
                     {testimonial.industry}
                   </span>
                 </div>
 
                 {/* Content */}
-                <blockquote className="text-gray-700 mb-6 leading-relaxed">
+                <blockquote className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 leading-relaxed line-clamp-5 sm:line-clamp-none">
                   &quot;{testimonial.content}&quot;
                 </blockquote>
 
@@ -157,11 +157,11 @@ export default function TestimonialsPage() {
                     alt={testimonial.name}
                     width={48}
                     height={48}
-                    className="rounded-full object-cover mr-4"
+                    className="rounded-full object-cover mr-3 sm:mr-4 w-10 h-10 sm:w-12 sm:h-12"
                   />
-                  <div>
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-600">
+                  <div className="min-w-0">
+                    <div className="font-semibold text-gray-900 text-sm sm:text-base truncate">{testimonial.name}</div>
+                    <div className="text-xs sm:text-sm text-gray-600 line-clamp-1">
                       {testimonial.position} at {testimonial.company}
                     </div>
                   </div>
@@ -173,33 +173,33 @@ export default function TestimonialsPage() {
       </section>
 
       {/* Featured Case Study */}
-      <section className="py-16 bg-white">
+      <section className="py-8 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 md:p-12 text-white">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 sm:p-8 md:p-12 text-white">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-center">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
                   Featured Success Story
                 </h2>
-                <h3 className="text-xl font-semibold mb-4">TechFlow Industries</h3>
-                <p className="text-blue-100 text-lg mb-6">
+                <h3 className="text-base sm:text-xl font-semibold mb-3 sm:mb-4">TechFlow Industries</h3>
+                <p className="text-blue-100 text-sm sm:text-lg mb-4 sm:mb-6">
                 &quot;BitnBolt&apos;s IoT solution transformed our manufacturing process, 
                   reducing downtime by 40% and saving millions in operational costs. 
                   Their expertise and support have been invaluable to our success.&quot;
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  <button className="bg-white text-blue-600 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors">
                     Read Full Case Study
                   </button>
-                  <button className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+                  <button className="border-2 border-white text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold text-sm hover:bg-white hover:text-blue-600 transition-colors">
                     Watch Video
                   </button>
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-6xl mb-4">🏭</div>
-                <div className="text-2xl font-bold mb-2">40% Reduction</div>
-                <div className="text-blue-100">in Manufacturing Downtime</div>
+                <div className="text-4xl sm:text-6xl mb-2 sm:mb-4">🏭</div>
+                <div className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">40% Reduction</div>
+                <div className="text-sm sm:text-base text-blue-100">in Manufacturing Downtime</div>
               </div>
             </div>
           </div>
@@ -207,20 +207,20 @@ export default function TestimonialsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-8 sm:py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
             Join Our Success Stories
           </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-xl text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto">
             Ready to transform your business with cutting-edge IoT solutions? 
             Let&apos;s discuss how we can help you achieve similar results.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+            <button className="bg-blue-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors">
               Start Your Project
             </button>
-            <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+            <button className="border-2 border-blue-600 text-blue-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold text-sm hover:bg-blue-50 transition-colors">
               Schedule Consultation
             </button>
           </div>
@@ -230,4 +230,4 @@ export default function TestimonialsPage() {
       <Footer />
     </main>
   );
-} 
+}

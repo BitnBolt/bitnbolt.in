@@ -23,7 +23,8 @@ export async function GET() {
   try {
     const session = (await getServerSession(authOptions)) as Session | null;
     if (!session?.user?.id) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      // Guests use localStorage + /api/cart/resolve — return empty for unauthenticated API calls
+      return NextResponse.json({ items: [] });
     }
 
     await connectDB();

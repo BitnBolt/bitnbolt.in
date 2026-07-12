@@ -247,8 +247,8 @@ export default function OrderDetailPage() {
     return (
       <main className="min-h-screen bg-gray-100">
         <Header forceWhite />
-        <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${PAGE_TOP} pb-10`}>
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${PAGE_TOP} pb-8 sm:pb-10`}>
+          <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg text-sm">
             {error}
           </div>
         </div>
@@ -261,8 +261,8 @@ export default function OrderDetailPage() {
     return (
       <main className="min-h-screen bg-gray-100">
         <Header forceWhite />
-        <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${PAGE_TOP} pb-10`}>
-          <div className="text-gray-500 text-center">Order not found</div>
+        <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${PAGE_TOP} pb-8 sm:pb-10`}>
+          <div className="text-gray-500 text-center text-sm sm:text-base">Order not found</div>
         </div>
         <Footer />
       </main>
@@ -272,44 +272,44 @@ export default function OrderDetailPage() {
   return (
     <main className="min-h-screen bg-gray-100">
       <Header forceWhite />
-      <section className={`${PAGE_TOP} pb-10`}>
+      <section className={`${PAGE_TOP} pb-8 sm:pb-10`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Order Details</h1>
-              <p className="text-gray-500">Order #{order.orderId}</p>
+          <div className="flex justify-between items-start gap-3 mb-4 sm:mb-6">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Order Details</h1>
+              <p className="text-sm text-gray-500 truncate">Order #{order.orderId}</p>
             </div>
-            <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+            <span className={`shrink-0 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${getStatusColor(order.status)}`}>
               {getStatusText(order.status)}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Order Items */}
-              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold mb-4">Order Items</h2>
-                <div className="space-y-4">
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+                <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Order Items</h2>
+                <div className="space-y-2 sm:space-y-4">
                   {order.items.map((item, index) => (
-                    <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div key={index} className="flex items-start sm:items-center gap-3 sm:gap-4 p-2.5 sm:p-4 bg-gray-50 rounded-lg">
                       <Image
                         src={item.productId?.images?.[0] || '/next.svg'}
                         alt={item.productId?.name || 'Product'}
                         width={80}
                         height={80}
-                        className="rounded object-cover"
+                        className="rounded object-cover w-14 h-14 sm:w-20 sm:h-20 shrink-0"
                       />
-                      <div className="flex-1">
-                        <h3 className="font-medium">{item.productId?.name || 'Product Unavailable'}</h3>
-                        <p className="text-sm text-gray-500 mb-2">{item.productId?.description || 'Description not available'}</p>
-                        <div className="flex gap-4 text-sm">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-sm sm:text-base">{item.productId?.name || 'Product Unavailable'}</h3>
+                        <p className="text-sm text-gray-500 mb-1 sm:mb-2 line-clamp-2">{item.productId?.description || 'Description not available'}</p>
+                        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-sm">
                           <span>Qty: {item.quantity}</span>
-                          <span>Sold by: {item.vendorId?.businessName || item.vendorId?.seller_name || 'Vendor Unavailable'}</span>
+                          <span className="truncate">Sold by: {item.vendorId?.businessName || item.vendorId?.seller_name || 'Vendor Unavailable'}</span>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-lg">₹{(item.finalPrice * item.quantity).toFixed(2)}</p>
+                      <div className="text-right shrink-0">
+                        <p className="font-semibold text-base sm:text-lg">₹{(item.finalPrice * item.quantity).toFixed(2)}</p>
                       </div>
                     </div>
                   ))}
@@ -317,9 +317,9 @@ export default function OrderDetailPage() {
               </div>
 
               {/* Shipping Address */}
-              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold mb-4">Shipping Address</h2>
-                <div className="space-y-2">
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+                <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Shipping Address</h2>
+                <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
                   <p className="font-medium">{order.shippingAddress.fullName}</p>
                   <p>{order.shippingAddress.addressLine1}</p>
                   {order.shippingAddress.addressLine2 && (
@@ -334,18 +334,18 @@ export default function OrderDetailPage() {
               </div>
 
               {/* Status History */}
-              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold mb-4">Order Timeline</h2>
-                <div className="space-y-3">
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+                <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Order Timeline</h2>
+                <div className="space-y-2 sm:space-y-3">
                   {order.statusHistory.map((history, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded">
-                      <div className={`w-3 h-3 rounded-full ${getStatusColor(history.status).replace('bg-', 'bg-').replace('text-', '')}`}></div>
-                      <div className="flex-1">
-                        <p className="font-medium">{getStatusText(history.status)}</p>
+                    <div key={index} className="flex items-start sm:items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 bg-gray-50 rounded">
+                      <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 mt-1.5 sm:mt-0 shrink-0 rounded-full ${getStatusColor(history.status).replace('bg-', 'bg-').replace('text-', '')}`}></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm sm:text-base">{getStatusText(history.status)}</p>
                         {history.comment && <p className="text-sm text-gray-500">{history.comment}</p>}
                         {history.updatedBy && <p className="text-xs text-gray-400">Updated by: {history.updatedBy}</p>}
                       </div>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs sm:text-sm text-gray-500 shrink-0 text-right">
                         {new Date(history.timestamp).toLocaleString()}
                       </p>
                     </div>
@@ -355,20 +355,20 @@ export default function OrderDetailPage() {
 
               {/* Tracking Information */}
               {order.deliveryDetails.awbCode && (
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold">Package Tracking</h2>
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-3 sm:mb-4">
+                    <h2 className="text-base sm:text-lg font-semibold">Package Tracking</h2>
                     <button
                       onClick={fetchTrackingData}
                       disabled={loadingTracking}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                      className="px-3 py-2 sm:px-4 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                     >
                       {loadingTracking ? 'Loading...' : 'Refresh Tracking'}
                     </button>
                   </div>
                   
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
+                  <div className="space-y-2 text-sm sm:text-base">
+                    <div className="flex justify-between gap-2">
                       <span>AWB Code:</span>
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-sm">{order.deliveryDetails.awbCode}</span>
@@ -383,7 +383,7 @@ export default function OrderDetailPage() {
                       </div>
                     </div>
                     {order.deliveryDetails.courierName && (
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span>Courier:</span>
                         <span className="font-medium">{order.deliveryDetails.courierName}</span>
                       </div>
@@ -391,12 +391,12 @@ export default function OrderDetailPage() {
                   </div>
 
                   {trackingData && (
-                    <div className="mt-4">
-                      <h3 className="font-medium mb-2">Tracking Details</h3>
-                      <div className="space-y-2">
+                    <div className="mt-3 sm:mt-4">
+                      <h3 className="font-medium mb-2 text-sm sm:text-base">Tracking Details</h3>
+                      <div className="space-y-1.5 sm:space-y-2">
                         {trackingData.tracking_details?.map((track: { status: string; location: string; time: string }, index: number) => (
-                          <div key={index} className="p-3 bg-gray-50 rounded">
-                            <p className="font-medium">{track.status}</p>
+                          <div key={index} className="p-2.5 sm:p-3 bg-gray-50 rounded">
+                            <p className="font-medium text-sm sm:text-base">{track.status}</p>
                             <p className="text-sm text-gray-500">{track.location}</p>
                             <p className="text-xs text-gray-400">{track.time}</p>
                           </div>
@@ -409,11 +409,11 @@ export default function OrderDetailPage() {
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Order Summary */}
-              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
-                <div className="space-y-3">
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+                <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Order Summary</h2>
+                <div className="space-y-2 sm:space-y-3 text-sm sm:text-base">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
                     <span>₹{order.orderSummary.itemsTotal.toFixed(2)}</span>
@@ -426,7 +426,7 @@ export default function OrderDetailPage() {
                     <span>Tax (GST)</span>
                     <span>₹{order.orderSummary.tax.toFixed(2)}</span>
                   </div>
-                  <div className="border-t pt-3 flex justify-between font-semibold text-lg">
+                  <div className="border-t pt-2.5 sm:pt-3 flex justify-between font-semibold text-base sm:text-lg">
                     <span>Total</span>
                     <span>₹{order.orderSummary.totalAmount.toFixed(2)}</span>
                   </div>
@@ -434,29 +434,29 @@ export default function OrderDetailPage() {
               </div>
 
               {/* Payment Information */}
-              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold mb-4">Payment Information</h2>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+                <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Payment Information</h2>
+                <div className="space-y-2 text-sm sm:text-base">
+                  <div className="flex justify-between gap-2">
                     <span>Method</span>
                     <span className="font-medium">{order.paymentDetails.method.toUpperCase()}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between gap-2 items-center">
                     <span>Status</span>
                     <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(order.paymentDetails.status)}`}>
                       {order.paymentDetails.status.charAt(0).toUpperCase() + order.paymentDetails.status.slice(1)}
                     </span>
                   </div>
                   {order.paymentDetails.transactionId && (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between gap-2">
                       <span>Transaction ID</span>
-                      <span className="text-sm font-mono">{order.paymentDetails.transactionId}</span>
+                      <span className="text-sm font-mono break-all text-right">{order.paymentDetails.transactionId}</span>
                     </div>
                   )}
                   {order.paymentDetails.paidAt && (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between gap-2">
                       <span>Paid At</span>
-                      <span className="text-sm">{new Date(order.paymentDetails.paidAt).toLocaleString()}</span>
+                      <span className="text-sm text-right">{new Date(order.paymentDetails.paidAt).toLocaleString()}</span>
                     </div>
                   )}
                 </div>
@@ -464,27 +464,27 @@ export default function OrderDetailPage() {
 
               {/* Delivery Information */}
               {order.deliveryDetails.provider && (
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <h2 className="text-lg font-semibold mb-4">Delivery Information</h2>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6">
+                  <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Delivery Information</h2>
+                  <div className="space-y-2 text-sm sm:text-base">
+                    <div className="flex justify-between gap-2">
                       <span>Provider</span>
                       <span className="font-medium">{order.deliveryDetails.provider}</span>
                     </div>
                     {order.deliveryDetails.totalShippingCost && (
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span>Total Shipping Cost</span>
                         <span className="font-medium">₹{order.deliveryDetails.totalShippingCost.toFixed(2)}</span>
                       </div>
                     )}
                     {order.deliveryDetails.trackingId && (
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span>Tracking ID</span>
-                        <span className="font-mono text-sm">{order.deliveryDetails.trackingId}</span>
+                        <span className="font-mono text-sm break-all text-right">{order.deliveryDetails.trackingId}</span>
                       </div>
                     )}
                     {order.deliveryDetails.awbCode && (
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span>AWB Code</span>
                         <div className="flex items-center gap-2">
                           <span className="font-mono text-sm">{order.deliveryDetails.awbCode}</span>
@@ -500,7 +500,7 @@ export default function OrderDetailPage() {
                       </div>
                     )}
                     {order.deliveryDetails.courierName && (
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span>Courier</span>
                         <span className="font-medium">{order.deliveryDetails.courierName}</span>
                       </div>
@@ -509,16 +509,16 @@ export default function OrderDetailPage() {
                   
                   {/* Multi-vendor shipments */}
                   {order.deliveryDetails.vendorShipments && order.deliveryDetails.vendorShipments.length > 0 && (
-                    <div className="mt-4 pt-4 border-t">
-                      <h3 className="font-medium mb-3">Vendor Shipments</h3>
-                      <div className="space-y-3">
+                    <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t">
+                      <h3 className="font-medium mb-2 sm:mb-3 text-sm sm:text-base">Vendor Shipments</h3>
+                      <div className="space-y-2 sm:space-y-3">
                         {order.deliveryDetails.vendorShipments.map((shipment, index: number) => (
-                          <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                            <div className="flex justify-between items-start">
-                              <div>
+                          <div key={index} className="bg-gray-50 p-2.5 sm:p-3 rounded-lg">
+                            <div className="flex justify-between items-start gap-2">
+                              <div className="min-w-0">
                                 <p className="text-sm font-medium">Vendor Shipment #{index + 1}</p>
                                 {shipment.shiprocketOrderId && (
-                                  <p className="text-xs text-gray-600">Order ID: {shipment.shiprocketOrderId}</p>
+                                  <p className="text-xs text-gray-600 break-all">Order ID: {shipment.shiprocketOrderId}</p>
                                 )}
                                 {shipment.awbCode && (
                                   <p className="text-xs text-gray-600">AWB: {shipment.awbCode}</p>
@@ -527,7 +527,7 @@ export default function OrderDetailPage() {
                                   <p className="text-xs text-gray-600">Courier: {shipment.courierName}</p>
                                 )}
                               </div>
-                              <div className="text-right">
+                              <div className="text-right shrink-0">
                                 <span className={`px-2 py-1 rounded text-xs font-medium ${
                                   shipment.shiprocketStatus === 'delivered' ? 'bg-green-100 text-green-800' :
                                   shipment.shiprocketStatus === 'shipped' ? 'bg-blue-100 text-blue-800' :

@@ -56,21 +56,20 @@ function ProductSearchContent() {
 
   return (
     <>
-      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
         Results for <span className="text-blue-600">&quot;{keyword}&quot;</span>
       </h2>
-      {/* Optionally, add a filter/sort bar here later */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8">
         {dummyProducts.map(product => (
-          <div key={product.id} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
-            <div className="relative h-48 w-full overflow-hidden">
+          <div key={product.id} className="bg-white rounded-xl sm:rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
+            <div className="relative h-36 sm:h-48 w-full overflow-hidden">
               <Image src={product.image} alt={product.name} width={400} height={300} className="w-full h-full object-cover" />
             </div>
-            <div className="p-4 flex-1 flex flex-col justify-between">
-              <span className="inline-block mb-1 px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full font-medium w-fit">{product.category}</span>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
-              <p className="text-gray-500 text-sm mb-2 line-clamp-2">{product.description}</p>
-              <div className="flex items-center mb-2">
+            <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
+              <span className="hidden sm:inline-block mb-1 px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full font-medium w-fit">{product.category}</span>
+              <h3 className="text-sm sm:text-lg font-semibold text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
+              <p className="hidden sm:block text-gray-500 text-sm mb-2 line-clamp-2">{product.description}</p>
+              <div className="hidden sm:flex items-center mb-2">
                 <div className="flex text-yellow-400 mr-2">
                   {[...Array(5)].map((_, i) => (
                     <svg
@@ -85,11 +84,11 @@ function ProductSearchContent() {
                 </div>
                 <span className="text-sm text-gray-600">{product.rating} ({product.reviewCount})</span>
               </div>
-              <div className="flex items-center justify-between mt-auto gap-2">
-                <span className="text-xl font-bold text-blue-600">${product.price}</span>
-                <div className="flex gap-2">
-                  <Link href={`/product/${product.id}`} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm text-center">View</Link>
-                  <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors font-medium text-sm">Add to Cart</button>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-auto gap-2">
+                <span className="text-base sm:text-xl font-bold text-blue-600">${product.price}</span>
+                <div className="flex gap-1.5 sm:gap-2">
+                  <Link href={`/product/${product.id}`} className="flex-1 sm:flex-none bg-blue-600 text-white px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs sm:text-sm text-center">View</Link>
+                  <button className="flex-1 sm:flex-none bg-teal-600 text-white px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg hover:bg-teal-700 transition-colors font-medium text-xs sm:text-sm">Add</button>
                 </div>
               </div>
             </div>
@@ -104,9 +103,9 @@ export default function ProductSearchPage() {
   return (
     <main className="min-h-screen">
       <Header forceWhite />
-      <section className={`${PAGE_TOP} pb-10 bg-gray-50 min-h-[60vh]`}>
+      <section className={`${PAGE_TOP} pb-8 sm:pb-10 bg-gray-50 min-h-[60vh]`}>
         <div className="max-w-6xl mx-auto px-4">
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div className="text-sm sm:text-base">Loading...</div>}>
             <ProductSearchContent />
           </Suspense>
         </div>
@@ -114,4 +113,4 @@ export default function ProductSearchPage() {
       <Footer />
     </main>
   );
-} 
+}

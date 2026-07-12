@@ -89,10 +89,27 @@ html {
   background: #2563eb;
 }
 
-/* Focus styles */
+/* Focus styles — keyboard only on interactive controls; inputs use their own border styles */
 *:focus {
+  outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+summary:focus-visible {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
+}
+
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 /* Button hover effects */
