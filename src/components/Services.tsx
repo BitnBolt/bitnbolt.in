@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
@@ -104,7 +104,7 @@ function ServiceCard({
   variants,
 }: {
   service: Service;
-  variants: object;
+  variants: Variants;
 }) {
   const body = <ServiceCardBody service={service} />;
 
