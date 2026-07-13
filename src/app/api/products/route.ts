@@ -35,9 +35,9 @@ export async function GET(req: Request) {
       filter.finalPrice = priceFilter;
     }
 
-    const sort = dealsOnly
-      ? ({ discount: -1 as const, isFeatured: -1 as const, updatedAt: -1 as const })
-      : ({ isFeatured: -1 as const, createdAt: -1 as const });
+    const sort: Record<string, 1 | -1> = dealsOnly
+      ? { discount: -1, isFeatured: -1, updatedAt: -1 }
+      : { isFeatured: -1, createdAt: -1 };
 
     const total = await Product.countDocuments(filter);
     const items = await Product.find(filter)
