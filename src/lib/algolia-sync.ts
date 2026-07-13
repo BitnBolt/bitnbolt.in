@@ -6,7 +6,7 @@ import { SITE_SEARCH_RECORDS, type SiteSearchRecord } from '@/lib/search-content
 export type { SiteSearchRecord };
 export type AlgoliaProductRecord = SiteSearchRecord & {
   type: 'product';
-  rankBoost: 100;
+  rankBoost: number;
 };
 
 type ProductLike = Partial<IProduct> & {

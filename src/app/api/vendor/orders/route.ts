@@ -54,11 +54,12 @@ export async function GET(req: Request) {
 
     const filteredOrders = orders.map((order) => {
       const items = order.items
-        .filter((item) => vendorIdOfItem(item) === vendorKey)
-        .map((item) => sanitizeOrderItemForVendor(item));
+        .filter((item: { vendorId?: unknown }) => vendorIdOfItem(item) === vendorKey)
+        .map((item: unknown) => sanitizeOrderItemForVendor(item));
 
       const vendorSubtotal = items.reduce(
-        (sum, item) => sum + item.basePrice * item.quantity,
+        (sum: number, item: { basePrice: number; quantity: number }) =>
+          sum + item.basePrice * item.quantity,
         0
       );
 
