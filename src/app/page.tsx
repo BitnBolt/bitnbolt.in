@@ -25,7 +25,7 @@ export default async function Home() {
       <HomeContent>
         <Hero />
         <Deals />
-        <Products limit={3} showAllLink={true} />
+        <Products limit={4} showAllLink={true} />
         <Services />
         <Industries />
         <Features />

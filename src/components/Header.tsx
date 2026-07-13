@@ -145,8 +145,8 @@ export default function Header({ forceWhite = false }: HeaderProps) {
           {/* Search Bar - Algolia */}
           <HeaderSearch isScrolled={isScrolled} />
 
-          {/* Right Side Actions */}
-          <div className="flex items-center space-x-1.5 sm:space-x-4">
+          {/* Right Side Actions — shrink-0 so cart/hamburger never get pushed off small screens */}
+          <div className="flex items-center shrink-0 space-x-1.5 sm:space-x-4">
             {/* Account Section */}
             {status === 'loading' ? (
               <HeaderAuthSkeleton />

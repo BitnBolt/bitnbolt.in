@@ -94,7 +94,7 @@ export default function HeaderSearch({ isScrolled }: Props) {
   };
 
   return (
-    <div ref={wrapRef} className="relative flex flex-1 max-w-sm sm:max-w-xl mx-2 sm:mx-6">
+    <div ref={wrapRef} className="relative flex flex-1 min-w-0 max-w-sm sm:max-w-xl mx-1.5 sm:mx-6">
       <form
         onSubmit={onSubmit}
         className={`flex items-center rounded-full shadow-md sm:shadow-lg border sm:border-2 pl-1.5 sm:pl-2 w-full transition-colors outline-none ${

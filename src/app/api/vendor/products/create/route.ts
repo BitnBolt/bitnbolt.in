@@ -5,6 +5,7 @@ import { verifyVendorToken, extractTokenFromHeader } from '@/lib/vendor-jwt';
 import slugify from 'slugify';
 import { filterKeyValuePairs, filterTextLines } from '@/lib/product-detail';
 import { syncProductToAlgolia } from '@/lib/algolia-sync';
+import { validatePricingOrThrow } from '@/lib/product-pricing';
 
 export async function POST(request: NextRequest) {
   try {
@@ -102,7 +103,19 @@ export async function POST(request: NextRequest) {
       counter++;
     }
 
-    // Create product with default values
+    // Vendor may only set base price; margin/discount are admin-controlled
+    const profitMargin = 80;
+    const discount = 0;
+    let finalPrice: number;
+    try {
+      finalPrice = validatePricingOrThrow(Number(productData.basePrice), profitMargin, discount);
+    } catch (err) {
+      return NextResponse.json(
+        { success: false, message: err instanceof Error ? err.message : 'Invalid pricing' },
+        { status: 400 }
+      );
+    }
+
     const product = new Product({
       ...productData,
       whatsInTheBox: filterTextLines(productData.whatsInTheBox),
@@ -111,8 +124,9 @@ export async function POST(request: NextRequest) {
       specifications: filterKeyValuePairs(productData.specifications),
       slug,
       vendorId: tokenPayload.vendorId,
-      profitMargin: 80, // Default 80% markup
-      discount: 0,      // Default no discount
+      profitMargin,
+      discount,
+      finalPrice,
       isFeatured: false,
       isPublished: false,
       isSuspended: false,
@@ -125,10 +139,6 @@ export async function POST(request: NextRequest) {
         sales: 0
       }
     });
-
-    // Calculate final price
-    const priceWithMargin = product.basePrice * (1 + product.profitMargin / 100);
-    product.finalPrice = priceWithMargin * (1 - product.discount / 100);
 
     await product.save();
 

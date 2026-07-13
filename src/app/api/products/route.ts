@@ -39,6 +39,7 @@ export async function GET(req: Request) {
         finalPrice: 1,
         discount: 1,
         basePrice: 1,
+        profitMargin: 1,
         rating: 1,
         category: 1,
         features: 1,

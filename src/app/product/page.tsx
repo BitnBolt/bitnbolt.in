@@ -19,6 +19,7 @@ type ApiProduct = {
   images: string[];
   finalPrice: number;
   discount?: number;
+  profitMargin?: number;
   basePrice: number;
   rating?: { average?: number; count?: number };
   category: string;
@@ -87,19 +88,25 @@ export default function Page() {
           total: number;
           totalPages: number;
         };
-        const mapped: UiProduct[] = (data.items || []).map((p) => ({
-          id: p._id,
-          slug: p.slug,
-          name: p.name,
-          category: p.category,
-          price: p.finalPrice,
-          originalPrice: p.basePrice,
-          rating: p.rating?.average ?? 0,
-          reviewCount: p.rating?.count ?? 0,
-          image: p.images?.[0] || '/next.svg',
-          features: (p.features || []).slice(0, 3).map((f) => `${f.key}: ${f.value}`),
-          inStock: (p.stock ?? 0) > 0,
-        }));
+        const mapped: UiProduct[] = (data.items || []).map((p) => {
+          const margin = Number(p.profitMargin) || 0;
+          const disc = Number(p.discount) || 0;
+          const marginedPrice =
+            Math.round(p.basePrice * (1 + margin / 100) * 100) / 100;
+          return {
+            id: p._id,
+            slug: p.slug,
+            name: p.name,
+            category: p.category,
+            price: p.finalPrice,
+            originalPrice: disc > 0 ? marginedPrice : p.finalPrice,
+            rating: p.rating?.average ?? 0,
+            reviewCount: p.rating?.count ?? 0,
+            image: p.images?.[0] || '/next.svg',
+            features: (p.features || []).slice(0, 3).map((f) => `${f.key}: ${f.value}`),
+            inStock: (p.stock ?? 0) > 0,
+          };
+        });
         setItems(mapped);
         setTotal(data.total || 0);
         setTotalPages(data.totalPages || 1);

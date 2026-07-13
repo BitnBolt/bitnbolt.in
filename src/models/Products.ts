@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { calculateFinalPrice, isValidCustomerPrice } from '@/lib/product-pricing';
 
 export interface IProduct extends mongoose.Document {
     name: string;
@@ -266,17 +267,18 @@ const productSchema = new mongoose.Schema<IProduct>({
 
 // Middleware to calculate final price before saving
 productSchema.pre('save', function(next) {
-    // Calculate price with profit margin
-    const priceWithMargin = this.basePrice * (1 + this.profitMargin / 100);
-    
-    // Apply discount if any
-    this.finalPrice = priceWithMargin * (1 - this.discount / 100);
-    
+    this.finalPrice = calculateFinalPrice(this.basePrice, this.profitMargin, this.discount);
+
+    if (!isValidCustomerPrice(this.basePrice, this.profitMargin, this.discount)) {
+        return next(new Error(
+            `Final price (₹${this.finalPrice}) must be greater than base price (₹${this.basePrice}). Reduce discount or increase margin.`
+        ));
+    }
+
     const now = new Date();
     this.updatedAt = new Date(now.getTime() + (5.5 * 60 * 60 * 1000)); // Add 5.5 hours for IST
     next();
 });
-
 // Indexes for better search performance
 productSchema.index({ name: 'text', description: 'text', tags: 'text' });
 productSchema.index({ slug: 1 }, { unique: true });

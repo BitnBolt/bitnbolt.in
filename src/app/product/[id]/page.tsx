@@ -150,13 +150,18 @@ export default function ProductViewPage() {
     return () => controller.abort();
   }, [idOrSlug, status, isAuthenticated]);
 
+  const marginedPrice = useMemo(() => {
+    if (!product) return 0;
+    return Math.round(product.basePrice * (1 + (product.profitMargin || 0) / 100) * 100) / 100;
+  }, [product]);
+
   const discountPct = useMemo(() => {
     if (!product) return 0;
-    if (product.basePrice && product.finalPrice && product.basePrice > product.finalPrice) {
-      return Math.round(((product.basePrice - product.finalPrice) / product.basePrice) * 100);
+    if (product.discount > 0 && marginedPrice > product.finalPrice) {
+      return Math.round(((marginedPrice - product.finalPrice) / marginedPrice) * 100);
     }
     return Math.round(product.discount || 0);
-  }, [product]);
+  }, [product, marginedPrice]);
 
   const detailSections = useMemo(() => {
     if (!product) {
@@ -276,9 +281,9 @@ export default function ProductViewPage() {
               </div>
               <div className="mb-3 sm:mb-4 flex flex-wrap items-center gap-2 sm:gap-3">
                 <span className="text-2xl sm:text-3xl font-bold text-blue-600">₹{product.finalPrice.toFixed(2)}</span>
-                {product.basePrice > product.finalPrice && (
+                {product.discount > 0 && marginedPrice > product.finalPrice && (
                   <>
-                    <span className="text-base sm:text-lg text-gray-500 line-through">₹{product.basePrice.toFixed(2)}</span>
+                    <span className="text-base sm:text-lg text-gray-500 line-through">₹{marginedPrice.toFixed(2)}</span>
                     <span className="text-xs sm:text-sm text-green-600 font-medium">{discountPct}% off</span>
                   </>
                 )}
