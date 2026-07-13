@@ -112,6 +112,11 @@ function HitRow({ hit }: { hit: AlgoliaHit }) {
           {hit.category ? (
             <span className="text-[10px] text-gray-400 truncate">{hit.category}</span>
           ) : null}
+          {isProduct && hit.isFeatured ? (
+            <span className="text-[10px] font-semibold text-amber-950 bg-[#FFD166] px-1.5 py-0.5 rounded-full">
+              Featured
+            </span>
+          ) : null}
         </span>
         <span className="block text-sm sm:text-base font-semibold text-[#0B1C2D] truncate">
           <Highlight

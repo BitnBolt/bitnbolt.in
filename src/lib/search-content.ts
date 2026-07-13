@@ -19,6 +19,7 @@ export type SiteSearchRecord = {
   ratingCount?: number;
   stock?: number;
   isPublished?: boolean;
+  isFeatured?: boolean;
 };
 
 /** Services, pages, and FAQs — searchable alongside products. */

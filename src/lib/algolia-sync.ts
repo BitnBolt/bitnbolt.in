@@ -24,6 +24,7 @@ type ProductLike = Partial<IProduct> & {
   stock?: number;
   isPublished?: boolean;
   isSuspended?: boolean;
+  isFeatured?: boolean;
 };
 
 function getAdminClient() {
@@ -40,7 +41,7 @@ export function toAlgoliaProductRecord(product: ProductLike): AlgoliaProductReco
   return {
     objectID: id.startsWith('product:') ? id : `product:${id}`,
     type: 'product',
-    rankBoost: 100,
+    rankBoost: product.isFeatured ? 150 : 100,
     title: product.name || '',
     description: product.description || '',
     body: [
@@ -64,6 +65,7 @@ export function toAlgoliaProductRecord(product: ProductLike): AlgoliaProductReco
     ratingCount: Number(product.rating?.count) || 0,
     stock: Number(product.stock) || 0,
     isPublished: Boolean(product.isPublished),
+    isFeatured: Boolean(product.isFeatured),
   };
 }
 
@@ -147,6 +149,7 @@ export const ALGOLIA_INDEX_SETTINGS = {
     'ratingCount',
     'stock',
     'isPublished',
+    'isFeatured',
   ],
 };
 

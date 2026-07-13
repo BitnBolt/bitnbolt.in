@@ -33,6 +33,7 @@ export type AlgoliaHit = {
   ratingCount?: number;
   stock?: number;
   isPublished?: boolean;
+  isFeatured?: boolean;
   /** @deprecated prefer title — kept for older product-only records */
   name?: string;
 };

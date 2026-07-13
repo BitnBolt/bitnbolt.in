@@ -25,6 +25,7 @@ type ApiProduct = {
   rating?: { average?: number; count?: number };
   category: string;
   stock: number;
+  isFeatured?: boolean;
 };
 
 type UiProduct = {
@@ -39,6 +40,7 @@ type UiProduct = {
   reviewCount: number;
   image: string;
   inStock: boolean;
+  isFeatured: boolean;
 };
 
 function roundMoney(value: number) {
@@ -116,6 +118,7 @@ export default function Page() {
             reviewCount: p.rating?.count ?? 0,
             image: p.images?.[0] || '/next.svg',
             inStock: (p.stock ?? 0) > 0,
+            isFeatured: Boolean(p.isFeatured),
           };
         });
         setItems(mapped);
@@ -406,13 +409,25 @@ export default function Page() {
                                 OUT OF STOCK
                               </span>
                             )}
+                            {p.isFeatured && (
+                              <span className="absolute top-2 right-2 bg-[#FFD166] text-amber-950 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold shadow">
+                                Featured
+                              </span>
+                            )}
                           </div>
                         </Link>
 
                         <div className="p-3 sm:p-4 flex flex-col flex-1">
-                          <span className="hidden sm:inline-block text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full w-fit mb-2">
-                            {p.category}
-                          </span>
+                          <div className="hidden sm:flex flex-wrap items-center gap-1.5 mb-2">
+                            <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full w-fit">
+                              {p.category}
+                            </span>
+                            {p.isFeatured && (
+                              <span className="text-xs font-semibold text-amber-900 bg-[#FFD166]/70 px-2 py-0.5 rounded-full w-fit">
+                                Featured
+                              </span>
+                            )}
+                          </div>
 
                           <Link href={`/product/${p.slug || p.id}`}>
                             <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1.5 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem] group-hover:text-blue-600 transition-colors">

@@ -4,7 +4,7 @@ import Order from '@/models/Order';
 import Product from '@/models/Products';
 import Vendor from '@/models/Vendor';
 import jwt from 'jsonwebtoken';
-import { sanitizeOrderItemForVendor } from '@/lib/vendor-pricing-visibility';
+import { sanitizeOrderItemForVendor, vendorIdOfItem } from '@/lib/vendor-pricing-visibility';
 
 export async function GET(
   req: Request,
@@ -48,8 +48,9 @@ export async function GET(
     }
 
     // Filter items to only show this vendor's products
-    const vendorItems = order.items.filter((item: { vendorId: { _id: string } }) => 
-      String(item.vendorId._id) === String(vendor._id)
+    const vendorKey = String(vendor._id);
+    const vendorItems = order.items.filter(
+      (item: { vendorId?: unknown }) => vendorIdOfItem(item) === vendorKey
     );
 
     if (vendorItems.length === 0) {
@@ -59,7 +60,8 @@ export async function GET(
     }
 
     // Vendor payout / display totals use base price only (hide admin margin & discount)
-    const vendorSubtotal = vendorItems.reduce(
+    const sanitizedItems = vendorItems.map((item: unknown) => sanitizeOrderItemForVendor(item));
+    const vendorSubtotal = sanitizedItems.reduce(
       (sum: number, item: { basePrice: number; quantity: number }) =>
         sum + item.basePrice * item.quantity,
       0
@@ -69,7 +71,7 @@ export async function GET(
       success: true,
       order: {
         ...order.toObject(),
-        items: vendorItems.map((item: unknown) => sanitizeOrderItemForVendor(item)),
+        items: sanitizedItems,
         vendorSubtotal,
         orderSummary: {
           itemsTotal: vendorSubtotal,
