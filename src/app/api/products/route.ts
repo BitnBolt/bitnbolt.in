@@ -35,6 +35,7 @@ export async function GET(req: Request) {
       .select({
         name: 1,
         slug: 1,
+        description: 1,
         images: 1,
         finalPrice: 1,
         discount: 1,
@@ -42,7 +43,6 @@ export async function GET(req: Request) {
         profitMargin: 1,
         rating: 1,
         category: 1,
-        features: 1,
         stock: 1,
         isPublished: 1,
       })
