@@ -4,7 +4,7 @@
  * Usage:
  *   npm run sync-algolia
  *
- * Products get rankBoost 100 so they rank above services when both match.
+ * Products get rankBoost 100 (150 if featured) so they rank above services when both match.
  */
 
 const path = require('path');
@@ -28,10 +28,11 @@ const Product = mongoose.models.Product || mongoose.model('Product', productSche
 
 function toProductRecord(doc) {
   const id = String(doc._id);
+  const isFeatured = Boolean(doc.isFeatured);
   return {
     objectID: `product:${id}`,
     type: 'product',
-    rankBoost: 100,
+    rankBoost: isFeatured ? 150 : 100,
     title: doc.name || '',
     description: doc.description || '',
     body: [doc.name, doc.brand, doc.category, ...(Array.isArray(doc.tags) ? doc.tags : []), doc.description]
@@ -49,6 +50,7 @@ function toProductRecord(doc) {
     ratingCount: Number(doc.rating?.count) || 0,
     stock: Number(doc.stock) || 0,
     isPublished: Boolean(doc.isPublished),
+    isFeatured,
   };
 }
 
@@ -86,6 +88,28 @@ async function main() {
         'filterOnly(isPublished)',
       ],
       customRanking: ['desc(rankBoost)', 'desc(ratingAverage)', 'desc(ratingCount)'],
+      attributesToRetrieve: [
+        'objectID',
+        'type',
+        'rankBoost',
+        'title',
+        'name',
+        'description',
+        'body',
+        'url',
+        'image',
+        'category',
+        'brand',
+        'tags',
+        'slug',
+        'finalPrice',
+        'discount',
+        'ratingAverage',
+        'ratingCount',
+        'stock',
+        'isPublished',
+        'isFeatured',
+      ],
     },
   });
 
