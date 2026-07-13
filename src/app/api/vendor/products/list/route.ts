@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     const sortOptions: { [key: string]: 1 | -1 } = {};
     switch (sortBy) {
       case 'price':
-        sortOptions.finalPrice = sortOrder === 'asc' ? 1 : -1;
+        sortOptions.basePrice = sortOrder === 'asc' ? 1 : -1;
         break;
       case 'views':
         sortOptions['stats.views'] = sortOrder === 'asc' ? 1 : -1;
@@ -95,9 +95,6 @@ export async function GET(request: NextRequest) {
           description: 1,
           images: 1,
           basePrice: 1,
-          finalPrice: 1,
-          profitMargin: 1,
-          discount: 1,
           category: 1,
           subCategory: 1,
           brand: 1,

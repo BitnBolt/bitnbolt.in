@@ -6,6 +6,7 @@ import { deleteFromCloudinary } from '@/lib/cloudinary';
 import { filterKeyValuePairs, filterTextLines } from '@/lib/product-detail';
 import { syncProductToAlgolia } from '@/lib/algolia-sync';
 import { validatePricingOrThrow } from '@/lib/product-pricing';
+import { sanitizeProductForVendor } from '@/lib/vendor-pricing-visibility';
 
 const VENDOR_LOCKED_FIELDS = [
   'profitMargin',
@@ -113,7 +114,7 @@ export async function PUT(
     return NextResponse.json({
       success: true,
       message: 'Product updated successfully',
-      product,
+      product: sanitizeProductForVendor(product),
     });
   } catch (error) {
     console.error('Product update error:', error);

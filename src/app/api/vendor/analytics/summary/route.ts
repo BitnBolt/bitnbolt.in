@@ -52,7 +52,7 @@ function resolveDateRange(request: NextRequest): DateRange {
 type AnalyticsOrderItem = {
   productId: string | { _id: string; name?: string };
   quantity: number;
-  finalPrice: number;
+  basePrice: number;
   vendorId?: string | { _id: string };
 };
 
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
       { $match: { 'items.vendorId': vendorObjectId } },
       {
         $addFields: {
-          itemRevenue: { $multiply: ['$items.finalPrice', '$items.quantity'] },
+          itemRevenue: { $multiply: ['$items.basePrice', '$items.quantity'] },
         },
       },
       {
@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
       { $match: { 'items.vendorId': vendorObjectId } },
       {
         $addFields: {
-          itemRevenue: { $multiply: ['$items.finalPrice', '$items.quantity'] },
+          itemRevenue: { $multiply: ['$items.basePrice', '$items.quantity'] },
           orderDate: {
             $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
           },
@@ -175,7 +175,7 @@ export async function GET(request: NextRequest) {
           _id: '$items.productId',
           unitsSold: { $sum: '$items.quantity' },
           revenue: {
-            $sum: { $multiply: ['$items.finalPrice', '$items.quantity'] },
+            $sum: { $multiply: ['$items.basePrice', '$items.quantity'] },
           },
         },
       },
@@ -224,7 +224,19 @@ export async function GET(request: NextRequest) {
       status: order.status,
       createdAt: order.createdAt,
       paymentStatus: order.paymentDetails?.status,
-      totalAmount: order.orderSummary?.totalAmount,
+      totalAmount: order.items
+        .filter(
+          (item: AnalyticsOrderItem) =>
+            (typeof item.vendorId === 'object'
+              ? item.vendorId._id
+              : item.vendorId
+            )?.toString() === vendor._id.toString()
+        )
+        .reduce(
+          (sum: number, item: AnalyticsOrderItem) =>
+            sum + item.basePrice * item.quantity,
+          0
+        ),
       items: order.items
         .filter(
           (item: AnalyticsOrderItem) =>
@@ -236,7 +248,7 @@ export async function GET(request: NextRequest) {
         .map((item: AnalyticsOrderItem) => ({
           productId: item.productId,
           quantity: item.quantity,
-          finalPrice: item.finalPrice,
+          basePrice: item.basePrice,
         })),
     }));
 

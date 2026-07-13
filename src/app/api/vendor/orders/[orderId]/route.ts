@@ -4,6 +4,7 @@ import Order from '@/models/Order';
 import Product from '@/models/Products';
 import Vendor from '@/models/Vendor';
 import jwt from 'jsonwebtoken';
+import { sanitizeOrderItemForVendor } from '@/lib/vendor-pricing-visibility';
 
 export async function GET(
   req: Request,
@@ -57,17 +58,25 @@ export async function GET(
       }, { status: 404 });
     }
 
-    // Calculate vendor-specific totals
-    const vendorSubtotal = vendorItems.reduce((sum: number, item: { finalPrice: number; quantity: number }) => 
-      sum + (item.finalPrice * item.quantity), 0
+    // Vendor payout / display totals use base price only (hide admin margin & discount)
+    const vendorSubtotal = vendorItems.reduce(
+      (sum: number, item: { basePrice: number; quantity: number }) =>
+        sum + item.basePrice * item.quantity,
+      0
     );
 
     return NextResponse.json({
       success: true,
       order: {
         ...order.toObject(),
-        items: vendorItems,
+        items: vendorItems.map((item: unknown) => sanitizeOrderItemForVendor(item)),
         vendorSubtotal,
+        orderSummary: {
+          itemsTotal: vendorSubtotal,
+          shippingCharge: 0,
+          tax: 0,
+          totalAmount: vendorSubtotal,
+        },
       },
     });
 

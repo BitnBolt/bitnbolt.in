@@ -6,6 +6,7 @@ import slugify from 'slugify';
 import { filterKeyValuePairs, filterTextLines } from '@/lib/product-detail';
 import { syncProductToAlgolia } from '@/lib/algolia-sync';
 import { validatePricingOrThrow } from '@/lib/product-pricing';
+import { sanitizeProductForVendor } from '@/lib/vendor-pricing-visibility';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,7 +30,16 @@ export async function POST(request: NextRequest) {
 
     const productData = await request.json();
 
-    // Basic validation
+    // Marketplace pricing is admin-only — ignore any attempted client values
+    delete productData.profitMargin;
+    delete productData.discount;
+    delete productData.finalPrice;
+    delete productData.isFeatured;
+    delete productData.isSuspended;
+    delete productData.suspensionReason;
+    delete productData.vendorId;
+    delete productData.stats;
+    delete productData.rating;
     if (!productData.name?.trim()) {
       return NextResponse.json(
         { success: false, message: 'Product name is required' },
@@ -148,7 +158,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Product created successfully',
-      data: { product }
+      data: { product: sanitizeProductForVendor(product) }
     });
 
   } catch (error) {

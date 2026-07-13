@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { FilterQuery } from 'mongoose';
+import mongoose from 'mongoose';
 import { connectDB } from '@/lib/db';
 import Product, { IProduct } from '@/models/Products';
 import { extractTokenFromHeader, verifyAdminToken } from '@/lib/admin-jwt';
@@ -34,8 +35,15 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '10', 10)));
     const status = searchParams.get('status'); // published | draft | suspended
     const search = searchParams.get('search')?.trim();
+    const vendorId = searchParams.get('vendorId')?.trim();
 
     const filter: FilterQuery<IProduct> = {};
+    if (vendorId) {
+      if (!mongoose.Types.ObjectId.isValid(vendorId)) {
+        return NextResponse.json({ success: false, message: 'Invalid vendorId' }, { status: 400 });
+      }
+      filter.vendorId = new mongoose.Types.ObjectId(vendorId);
+    }
     if (status === 'published') {
       filter.isPublished = true;
       filter.isSuspended = false;
@@ -69,10 +77,21 @@ export async function GET(request: NextRequest) {
         .lean(),
       Product.countDocuments(filter),
       Promise.all([
-        Product.countDocuments(),
-        Product.countDocuments({ isPublished: true, isSuspended: false }),
-        Product.countDocuments({ isPublished: false, isSuspended: false }),
-        Product.countDocuments({ isSuspended: true }),
+        Product.countDocuments(vendorId ? { vendorId: filter.vendorId } : {}),
+        Product.countDocuments({
+          ...(vendorId ? { vendorId: filter.vendorId } : {}),
+          isPublished: true,
+          isSuspended: false,
+        }),
+        Product.countDocuments({
+          ...(vendorId ? { vendorId: filter.vendorId } : {}),
+          isPublished: false,
+          isSuspended: false,
+        }),
+        Product.countDocuments({
+          ...(vendorId ? { vendorId: filter.vendorId } : {}),
+          isSuspended: true,
+        }),
       ]),
     ]);
 

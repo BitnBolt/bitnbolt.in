@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { verifyVendorToken, extractTokenFromHeader } from "@/lib/vendor-jwt";
 import Product from "@/models/Products";
+import { sanitizeProductForVendor } from "@/lib/vendor-pricing-visibility";
 
 export async function GET(
   request: NextRequest,
@@ -39,7 +40,10 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ product }, { status: 200 });
+    return NextResponse.json(
+      { product: sanitizeProductForVendor(product) },
+      { status: 200 }
+    );
   } catch (error: unknown) {
     console.error("Error fetching product:", error);
     return NextResponse.json(
@@ -47,4 +51,4 @@ export async function GET(
       { status: 500 }
     );
   }
-} 
+}

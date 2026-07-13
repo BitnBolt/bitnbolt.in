@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
                   in: {
                     $cond: [
                       { $eq: ['$$item.vendorId', vendorId] },
-                      { $multiply: ['$$item.finalPrice', '$$item.quantity'] },
+                      { $multiply: ['$$item.basePrice', '$$item.quantity'] },
                       0,
                     ],
                   },

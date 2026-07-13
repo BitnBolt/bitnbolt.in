@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       { $match: { 'items.vendorId': vendorId } },
       {
         $addFields: {
-          itemAmount: { $multiply: ['$items.finalPrice', '$items.quantity'] },
+          itemAmount: { $multiply: ['$items.basePrice', '$items.quantity'] },
           paymentMethod: '$paymentDetails.method',
         },
       },
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
           orderId: { $first: '$orderId' },
           status: { $first: '$status' },
           paymentMethod: { $first: '$paymentDetails.method' },
-          amount: { $sum: { $multiply: ['$items.finalPrice', '$items.quantity'] } },
+          amount: { $sum: { $multiply: ['$items.basePrice', '$items.quantity'] } },
           updatedAt: { $first: '$updatedAt' },
         },
       },
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
           orderId: { $first: '$orderId' },
           status: { $first: '$status' },
           paymentMethod: { $first: '$paymentDetails.method' },
-          amount: { $sum: { $multiply: ['$items.finalPrice', '$items.quantity'] } },
+          amount: { $sum: { $multiply: ['$items.basePrice', '$items.quantity'] } },
           deliveredAt: { $first: '$updatedAt' },
         },
       },
