@@ -11,9 +11,11 @@ export function middleware(request: NextRequest) {
       'http://localhost:3002', // admin frontend
       'http://localhost:3001', // Vendor frontend
       'http://localhost:3000', // Main frontend
+      'http://localhost:3003', // Career frontend (local)
       'https://admin.bitnbolt.in', // Production admin domain
       'https://vendor.bitnbolt.in', // Production vendor domain
       'https://bitnbolt.in', // Production main domain
+      'https://career.bitnbolt.in', // Career portal
     ];
     
 
