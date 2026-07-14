@@ -17,7 +17,12 @@ export async function GET(request: NextRequest) {
       isPublished: true,
       isOpen: true,
     };
-    if (type) filter.type = type;
+    // CAP is handled on /cap via dedicated endpoint — keep out of internship listings
+    if (type) {
+      filter.type = type;
+    } else {
+      filter.type = { $ne: 'cap' };
+    }
     if (category) filter.category = category;
 
     const [items, total] = await Promise.all([
