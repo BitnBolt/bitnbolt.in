@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "create-admin": "node scripts/create-first-admin.js",
-    "sync-algolia": "node --env-file=.env.local scripts/sync-algolia.js"
+    "sync-algolia": "node --env-file=.env.local scripts/sync-algolia.js",
+    "seed-career-jobs": "node --env-file=.env.local scripts/seed-career-jobs.js"
   },
   "dependencies": {
     "@auth/core": "^0.34.2",
