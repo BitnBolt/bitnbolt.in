@@ -32,6 +32,16 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
+    if (body.type === 'cap') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'CAP is managed on the career site, not through job postings. Use CAP Applications to review applicants.',
+        },
+        { status: 400 }
+      );
+    }
+
     if (!body.title?.trim()) {
       return NextResponse.json({ success: false, message: 'Title is required' }, { status: 400 });
     }

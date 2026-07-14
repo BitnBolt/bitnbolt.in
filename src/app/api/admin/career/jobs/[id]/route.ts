@@ -67,6 +67,16 @@ export async function PUT(
 
     const body = await request.json();
 
+    if (job.type === 'cap' || body.type === 'cap') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'CAP content is fixed and cannot be edited from admin job postings.',
+        },
+        { status: 400 }
+      );
+    }
+
     if (body.title !== undefined) job.title = String(body.title).trim();
     if (body.description !== undefined) job.description = String(body.description).trim();
     if (body.category !== undefined) job.category = String(body.category).trim();
@@ -127,10 +137,22 @@ export async function DELETE(
     if (auth.error) return auth.error;
 
     const { id } = await params;
-    const job = await CareerJob.findByIdAndDelete(id);
+    const job = await CareerJob.findById(id);
     if (!job) {
       return NextResponse.json({ success: false, message: 'Job not found' }, { status: 404 });
     }
+
+    if (job.type === 'cap') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'CAP cannot be deleted from admin. It is fixed on the career site.',
+        },
+        { status: 400 }
+      );
+    }
+
+    await CareerJob.findByIdAndDelete(id);
 
     return NextResponse.json({
       success: true,

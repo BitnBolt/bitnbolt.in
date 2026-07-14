@@ -34,6 +34,12 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')?.trim();
 
     const filter: FilterQuery<ICareerJob> = {};
+    // CAP content is fixed on career site — never manage from admin job list
+    const includeCap = searchParams.get('includeCap') === 'true';
+    if (!includeCap && !type) {
+      filter.type = { $ne: 'cap' };
+    }
+
     if (status === 'published') {
       filter.isPublished = true;
       filter.isOpen = true;
@@ -60,10 +66,10 @@ export async function GET(request: NextRequest) {
       CareerJob.find(filter).sort({ updatedAt: -1 }).skip(skip).limit(limit).lean(),
       CareerJob.countDocuments(filter),
       Promise.all([
-        CareerJob.countDocuments(),
-        CareerJob.countDocuments({ isPublished: true, isOpen: true }),
-        CareerJob.countDocuments({ isPublished: false }),
-        CareerJob.countDocuments({ isOpen: false }),
+        CareerJob.countDocuments({ type: { $ne: 'cap' } }),
+        CareerJob.countDocuments({ type: { $ne: 'cap' }, isPublished: true, isOpen: true }),
+        CareerJob.countDocuments({ type: { $ne: 'cap' }, isPublished: false }),
+        CareerJob.countDocuments({ type: { $ne: 'cap' }, isOpen: false }),
       ]),
     ]);
 
