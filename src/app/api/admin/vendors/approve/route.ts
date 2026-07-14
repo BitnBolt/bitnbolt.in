@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Vendor from '@/models/Vendor';
 import { verifyAdminToken } from '@/lib/admin-jwt';
+import { notifyAsync, reportSystemErrorAsync } from '@/lib/telegram-notify';
 
 export async function PUT(request: NextRequest) {
   try {
@@ -41,8 +42,14 @@ export async function PUT(request: NextRequest) {
     vendor.updatedAt = new Date();
     await vendor.save();
 
-    // TODO: Send email notification to vendor about approval/rejection
-    // You can implement email notification here
+    notifyAsync({
+      domain: 'vendors',
+      event: approved ? 'vendor.approved' : 'vendor.rejected',
+      title: approved ? 'Vendor approved' : 'Vendor rejected',
+      body: `${vendor.shopName || vendor.email || vendorId} was ${approved ? 'approved' : 'rejected'}${reason ? `: ${reason}` : ''}`,
+      severity: approved ? 'info' : 'warning',
+      meta: { vendorId, approved, reason: reason || null },
+    });
 
     return NextResponse.json({
       success: true,
@@ -52,6 +59,11 @@ export async function PUT(request: NextRequest) {
 
   } catch (error) {
     console.error('Error updating vendor approval:', error);
+    reportSystemErrorAsync({
+      event: 'api.admin.vendors.approve',
+      title: 'Vendor approval failed',
+      body: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }

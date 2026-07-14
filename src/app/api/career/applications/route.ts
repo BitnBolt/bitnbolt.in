@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import CareerJob from '@/models/CareerJob';
 import CareerApplication from '@/models/CareerApplication';
+import { notifyAsync, reportSystemErrorAsync } from '@/lib/telegram-notify';
 
 /** Public: submit application from career.bitnbolt.in */
 export async function POST(request: NextRequest) {
@@ -61,6 +62,20 @@ export async function POST(request: NextRequest) {
       status: 'submitted',
     });
 
+    const isCap = job.type === 'cap';
+    notifyAsync({
+      domain: isCap ? 'cap' : 'career_applications',
+      event: 'application.submitted',
+      title: isCap ? 'New CAP application' : 'New internship application',
+      body: `${application.fullName} (${application.email}) applied for ${job.title}`,
+      severity: 'info',
+      meta: {
+        applicationId: String(application._id),
+        jobId: String(job._id),
+        phone: application.phone,
+      },
+    });
+
     return NextResponse.json({
       success: true,
       message: 'Application submitted',
@@ -68,6 +83,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('POST /api/career/applications error:', error);
+    reportSystemErrorAsync({
+      event: 'api.career.applications',
+      title: 'Career application API failed',
+      body: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json(
       { success: false, message: 'Failed to submit application' },
       { status: 500 }

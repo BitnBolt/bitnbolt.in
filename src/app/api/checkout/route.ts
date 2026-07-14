@@ -9,6 +9,7 @@ import Order from '@/models/Order';
 import Vendor from '@/models/Vendor';
 import { getShiprocketDeliveryCost } from '@/lib/shiprocket';
 import { getAppBaseUrl, getCashfreeClient, getCashfreeMode } from '@/lib/cashfree';
+import { notifyAsync, reportSystemErrorAsync } from '@/lib/telegram-notify';
 
 interface CheckoutProduct {
   _id: string;
@@ -331,6 +332,20 @@ export async function POST(req: Request) {
         order.paymentDetails.gatewayResponse = cfOrder as unknown as Record<string, unknown>;
         await order.save();
 
+        notifyAsync({
+          domain: 'orders',
+          event: 'order.created',
+          title: 'Online order awaiting payment',
+          body: `Order ${order.orderId} · ₹${totalAmount} · payment session created`,
+          severity: 'info',
+          meta: {
+            orderId: order.orderId,
+            totalAmount,
+            paymentMethod: 'online',
+            userId: session.user.id,
+          },
+        });
+
         return NextResponse.json({
           success: true,
           orderId: order.orderId,
@@ -349,6 +364,12 @@ export async function POST(req: Request) {
           (paymentError as { response?: { data?: { message?: string } } })?.response?.data?.message ||
           (paymentError as Error)?.message ||
           'Failed to initialise online payment';
+        reportSystemErrorAsync({
+          event: 'api.checkout.cashfree',
+          title: 'Cashfree order creation failed',
+          body: message,
+          meta: { orderId },
+        });
         return NextResponse.json({ message }, { status: 500 });
       }
     }
@@ -356,6 +377,20 @@ export async function POST(req: Request) {
     // For COD orders, clear cart and return success
     user.cart = [];
     await user.save();
+
+    notifyAsync({
+      domain: 'orders',
+      event: 'order.placed',
+      title: 'New COD order',
+      body: `Order ${order.orderId} · ₹${totalAmount} · ${session.user.email || session.user.id}`,
+      severity: 'info',
+      meta: {
+        orderId: order.orderId,
+        totalAmount,
+        paymentMethod: 'cod',
+        userId: session.user.id,
+      },
+    });
 
     return NextResponse.json({
       success: true,
@@ -366,6 +401,11 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error('Checkout error:', error);
+    reportSystemErrorAsync({
+      event: 'api.checkout',
+      title: 'Checkout failed',
+      body: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json({ 
       message: 'Failed to process checkout' 
     }, { status: 500 });

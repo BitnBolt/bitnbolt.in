@@ -4,6 +4,7 @@ import Order from '@/models/Order';
 import Product from '@/models/Products';
 import User from '@/models/User';
 import { verifyCashfreeWebhookSignature } from '@/lib/cashfree';
+import { notifyAsync, reportSystemErrorAsync } from '@/lib/telegram-notify';
 
 type CashfreeWebhookPayload = {
   type?: string;
@@ -124,6 +125,27 @@ export async function POST(req: Request) {
           user.cart = [];
           await user.save();
         }
+
+        notifyAsync({
+          domain: 'payments',
+          event: 'payment.success',
+          title: 'Payment received',
+          body: `Order ${orderId} · ₹${order.totalAmount ?? payload.data?.order?.order_amount ?? '?'} paid`,
+          severity: 'info',
+          meta: {
+            orderId,
+            paymentId: paymentId || null,
+            amount: order.totalAmount,
+          },
+        });
+        notifyAsync({
+          domain: 'orders',
+          event: 'order.confirmed',
+          title: 'Order confirmed',
+          body: `Order ${orderId} confirmed after online payment`,
+          severity: 'info',
+          meta: { orderId },
+        });
       }
 
       return NextResponse.json({ success: true });
@@ -141,6 +163,12 @@ export async function POST(req: Request) {
         }
       } catch (stockError) {
         console.error('Cashfree webhook: failed to restore stock:', stockError);
+        reportSystemErrorAsync({
+          event: 'webhook.cashfree.stock_restore',
+          title: 'Stock restore failed after payment failure',
+          body: stockError instanceof Error ? stockError.message : 'Unknown error',
+          meta: { orderId },
+        });
       }
 
       order.paymentDetails.status = 'failed';
@@ -155,11 +183,25 @@ export async function POST(req: Request) {
         timestamp: new Date(),
       });
       await order.save();
+
+      notifyAsync({
+        domain: 'payments',
+        event: paymentStatus === 'USER_DROPPED' ? 'payment.dropped' : 'payment.failed',
+        title: paymentStatus === 'USER_DROPPED' ? 'Payment abandoned' : 'Payment failed',
+        body: `Order ${orderId} · ${paymentStatus || 'FAILED'}`,
+        severity: 'warning',
+        meta: { orderId, paymentStatus },
+      });
     }
 
     return NextResponse.json({ success: true, handled: true });
   } catch (error) {
     console.error('Cashfree webhook error:', error);
+    reportSystemErrorAsync({
+      event: 'webhook.cashfree',
+      title: 'Cashfree webhook processing failed',
+      body: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json({ message: 'Webhook processing failed' }, { status: 500 });
   }
 }

@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import { extractTokenFromHeader, verifyAdminToken } from '@/lib/admin-jwt';
 import { canManageCareers } from '@/lib/career-admin';
 import { ensureCapJobDoc, findCapJobDoc } from '@/lib/career-cap';
+import { notifyAsync } from '@/lib/telegram-notify';
 
 async function requireCareerAdmin(request: NextRequest) {
   const token = extractTokenFromHeader(request.headers.get('authorization'));
@@ -67,6 +68,15 @@ export async function PUT(request: NextRequest) {
     // Keep published so the apply endpoint can resolve the job + toggle cleanly
     job.isPublished = true;
     await job.save();
+
+    notifyAsync({
+      domain: 'cap',
+      event: body.isOpen ? 'cap.opened' : 'cap.closed',
+      title: body.isOpen ? 'CAP applications opened' : 'CAP applications closed',
+      body: `${job.title} is now ${body.isOpen ? 'open' : 'closed'} for applications`,
+      severity: 'info',
+      meta: { jobId: String(job._id), isOpen: body.isOpen },
+    });
 
     return NextResponse.json({
       success: true,
