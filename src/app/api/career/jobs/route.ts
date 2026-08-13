@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
 
     const filter: Record<string, unknown> = {
       isPublished: true,
-      isOpen: true,
     };
     // CAP is handled on /cap via dedicated endpoint — keep out of internship listings
     if (type) {
@@ -31,7 +30,7 @@ export async function GET(request: NextRequest) {
         .skip((page - 1) * pageSize)
         .limit(pageSize)
         .select(
-          'title slug type category department location description duration stipend openings applicationDeadline updatedAt'
+          'title slug type category department location description responsibilities requirements duration stipend openings applicationDeadline isOpen updatedAt'
         )
         .lean(),
       CareerJob.countDocuments(filter),

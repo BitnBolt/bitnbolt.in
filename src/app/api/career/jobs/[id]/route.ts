@@ -13,8 +13,8 @@ export async function GET(
 
     const isObjectId = mongoose.Types.ObjectId.isValid(idOrSlug);
     const query = isObjectId
-      ? { _id: idOrSlug, isPublished: true, isOpen: true }
-      : { slug: idOrSlug, isPublished: true, isOpen: true };
+      ? { _id: idOrSlug, isPublished: true }
+      : { slug: idOrSlug, isPublished: true };
 
     const job = await CareerJob.findOne(query).lean();
     if (!job) {
