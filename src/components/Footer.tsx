@@ -15,6 +15,7 @@ export default function Footer() {
     { name: 'Custom PCB', href: '/pcb' },
     { name: 'Firmware', href: '/firmware' },
     { name: 'IoT DIY Kit', href: '/iot-board' },
+    { name: 'IoT Kit Offer', href: '/iot-kit' },
     { name: 'About Us', href: '/about' },
     { name: 'Testimonials', href: '/testimonials' },
     { name: 'Contact', href: '/contact' }

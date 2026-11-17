@@ -224,10 +224,10 @@ export default function IotBoardClient({ productId }: Props) {
                                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                     <BuyButton />
                                     <Link
-                                        href="/product/iot-board"
+                                        href="/iot-kit"
                                         className="border-2 border-white/30 hover:border-white/60 text-white px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base flex items-center justify-center transition-all duration-300 hover:bg-white/10"
                                     >
-                                        View Product
+                                        Student Offer
                                     </Link>
                                 </div>
                             </motion.div>

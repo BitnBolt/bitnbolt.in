@@ -13,6 +13,7 @@ const desktopNavLinks = [
   { href: '/', label: 'Home' },
   { href: '/product', label: 'Shop IoT Products' },
   { href: '/iot-board', label: 'IoT DIY Kit' },
+  { href: '/iot-kit', label: 'Kit Offer' },
   { href: '/firmware', label: 'Firmware' },
   { href: '/pcb', label: 'Custom PCB' },
   { href: '/about', label: 'About' },
@@ -24,6 +25,7 @@ const mobileNavLinks = [
   { href: '/pcb', label: 'Custom PCB' },
   { href: '/firmware', label: 'Firmware' },
   { href: '/iot-board', label: 'IoT DIY Kit' },
+  { href: '/iot-kit', label: 'Kit Offer' },
   { href: '/about', label: 'About' },
 ] as const;
 

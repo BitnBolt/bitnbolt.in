@@ -83,6 +83,17 @@
     "tags": ["iot", "diy", "kit", "board", "modules", "makers"]
   },
   {
+    "objectID": "page:iot-kit-offer",
+    "type": "page",
+    "rankBoost": 78,
+    "title": "IoT Development Kit Offer",
+    "description": "Learn C and Python on BitnBolt's ESP32 IoT Development Kit — early-bird student seats, parts guide, and registration.",
+    "body": "IoT kit offer early bird students C Python ESP32 landing workshop programming hardware parts components register",
+    "url": "/iot-kit",
+    "category": "Page",
+    "tags": ["iot", "kit", "offer", "students", "esp32", "learn", "c", "python"]
+  },
+  {
     "objectID": "page:shop",
     "type": "page",
     "rankBoost": 55,
