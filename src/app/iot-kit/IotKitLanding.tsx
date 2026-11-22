@@ -7,13 +7,23 @@ import { motion, type Variants } from 'framer-motion';
 import { companyInfo, formatCompanyAddress } from '@/lib/company';
 
 const EARLY_BIRD_SEATS = 20;
-const MRP = 2499;
-const EARLY_BIRD = 499;
+const DISCOUNT_PCT = 17;
+/** Normal kit price (strikethrough during the offer). */
+const MRP = 3000;
+/** First 20 students offer price. */
+const EARLY_BIRD = 2500;
+const GOOGLE_FORM_URL = 'https://forms.gle/SFyeUHRixdhtzNsg6';
+
+const formatInr = (n: number, withPaise = false) =>
+  n.toLocaleString('en-IN', {
+    minimumFractionDigits: withPaise ? 2 : 0,
+    maximumFractionDigits: withPaise ? 2 : 0,
+  });
 
 const learnItems = [
   {
     title: 'C programming on hardware',
-    body: 'Write firmware, blink LEDs, read sensors, and drive displays — the fundamentals of embedded C, on a real ESP32 board.',
+    body: 'Write firmware, blink LEDs, read sensors, and drive displays — the fundamentals of embedded C, on a real Arduino board.',
   },
   {
     title: 'Python for IoT prototypes',
@@ -32,7 +42,7 @@ const learnItems = [
 const benefits = [
   'Everything you need in one box — no hunting for modules separately.',
   'Easy-to-follow guides to get you coding on day one.',
-  'Works with Arduino IDE and common ESP32 toolchains.',
+  'Works with the Arduino IDE and common toolchains.',
   'Reusable components for endless project ideas.',
   'Built for students, hobbyists, educators, and MVP builders.',
 ];
@@ -58,7 +68,7 @@ const components = [
   { name: 'Potentiometer', detail: 'Analog control input for tuning thresholds and UI values.' },
   { name: 'Pinout peripherals', detail: 'Breakouts to wire external modules without redesigning the board.' },
   { name: 'Power LED', detail: 'Instant visual cue that the kit is powered and ready.' },
-  { name: 'ESP32 controller', detail: 'Runs your C/Python firmware and manages onboard peripherals.' },
+  { name: 'Arduino controller', detail: 'Runs your C/Python firmware and manages onboard peripherals.' },
   { name: 'Slider switch', detail: 'Simple power/control switching during demos and labs.' },
   { name: 'Power jack', detail: 'External power input for stable bench and classroom use.' },
   { name: 'OLED display', detail: 'Real-time data, messages, and project dashboards on-device.' },
@@ -69,7 +79,7 @@ const components = [
 ];
 
 const specs = [
-  { label: 'Microcontroller', value: 'ESP32' },
+  { label: 'Microcontroller', value: 'Arduino' },
   { label: 'Display modules', value: '7-segment + OLED / LCD*' },
   { label: 'Connectivity', value: 'Wi-Fi & Bluetooth®' },
   { label: 'Power outputs', value: '5V, 3.3V, GND, 12V*' },
@@ -96,11 +106,11 @@ const faqs = [
   },
   {
     q: 'What programming languages can I use?',
-    a: 'The kit is built around the ESP32, so you can work in C/C++ (Arduino-style) and Python-based workflows for IoT prototyping.',
+    a: 'The kit is built around the Arduino, so you can work in C/C++ (Arduino-style) and Python-based workflows for IoT prototyping.',
   },
   {
     q: 'How does early-bird pricing work?',
-    a: `The first ${EARLY_BIRD_SEATS} student seats get the early-bird price. After that, standard kit pricing applies. GST is applied at checkout as applicable.`,
+    a: `The first ${EARLY_BIRD_SEATS} students get ${DISCOUNT_PCT}% off at ₹${formatInr(EARLY_BIRD)}. After that, the normal kit price of ₹${formatInr(MRP, true)} applies (including GST).`,
   },
   {
     q: 'What happens after I pay?',
@@ -120,10 +130,9 @@ const stagger: Variants = {
 
 type Props = {
   productHref: string;
-  formUrl?: string;
 };
 
-export default function IotKitLanding({ productHref, formUrl }: Props) {
+export default function IotKitLanding({ productHref }: Props) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [showSticky, setShowSticky] = useState(false);
 
@@ -134,8 +143,8 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const primaryHref = formUrl || productHref;
-  const primaryLabel = formUrl ? 'Register your seat' : 'Get the kit';
+  const primaryHref = GOOGLE_FORM_URL;
+  const primaryLabel = 'Register your seat';
 
   return (
     <div className="relative min-h-screen bg-[#F4F7FB] text-[#0B1C2D] overflow-x-hidden">
@@ -171,7 +180,7 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
               href="#offer"
               className="rounded-full bg-[#0B1C2D] px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-[#163554] transition-colors"
             >
-              Early-bird offer
+              {DISCOUNT_PCT}% off offer
             </a>
           </div>
         </div>
@@ -198,69 +207,68 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
             }}
           />
 
-          <div className="relative mx-auto max-w-6xl px-4 pt-10 pb-8 sm:px-6 sm:pt-14 sm:pb-12">
-            <motion.div initial="hidden" animate="show" variants={stagger} className="max-w-2xl">
-              <motion.p
-                variants={fadeUp}
-                className="font-[family-name:var(--font-iot-kit-display)] text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white"
-              >
-                BitnBolt
-              </motion.p>
-              <motion.h1
-                variants={fadeUp}
-                className="mt-3 sm:mt-4 font-[family-name:var(--font-iot-kit-display)] text-xl sm:text-3xl md:text-4xl font-semibold leading-snug text-white/95"
-              >
-                Learn <span className="text-[#FFD166]">C &amp; Python</span> on a real IoT Development Kit
-              </motion.h1>
-              <motion.p variants={fadeUp} className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-white/70 leading-relaxed">
-                One ESP32 board. Onboard modules. Hands-on labs — from blinking LEDs to connected IoT projects.
-              </motion.p>
-              <motion.div variants={fadeUp} className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
-                <a
-                  href="#offer"
-                  className="inline-flex items-center justify-center rounded-full bg-[#FFD166] px-6 py-3 text-sm sm:text-base font-bold text-[#0B1C2D] hover:bg-[#FFC033] transition-colors"
+          <div className="relative mx-auto max-w-6xl px-4 pt-10 pb-10 sm:px-6 sm:pt-14 sm:pb-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <motion.div initial="hidden" animate="show" variants={stagger} className="max-w-2xl">
+                <motion.p
+                  variants={fadeUp}
+                  className="font-[family-name:var(--font-iot-kit-display)] text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white"
                 >
-                  Claim early-bird seat
-                </a>
-                <a
-                  href="#parts"
-                  className="inline-flex items-center justify-center rounded-full border border-white/25 px-6 py-3 text-sm sm:text-base font-semibold text-white hover:bg-white/10 transition-colors"
+                  BitnBolt
+                </motion.p>
+                <motion.h1
+                  variants={fadeUp}
+                  className="mt-3 sm:mt-4 font-[family-name:var(--font-iot-kit-display)] text-xl sm:text-3xl md:text-4xl font-semibold leading-snug text-white/95"
                 >
-                  See what&apos;s inside
-                </a>
+                  Learn <span className="text-[#FFD166]">C &amp; Python</span> on a real IoT Development Kit
+                </motion.h1>
+                <motion.p variants={fadeUp} className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-white/70 leading-relaxed">
+                  One Arduino board. Onboard modules. Hands-on labs — from blinking LEDs to connected IoT projects.
+                </motion.p>
+                <motion.div variants={fadeUp} className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="#offer"
+                    className="inline-flex items-center justify-center rounded-full bg-[#FFD166] px-6 py-3 text-sm sm:text-base font-bold text-[#0B1C2D] hover:bg-[#FFC033] transition-colors"
+                  >
+                    Claim {DISCOUNT_PCT}% off seat
+                  </a>
+                  <a
+                    href="#parts"
+                    className="inline-flex items-center justify-center rounded-full border border-white/25 px-6 py-3 text-sm sm:text-base font-semibold text-white hover:bg-white/10 transition-colors"
+                  >
+                    See what&apos;s inside
+                  </a>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 1.04 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full"
-          >
-            <div className="relative mx-auto max-w-6xl px-0 sm:px-6">
-              <div className="relative aspect-[16/9] sm:aspect-[21/9] overflow-hidden sm:rounded-t-2xl">
-                <Image
-                  src="/iot-board/im4.png"
-                  alt="BitnBolt IoT Development Kit"
-                  fill
-                  priority
-                  className="object-cover object-center"
-                  sizes="100vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1C2D] via-transparent to-transparent" />
-              </div>
+              <motion.div
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                className="relative w-full"
+              >
+                <div className="relative aspect-[4/3] sm:aspect-[5/4] lg:aspect-square overflow-hidden rounded-xl ring-1 ring-white/10 shadow-2xl">
+                  <Image
+                    src="/iot-board/im4.png"
+                    alt="BitnBolt IoT Development Kit"
+                    fill
+                    priority
+                    className="object-cover object-center"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
+          </div>
         </section>
 
         {/* Impact strip — be10x style */}
         <section className="border-y border-[#0B1C2D]/8 bg-white">
           <div className="mx-auto grid max-w-6xl grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[#0B1C2D]/8">
             {[
-              { k: 'ESP32', v: 'Wi-Fi + Bluetooth' },
+              { k: 'Arduino', v: 'Wi-Fi + Bluetooth' },
               { k: '14+', v: 'Onboard modules' },
-              { k: `${EARLY_BIRD_SEATS}`, v: 'Early-bird seats' },
+              { k: `${DISCOUNT_PCT}%`, v: `Off · first ${EARLY_BIRD_SEATS}` },
               { k: 'C + Py', v: 'Programming paths' },
             ].map((stat) => (
               <div key={stat.k} className="px-4 py-5 sm:px-6 sm:py-7 text-center">
@@ -283,12 +291,9 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
               variants={stagger}
               className="max-w-2xl"
             >
-              <motion.p variants={fadeUp} className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1E88E5]">
-                What you&apos;ll learn
-              </motion.p>
               <motion.h2
                 variants={fadeUp}
-                className="mt-2 font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight"
+                className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight"
               >
                 Not theory — build on the board
               </motion.h2>
@@ -308,15 +313,17 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
                 <motion.div
                   key={item.title}
                   variants={fadeUp}
-                  className="relative border-l-2 border-[#1E88E5] pl-5 py-1"
+                  className="flex gap-4 border-l-2 border-[#1E88E5] pl-5 py-1"
                 >
-                  <span className="font-[family-name:var(--font-iot-kit-display)] text-4xl font-extrabold text-[#1E88E5]/15 absolute -left-1 -top-2 select-none">
+                  <span className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-3xl font-extrabold text-[#1E88E5] leading-none shrink-0 pt-0.5">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <h3 className="font-[family-name:var(--font-iot-kit-display)] text-lg sm:text-xl font-bold relative">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-[#0B1C2D]/65 leading-relaxed">{item.body}</p>
+                  <div className="min-w-0">
+                    <h3 className="font-[family-name:var(--font-iot-kit-display)] text-lg sm:text-xl font-bold">
+                      {item.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-[#0B1C2D]/65 leading-relaxed">{item.body}</p>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
@@ -327,8 +334,7 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
         <section className="bg-[#0B1C2D] text-white py-14 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 grid lg:grid-cols-2 gap-12 lg:gap-16">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FFD166]">Kit overview</p>
-              <h2 className="mt-2 font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
+              <h2 className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
                 Why builders pick this kit
               </h2>
               <ul className="mt-8 space-y-4">
@@ -341,8 +347,7 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
               </ul>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FFD166]">Who it&apos;s for</p>
-              <h2 className="mt-2 font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
+              <h2 className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
                 Built for makers at every stage
               </h2>
               <div className="mt-8 grid sm:grid-cols-2 gap-3">
@@ -363,8 +368,7 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
         <section className="py-14 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1E88E5]">Across every year</p>
-              <h2 className="mt-2 font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
+              <h2 className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
                 One board that grows with your degree
               </h2>
               <p className="mt-3 text-sm sm:text-base text-[#0B1C2D]/65">
@@ -384,35 +388,17 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
           </div>
         </section>
 
-        {/* Parts & components — flyer image */}
+        {/* Parts & components */}
         <section id="parts" className="bg-white py-14 sm:py-20 scroll-mt-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="max-w-2xl mx-auto text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1E88E5]">Parts &amp; components</p>
-              <h2 className="mt-2 font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
+              <h2 className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
                 Explore every piece of the kit
               </h2>
               <p className="mt-3 text-sm sm:text-base text-[#0B1C2D]/65">
-                Annotated board layout — know exactly what you&apos;re programming.
+                Everything onboard — know exactly what you&apos;re programming.
               </p>
             </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="mt-10 relative w-full overflow-hidden border border-[#0B1C2D]/10 bg-[#0B1C2D]"
-            >
-              <Image
-                src="/iot-board/parts-components.jpg"
-                alt="BitnBolt IoT Development Kit parts and components diagram"
-                width={1600}
-                height={2000}
-                className="w-full h-auto"
-                sizes="(max-width: 1152px) 100vw, 1152px"
-              />
-            </motion.div>
 
             <div className="mt-12 grid sm:grid-cols-2 gap-x-10 gap-y-5">
               {components.map((c, i) => (
@@ -434,8 +420,7 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
         <section className="py-14 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 grid lg:grid-cols-2 gap-12">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1E88E5]">Technical specs</p>
-              <h2 className="mt-2 font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-3xl font-extrabold">
+              <h2 className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-3xl font-extrabold">
                 Built to teach. Specced to ship.
               </h2>
               <dl className="mt-8 divide-y divide-[#0B1C2D]/10 border-y border-[#0B1C2D]/10">
@@ -449,8 +434,7 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
               <p className="mt-3 text-[11px] text-[#0B1C2D]/45">*Availability may vary by kit revision.</p>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1E88E5]">Key features</p>
-              <h2 className="mt-2 font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-3xl font-extrabold">
+              <h2 className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-3xl font-extrabold">
                 Ready for classroom &amp; lab
               </h2>
               <ul className="mt-8 space-y-5">
@@ -479,20 +463,20 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
           <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
             <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-14 items-center">
               <div className="text-white">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FFD166]">Student early-bird</p>
-                <h2 className="mt-2 font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
+                <h2 className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
                   First {EARLY_BIRD_SEATS} seats. Then the window closes.
                 </h2>
                 <p className="mt-4 text-sm sm:text-base text-white/70 leading-relaxed max-w-lg">
-                  Pay for your kit, then complete the registration form so we can confirm your seat and shipping. GST
-                  applied at checkout as applicable.
+                  Lock in {DISCOUNT_PCT}% off as one of the first {EARLY_BIRD_SEATS} students. After that, the normal
+                  kit price applies. Pay for your kit, then complete the registration form so we can confirm your seat
+                  and shipping.
                 </p>
                 <ul className="mt-6 space-y-2 text-sm text-white/80">
                   <li className="flex gap-2">
                     <span className="text-[#FFD166]">✓</span> Full IoT Development Kit with onboard modules
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-[#FFD166]">✓</span> C &amp; Python learning path on ESP32
+                    <span className="text-[#FFD166]">✓</span> C &amp; Python learning path on Arduino
                   </li>
                   <li className="flex gap-2">
                     <span className="text-[#FFD166]">✓</span> Guides &amp; sample projects included
@@ -501,32 +485,32 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
               </div>
 
               <div className="bg-white p-6 sm:p-8 shadow-2xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#1E88E5]">IoT Development Kit</p>
-                <div className="mt-4 flex items-end gap-3">
-                  <span className="text-lg text-[#0B1C2D]/40 line-through font-medium">₹{MRP.toLocaleString('en-IN')}</span>
+                <div className="flex items-end gap-3 flex-wrap">
+                  <span className="text-lg text-[#0B1C2D]/40 line-through font-medium">₹{formatInr(MRP, true)}</span>
                   <span className="font-[family-name:var(--font-iot-kit-display)] text-5xl sm:text-6xl font-extrabold text-[#0B1C2D] leading-none">
-                    ₹{EARLY_BIRD}
+                    ₹{formatInr(EARLY_BIRD)}
+                  </span>
+                  <span className="mb-1 rounded-full bg-[#1E88E5]/10 px-2.5 py-1 text-xs font-bold text-[#1E88E5]">
+                    {DISCOUNT_PCT}% OFF
                   </span>
                 </div>
                 <p className="mt-2 text-xs text-[#0B1C2D]/55">
-                  Early-bird for first {EARLY_BIRD_SEATS} students · + GST as applicable
+                  {DISCOUNT_PCT}% off for the first {EARLY_BIRD_SEATS} students · then normal price
                 </p>
                 <a
                   href={primaryHref}
-                  target={formUrl ? '_blank' : undefined}
-                  rel={formUrl ? 'noopener noreferrer' : undefined}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="mt-6 flex w-full items-center justify-center rounded-full bg-[#FFD166] px-6 py-3.5 text-base font-bold text-[#0B1C2D] hover:bg-[#FFC033] transition-colors"
                 >
                   {primaryLabel}
                 </a>
-                {!formUrl && (
-                  <Link
-                    href="/iot-board"
-                    className="mt-3 flex w-full items-center justify-center rounded-full border border-[#0B1C2D]/15 px-6 py-3 text-sm font-semibold text-[#0B1C2D] hover:bg-[#F4F7FB] transition-colors"
-                  >
-                    View full product details
-                  </Link>
-                )}
+                <Link
+                  href={productHref}
+                  className="mt-3 flex w-full items-center justify-center rounded-full border border-[#0B1C2D]/15 px-6 py-3 text-sm font-semibold text-[#0B1C2D] hover:bg-[#F4F7FB] transition-colors"
+                >
+                  View full product details
+                </Link>
                 <p className="mt-4 text-center text-[11px] text-[#0B1C2D]/45">
                   After payment, fill the registration Google Form shared with your confirmation.
                 </p>
@@ -593,18 +577,19 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
                     'radial-gradient(circle at 90% 20%, #FFD166, transparent 35%), linear-gradient(135deg, transparent, rgba(11,28,45,0.35))',
                 }}
               />
-              <div className="relative max-w-xl">
+              <div className="relative max-w-2xl">
                 <p className="font-[family-name:var(--font-iot-kit-display)] text-2xl sm:text-4xl font-extrabold tracking-tight">
                   Your IoT advantage starts on the bench.
                 </p>
                 <p className="mt-3 text-sm sm:text-base text-white/85">
-                  Reserve an early-bird seat, get the kit, then register — and start coding C &amp; Python on hardware.
+                  Grab {DISCOUNT_PCT}% off as one of the first {EARLY_BIRD_SEATS}, get the kit, then register — and
+                  start coding C &amp; Python on hardware.
                 </p>
                 <a
                   href="#offer"
                   className="mt-6 inline-flex rounded-full bg-[#FFD166] px-6 py-3 text-sm font-bold text-[#0B1C2D] hover:bg-[#FFC033] transition-colors"
                 >
-                  Go to early-bird offer
+                  Go to {DISCOUNT_PCT}% off offer
                 </a>
               </div>
             </div>
@@ -659,16 +644,16 @@ export default function IotKitLanding({ productHref, formUrl }: Props) {
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="min-w-0">
-            <p className="text-xs text-[#0B1C2D]/55 truncate">Early-bird · first {EARLY_BIRD_SEATS}</p>
+            <p className="text-xs text-[#0B1C2D]/55 truncate">{DISCOUNT_PCT}% off · first {EARLY_BIRD_SEATS}</p>
             <p className="font-[family-name:var(--font-iot-kit-display)] font-bold">
-              <span className="text-[#0B1C2D]/35 line-through mr-2 text-sm">₹{MRP.toLocaleString('en-IN')}</span>
-              ₹{EARLY_BIRD}
+              <span className="text-[#0B1C2D]/35 line-through mr-2 text-sm">₹{formatInr(MRP, true)}</span>
+              ₹{formatInr(EARLY_BIRD)}
             </p>
           </div>
           <a
             href={primaryHref}
-            target={formUrl ? '_blank' : undefined}
-            rel={formUrl ? 'noopener noreferrer' : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
             className="shrink-0 rounded-full bg-[#0B1C2D] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#163554] transition-colors"
           >
             {primaryLabel}
