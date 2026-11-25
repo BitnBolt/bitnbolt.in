@@ -111,7 +111,7 @@ export default function IotBoardClient({ productId }: Props) {
         { id: 10, name: '4-bit Switch', nature: 'Input Modules' },
         { id: 11, name: 'IR Sensor', nature: 'Input Modules' },
         { id: 12, name: 'Ultrasonic Sensor', nature: 'Input Modules' },
-        { id: 13, name: 'Arduino Microcontroller', nature: 'Controller' },
+        { id: 13, name: 'ESP32 Microcontroller', nature: 'Controller' },
         { id: 14, name: 'Connectors', nature: 'Accessory' },
     ];
 
@@ -119,11 +119,11 @@ export default function IotBoardClient({ productId }: Props) {
         {
             title: 'Getting started with the BitnBolt IoT Development Kit',
             category: 'IoT',
-            image: '/iot-board/im1.png',
+            image: '/iot-board/im4.png',
             href: 'https://blog.bitnbolt.in/blog',
         },
         {
-            title: 'Build your first sensor project with Arduino',
+            title: 'Build your first sensor project with ESP32',
             category: 'Embedded Systems',
             image: '/iot-board/im2.png',
             href: 'https://blog.bitnbolt.in/blog',
@@ -131,7 +131,7 @@ export default function IotBoardClient({ productId }: Props) {
         {
             title: 'From classroom to prototype: IoT projects for students',
             category: 'Learning',
-            image: '/iot-board/im3.png',
+            image: '/iot-board/im1.png',
             href: 'https://blog.bitnbolt.in/learn',
         },
     ];
@@ -415,7 +415,7 @@ export default function IotBoardClient({ productId }: Props) {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <SectionHeading title="Gallery" align="left" />
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
-                            {['/iot-board/im1.png', '/iot-board/im2.png', '/iot-board/im3.png', '/iot-board/im4.png'].map(
+                            {['/iot-board/im4.png', '/iot-board/im2.png', '/iot-board/im1.png', '/iot-board/im3.png'].map(
                                 (src, i) => (
                                     <div
                                         key={i}

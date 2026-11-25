@@ -23,7 +23,7 @@ const formatInr = (n: number, withPaise = false) =>
 const learnItems = [
   {
     title: 'C programming on hardware',
-    body: 'Write firmware, blink LEDs, read sensors, and drive displays — the fundamentals of embedded C, on a real Arduino board.',
+    body: 'Write firmware, blink LEDs, read sensors, and drive displays — the fundamentals of embedded C, on a real ESP32 board.',
   },
   {
     title: 'Python for IoT prototypes',
@@ -42,7 +42,7 @@ const learnItems = [
 const benefits = [
   'Everything you need in one box — no hunting for modules separately.',
   'Easy-to-follow guides to get you coding on day one.',
-  'Works with the Arduino IDE and common toolchains.',
+  'Works with Arduino IDE and common ESP32 toolchains.',
   'Reusable components for endless project ideas.',
   'Built for students, hobbyists, educators, and MVP builders.',
 ];
@@ -68,18 +68,18 @@ const components = [
   { name: 'Potentiometer', detail: 'Analog control input for tuning thresholds and UI values.' },
   { name: 'Pinout peripherals', detail: 'Breakouts to wire external modules without redesigning the board.' },
   { name: 'Power LED', detail: 'Instant visual cue that the kit is powered and ready.' },
-  { name: 'Arduino controller', detail: 'Runs your C/Python firmware and manages onboard peripherals.' },
+  { name: 'ESP32 controller', detail: 'Runs your C/Python firmware and manages onboard peripherals.' },
   { name: 'Slider switch', detail: 'Simple power/control switching during demos and labs.' },
   { name: 'Power jack', detail: 'External power input for stable bench and classroom use.' },
   { name: 'OLED display', detail: 'Real-time data, messages, and project dashboards on-device.' },
   { name: '5V relay', detail: 'Switch higher-power loads safely from low-voltage logic.' },
   { name: 'Power section', detail: '5V, 3.3V, GND, and 12V* rails for expanding your circuit.' },
   { name: 'Mini breadboard', detail: 'Solder-free prototyping right beside the controller.' },
-  { name: 'Base studs', detail: 'Secure mounting so the kit stays stable while you work.' },
+  { name: 'Plastic Case', detail: 'Protective enclosure that keeps the kit secure and portable.' },
 ];
 
 const specs = [
-  { label: 'Microcontroller', value: 'Arduino' },
+  { label: 'Microcontroller', value: 'ESP32' },
   { label: 'Display modules', value: '7-segment + OLED / LCD*' },
   { label: 'Connectivity', value: 'Wi-Fi & Bluetooth®' },
   { label: 'Power outputs', value: '5V, 3.3V, GND, 12V*' },
@@ -92,7 +92,7 @@ const features = [
   { title: 'Step-by-step guides', body: 'Sample projects included so you start building, not guessing.' },
   { title: 'Reliable & safe', body: 'Quality components with proper isolation for classroom and lab use.' },
   { title: 'Modular design', body: 'Extend easily with extra sensors and breakout modules.' },
-  { title: 'Educational focus', body: 'Made for students, hobbyists, and innovators who learn by shipping.' },
+  { title: 'Educational focus', body: 'Made for students, hobbyists, and innovators who learn by doing.' },
 ];
 
 const faqs = [
@@ -106,7 +106,7 @@ const faqs = [
   },
   {
     q: 'What programming languages can I use?',
-    a: 'The kit is built around the Arduino, so you can work in C/C++ (Arduino-style) and Python-based workflows for IoT prototyping.',
+    a: 'The kit is built around the ESP32, so you can work in C/C++ (Arduino IDE) and Python-based workflows for IoT prototyping.',
   },
   {
     q: 'How does early-bird pricing work?',
@@ -223,7 +223,7 @@ export default function IotKitLanding({ productHref }: Props) {
                   Learn <span className="text-[#FFD166]">C &amp; Python</span> on a real IoT Development Kit
                 </motion.h1>
                 <motion.p variants={fadeUp} className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-white/70 leading-relaxed">
-                  One Arduino board. Onboard modules. Hands-on labs — from blinking LEDs to connected IoT projects.
+                  One ESP32 board. Onboard modules. Hands-on labs — from blinking LEDs to connected IoT projects.
                 </motion.p>
                 <motion.div variants={fadeUp} className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
                   <a
@@ -266,7 +266,7 @@ export default function IotKitLanding({ productHref }: Props) {
         <section className="border-y border-[#0B1C2D]/8 bg-white">
           <div className="mx-auto grid max-w-6xl grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[#0B1C2D]/8">
             {[
-              { k: 'Arduino', v: 'Wi-Fi + Bluetooth' },
+              { k: 'ESP32', v: 'Wi-Fi + Bluetooth' },
               { k: '14+', v: 'Onboard modules' },
               { k: `${DISCOUNT_PCT}%`, v: `Off · first ${EARLY_BIRD_SEATS}` },
               { k: 'C + Py', v: 'Programming paths' },
@@ -476,7 +476,7 @@ export default function IotKitLanding({ productHref }: Props) {
                     <span className="text-[#FFD166]">✓</span> Full IoT Development Kit with onboard modules
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-[#FFD166]">✓</span> C &amp; Python learning path on Arduino
+                    <span className="text-[#FFD166]">✓</span> C &amp; Python learning path on ESP32
                   </li>
                   <li className="flex gap-2">
                     <span className="text-[#FFD166]">✓</span> Guides &amp; sample projects included
@@ -526,7 +526,7 @@ export default function IotKitLanding({ productHref }: Props) {
               Gallery
             </h2>
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
-              {['/iot-board/im1.png', '/iot-board/im2.png', '/iot-board/im3.png', '/iot-board/im5.png'].map((src) => (
+              {['/iot-board/im4.png', '/iot-board/im2.png', '/iot-board/im1.png', '/iot-board/im3.png'].map((src) => (
                 <div key={src} className="relative aspect-[4/3] overflow-hidden bg-[#0B1C2D]/5">
                   <Image src={src} alt="IoT kit gallery" fill className="object-cover" sizes="25vw" />
                 </div>

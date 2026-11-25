@@ -16,11 +16,11 @@ const sora = Sora({
 export const metadata: Metadata = {
   title: 'IoT Development Kit | Learn C & Python on Real Hardware | BitnBolt',
   description:
-    'Hands-on IoT Development Kit with Arduino, onboard sensors, OLED, relay, and more. Learn C and Python programming on real hardware — early-bird seats for students.',
+    'Hands-on IoT Development Kit with ESP32, onboard sensors, OLED, relay, and more. Learn C and Python programming on real hardware — early-bird seats for students.',
   openGraph: {
     title: 'BitnBolt IoT Development Kit',
     description:
-      'Build smarter with a complete Arduino IoT kit. Learn C & Python, prototype faster, and ship real connected projects.',
+      'Build smarter with a complete ESP32 IoT kit. Learn C & Python, prototype faster, and ship real connected projects.',
     url: 'https://bitnbolt.in/iot-kit',
     siteName: 'BitnBolt',
     type: 'website',
