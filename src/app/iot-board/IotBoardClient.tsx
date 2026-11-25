@@ -111,7 +111,7 @@ export default function IotBoardClient({ productId }: Props) {
         { id: 10, name: '4-bit Switch', nature: 'Input Modules' },
         { id: 11, name: 'IR Sensor', nature: 'Input Modules' },
         { id: 12, name: 'Ultrasonic Sensor', nature: 'Input Modules' },
-        { id: 13, name: 'ESP32 Microcontroller', nature: 'Controller' },
+        { id: 13, name: 'Arduino Microcontroller', nature: 'Controller' },
         { id: 14, name: 'Connectors', nature: 'Accessory' },
     ];
 
@@ -123,7 +123,7 @@ export default function IotBoardClient({ productId }: Props) {
             href: 'https://blog.bitnbolt.in/blog',
         },
         {
-            title: 'Build your first sensor project with ESP32',
+            title: 'Build your first sensor project with Arduino',
             category: 'Embedded Systems',
             image: '/iot-board/im2.png',
             href: 'https://blog.bitnbolt.in/blog',
@@ -224,8 +224,14 @@ export default function IotBoardClient({ productId }: Props) {
                                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                     <BuyButton />
                                     <Link
-                                        href="/iot-kit"
+                                        href="/product/iot-board"
                                         className="border-2 border-white/30 hover:border-white/60 text-white px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base flex items-center justify-center transition-all duration-300 hover:bg-white/10"
+                                    >
+                                        View Product
+                                    </Link>
+                                    <Link
+                                        href="/iot-kit"
+                                        className="border-2 border-[#FFD166]/50 hover:border-[#FFD166] text-[#FFD166] px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base flex items-center justify-center transition-all duration-300 hover:bg-[#FFD166]/10"
                                     >
                                         Student Offer
                                     </Link>
@@ -541,10 +547,10 @@ export default function IotBoardClient({ productId }: Props) {
                                 <div className="mt-auto flex flex-col sm:flex-row gap-3">
                                     <BuyButton className="w-full sm:flex-1" />
                                     <Link
-                                        href="/contact"
+                                        href="/product/iot-board"
                                         className="border-2 border-white/30 hover:border-white/60 text-white px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base text-center transition-all duration-300 hover:bg-white/10 w-full sm:flex-1"
                                     >
-                                        Talk to Us
+                                        View Product
                                     </Link>
                                 </div>
                             </motion.div>
