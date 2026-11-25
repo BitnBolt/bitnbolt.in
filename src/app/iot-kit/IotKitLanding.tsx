@@ -225,10 +225,16 @@ export default function IotKitLanding({ productHref }: Props) {
                 <motion.p variants={fadeUp} className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-white/70 leading-relaxed">
                   One ESP32 board. Onboard modules. Hands-on labs — from blinking LEDs to connected IoT projects.
                 </motion.p>
-                <motion.div variants={fadeUp} className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
+                <motion.div variants={fadeUp} className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
+                  <Link
+                    href={productHref}
+                    className="inline-flex items-center justify-center rounded-full bg-[#FFD166] px-6 py-3 text-sm sm:text-base font-bold text-[#0B1C2D] hover:bg-[#FFC033] transition-colors"
+                  >
+                    Buy Now
+                  </Link>
                   <a
                     href="#offer"
-                    className="inline-flex items-center justify-center rounded-full bg-[#FFD166] px-6 py-3 text-sm sm:text-base font-bold text-[#0B1C2D] hover:bg-[#FFC033] transition-colors"
+                    className="inline-flex items-center justify-center rounded-full border border-white/25 px-6 py-3 text-sm sm:text-base font-semibold text-white hover:bg-white/10 transition-colors"
                   >
                     Claim {DISCOUNT_PCT}% off seat
                   </a>
@@ -247,13 +253,14 @@ export default function IotKitLanding({ productHref }: Props) {
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 className="relative w-full"
               >
-                <div className="relative aspect-[4/3] sm:aspect-[5/4] lg:aspect-square overflow-hidden rounded-xl ring-1 ring-white/10 shadow-2xl">
+                <div className="relative w-full overflow-hidden rounded-xl ring-1 ring-white/10 shadow-2xl bg-[#0B1C2D]/40 p-2 sm:p-3">
                   <Image
                     src="/iot-board/im4.png"
-                    alt="BitnBolt IoT Development Kit"
-                    fill
+                    alt="BitnBolt IoT Development Kit with ESP32"
+                    width={1200}
+                    height={900}
                     priority
-                    className="object-cover object-center"
+                    className="w-full h-auto object-contain"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                 </div>
@@ -497,20 +504,20 @@ export default function IotKitLanding({ productHref }: Props) {
                 <p className="mt-2 text-xs text-[#0B1C2D]/55">
                   {DISCOUNT_PCT}% off for the first {EARLY_BIRD_SEATS} students · then normal price
                 </p>
+                <Link
+                  href={productHref}
+                  className="mt-6 flex w-full items-center justify-center rounded-full bg-[#FFD166] px-6 py-3.5 text-base font-bold text-[#0B1C2D] hover:bg-[#FFC033] transition-colors"
+                >
+                  Buy Now
+                </Link>
                 <a
                   href={primaryHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-6 flex w-full items-center justify-center rounded-full bg-[#FFD166] px-6 py-3.5 text-base font-bold text-[#0B1C2D] hover:bg-[#FFC033] transition-colors"
+                  className="mt-3 flex w-full items-center justify-center rounded-full border border-[#0B1C2D]/15 px-6 py-3 text-sm font-semibold text-[#0B1C2D] hover:bg-[#F4F7FB] transition-colors"
                 >
                   {primaryLabel}
                 </a>
-                <Link
-                  href={productHref}
-                  className="mt-3 flex w-full items-center justify-center rounded-full border border-[#0B1C2D]/15 px-6 py-3 text-sm font-semibold text-[#0B1C2D] hover:bg-[#F4F7FB] transition-colors"
-                >
-                  View full product details
-                </Link>
                 <p className="mt-4 text-center text-[11px] text-[#0B1C2D]/45">
                   After payment, fill the registration Google Form shared with your confirmation.
                 </p>
