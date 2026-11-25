@@ -12,7 +12,7 @@ const DISCOUNT_PCT = 17;
 const MRP = 3000;
 /** First 20 students offer price. */
 const EARLY_BIRD = 2500;
-const GOOGLE_FORM_URL = 'https://forms.gle/SFyeUHRixdhtzNsg6';
+const GOOGLE_FORM_URL = 'https://forms.gle/RzwAGaBQ19dHmRz79';
 
 const formatInr = (n: number, withPaise = false) =>
   n.toLocaleString('en-IN', {
